@@ -1,0 +1,12 @@
+.track {
+  min-inline-size: 6rem;
+  block-size: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  overflow: hidden;
+}
+
+.fill {
+  block-size: 100%;
+  background: var(--color-accent);
+}

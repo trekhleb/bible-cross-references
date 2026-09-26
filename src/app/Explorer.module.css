@@ -1,0 +1,40 @@
+/* Every view fills the window. Inactive ones stay laid out at full size (so the arcs keep their
+   WebGL canvas and zoom) but are invisible, and `inert` keeps them out of focus and assistive
+   technology. */
+.view {
+  position: fixed;
+  inset: 0;
+}
+
+.view[data-active='false'] {
+  visibility: hidden;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.home {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home:hover {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 47.99rem) {
+  .title {
+    font-size: 1.0625rem;
+  }
+}
+
+.error {
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--color-text-muted);
+}

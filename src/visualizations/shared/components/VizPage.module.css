@@ -1,0 +1,131 @@
+.page {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  block-size: 100dvh;
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: calc(var(--space-2) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-inline-size: 0;
+}
+
+/* Below 80rem the busiest view's controls no longer fit beside the site's name, so every view puts
+   them on a second row, below the name and the view switch: the header keeps one height whichever
+   view is shown, and switching views never moves the content. */
+@media (max-width: 79.99rem) {
+  .masthead {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+}
+
+.controls {
+  display: flex;
+  flex: 1 1 20rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-block-size: 0;
+}
+
+.stage {
+  position: relative;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  inline-size: min(26rem, 42vw);
+  min-block-size: 0;
+  border-inline-start: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.sheetHandle {
+  display: none;
+}
+
+.footer {
+  border-block-start: 1px solid var(--color-border);
+  padding-block: var(--space-1);
+}
+
+@media (max-width: 47.99rem) {
+  .header {
+    gap: var(--space-2);
+    padding-inline: var(--space-3);
+  }
+
+  .masthead {
+    gap: var(--space-2);
+  }
+
+  /* The controls join the header's own wrapping, so they share the second row. */
+  .controls {
+    display: contents;
+  }
+
+  /* Phones: the details panel is a bottom sheet that shares the height with the stage, so the
+     visualization re-lays itself out above it instead of hiding behind it. */
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .panel {
+    inline-size: auto;
+    max-block-size: 42dvh;
+    padding-block-end: env(safe-area-inset-bottom, 0px);
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--color-border);
+    border-radius: 0.875rem 0.875rem 0 0;
+  }
+
+  .panel[data-expanded='true'] {
+    max-block-size: 78dvh;
+  }
+
+  .sheetHandle {
+    display: block;
+    flex: none;
+    inline-size: 100%;
+    padding: var(--space-3) 0;
+    touch-action: none;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .sheetHandle::before {
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 0.25rem;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: var(--color-border);
+    content: '';
+  }
+}

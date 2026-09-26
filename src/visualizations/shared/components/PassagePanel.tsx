@@ -1,0 +1,390 @@
+import { useId, useMemo, useState, type ReactNode } from 'react';
+import { getBook } from '../../../core/bible/books.ts';
+import { GENRES, getBookGenre } from '../../../core/bible/genres.ts';
+import {
+  chapterPassageOf,
+  formatPassage,
+  passageRange,
+  toPassageOsisId,
+  versePassage,
+  type Passage,
+} from '../../../core/bible/passage.ts';
+import { formatVerseIndexRange } from '../../../core/bible/reference-format.ts';
+import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
+import type { Versification } from '../../../core/bible/versification.ts';
+import { elementAt } from '../../../core/lib/array.ts';
+import { formatInteger } from '../../../shared/lib/format.ts';
+import { useBooleanPreference } from '../../../shared/lib/preferences.ts';
+import {
+  CloseIcon,
+  ExpandIcon,
+  IncomingIcon,
+  NextIcon,
+  OutgoingIcon,
+  PreviousIcon,
+  type IconComponent,
+} from '../../../shared/ui/icons.tsx';
+import type { Translation } from '../../../translations/translation.ts';
+import { collectConnections, groupByBook, type Connection } from '../connections.ts';
+import type { LinkFilter } from '../link-filter.ts';
+import { GENRE_COLORS, GENRE_HEX } from '../palette.ts';
+import type { VizData } from '../viz-data.ts';
+import styles from './PassagePanel.module.css';
+
+interface PassagePanelProps {
+  readonly data: VizData;
+  readonly passage: Passage;
+  readonly filter: LinkFilter;
+  /** Links that open the passage elsewhere, e.g. in another visualization. */
+  readonly actions?: ReactNode;
+  readonly onSelect: (passage: Passage) => void;
+  readonly onClose: () => void;
+}
+
+const INITIAL_ITEMS = 40;
+
+function neighbor(passage: Passage, step: -1 | 1, versification: Versification): Passage | null {
+  const range = passageRange(passage, versification);
+  const verse = step < 0 ? range.start - 1 : range.end + 1;
+  if (!versification.isValidIndex(verse)) {
+    return null;
+  }
+  return passage.kind === 'verse' ? versePassage(verse) : chapterPassageOf(verse, versification);
+}
+
+function verseTextOrNote(translation: Translation, verse: VerseIndex): string {
+  return (
+    translation.verseText(verse) ||
+    `Omitted in the ${translation.manifest.abbreviation} (not in the earliest manuscripts).`
+  );
+}
+
+/**
+ * Details of the focused passage: its text, where it connects (by genre) and every connection,
+ * grouped by book. Every connection is a button that travels there, so nothing depends on hover.
+ */
+export function PassagePanel({
+  data,
+  passage,
+  filter,
+  actions,
+  onSelect,
+  onClose,
+}: PassagePanelProps) {
+  const { versification, translation, crossReferences, verseGenres } = data;
+  const connections = useMemo(
+    () =>
+      collectConnections(
+        crossReferences.index,
+        passageRange(passage, versification),
+        filter,
+        verseGenres,
+      ),
+    [crossReferences.index, passage, versification, filter, verseGenres],
+  );
+  const range = passageRange(passage, versification);
+  const book = versification.bookAt(range.start);
+  const genre = getBookGenre(book.id);
+  const previous = neighbor(passage, -1, versification);
+  const next = neighbor(passage, 1, versification);
+  const unit = passage.kind === 'verse' ? 'verse' : 'chapter';
+
+  return (
+    <div className={styles.panel}>
+      <header className={styles.header}>
+        <div className={styles.heading}>
+          <p className={styles.eyebrow}>
+            <span className={styles.key} style={{ background: GENRE_COLORS[genre.id] }} />
+            {genre.name} · {book.testament === 'OT' ? 'Old Testament' : 'New Testament'}
+          </p>
+          <h2 className={styles.title}>{formatPassage(passage, versification)}</h2>
+        </div>
+        <button
+          type="button"
+          className={styles.iconButton}
+          disabled={!previous}
+          aria-label={`Previous ${unit}`}
+          onClick={() => {
+            if (previous) onSelect(previous);
+          }}
+        >
+          <PreviousIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.iconButton}
+          disabled={!next}
+          aria-label={`Next ${unit}`}
+          onClick={() => {
+            if (next) onSelect(next);
+          }}
+        >
+          <NextIcon />
+        </button>
+        <button type="button" className={styles.iconButton} aria-label="Close" onClick={onClose}>
+          <CloseIcon />
+        </button>
+      </header>
+
+      {/* Keyed by passage: following a link starts the new passage's details at the top. */}
+      <div key={toPassageOsisId(passage, versification)} className={styles.scroll}>
+        {/* A verse's links follow its text; a chapter's come before its (long) list of verses. */}
+        {passage.kind === 'verse' ? (
+          <>
+            <p className={styles.verseText}>{verseTextOrNote(translation, passage.verse)}</p>
+            {actions && <div className={styles.actions}>{actions}</div>}
+          </>
+        ) : (
+          <>
+            {actions && <div className={styles.actions}>{actions}</div>}
+            <ChapterVerses
+              start={range.start}
+              end={range.end}
+              translation={translation}
+              connections={[...connections.outgoing, ...connections.incoming]}
+              onSelect={onSelect}
+            />
+          </>
+        )}
+        <GenreBreakdown
+          connections={[...connections.outgoing, ...connections.incoming]}
+          verseGenres={verseGenres}
+        />
+        <ConnectionSection
+          icon={OutgoingIcon}
+          title="References"
+          description="where this passage points"
+          connections={connections.outgoing}
+          unfiltered={connections.unfilteredOutgoing}
+          showSourceVerse={passage.kind === 'chapter'}
+          data={data}
+          onSelect={onSelect}
+        />
+        <ConnectionSection
+          icon={IncomingIcon}
+          title="Referenced by"
+          description="passages that point here"
+          connections={connections.incoming}
+          unfiltered={connections.unfilteredIncoming}
+          showSourceVerse={passage.kind === 'chapter'}
+          data={data}
+          onSelect={onSelect}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ChapterVerses({
+  start,
+  end,
+  translation,
+  connections,
+  onSelect,
+}: {
+  readonly start: VerseIndex;
+  readonly end: VerseIndex;
+  readonly translation: Translation;
+  readonly connections: readonly Connection[];
+  readonly onSelect: (passage: Passage) => void;
+}) {
+  const counts = new Map<VerseIndex, number>();
+  for (const connection of connections) {
+    counts.set(connection.here, (counts.get(connection.here) ?? 0) + 1);
+  }
+  const verses = Array.from({ length: end - start + 1 }, (_, offset) => start + offset);
+  return (
+    <div>
+      <h3 className={styles.sectionTitle}>
+        Verses <span>· tap one to focus it</span>
+      </h3>
+      {verses.map((verse, offset) => (
+        <button
+          key={verse}
+          type="button"
+          className={styles.verseRow}
+          onClick={() => {
+            onSelect(versePassage(verse));
+          }}
+        >
+          <span className={styles.verseNumber}>{offset + 1}</span>
+          <span className={styles.snippet}>{verseTextOrNote(translation, verse)}</span>
+          <span className={styles.count}>{formatInteger(counts.get(verse) ?? 0)}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Where the passage's links go, by genre. It starts as a quiet summary (a strip in the genres'
+ * colors and the number of links), so the connections themselves stay the focus; the reader can
+ * open the details, and the choice is remembered.
+ */
+function GenreBreakdown({
+  connections,
+  verseGenres,
+}: {
+  readonly connections: readonly Connection[];
+  readonly verseGenres: Uint8Array;
+}) {
+  const [expanded, setExpanded] = useBooleanPreference('genre-breakdown-expanded', false);
+  const detailsId = useId();
+  if (connections.length === 0) {
+    return null;
+  }
+  const counts = new Array<number>(GENRES.length).fill(0);
+  for (const connection of connections) {
+    const genre = elementAt(verseGenres, connection.otherStart);
+    counts[genre] = (counts[genre] ?? 0) + 1;
+  }
+  const max = Math.max(...counts);
+  const present = GENRES.filter((genre) => (counts[genre.ordinal] ?? 0) > 0);
+  return (
+    <section className={styles.genres}>
+      <button
+        type="button"
+        className={styles.genresToggle}
+        aria-expanded={expanded}
+        aria-controls={detailsId}
+        onClick={() => {
+          setExpanded(!expanded);
+        }}
+      >
+        <span className={styles.genresLabel}>Connects to</span>
+        <span className={styles.strip} aria-hidden="true">
+          {present.map((genre) => (
+            <span
+              key={genre.id}
+              style={{
+                flexGrow: counts[genre.ordinal] ?? 0,
+                background: elementAt(GENRE_HEX, genre.ordinal),
+              }}
+            />
+          ))}
+        </span>
+        <span className={styles.count}>
+          {formatInteger(connections.length)}
+          <span className={styles.visuallyHidden}>
+            {' '}
+            links in {present.length} {present.length === 1 ? 'genre' : 'genres'}
+          </span>
+        </span>
+        <ExpandIcon className={styles.chevron} />
+      </button>
+      {expanded && (
+        <div id={detailsId} className={styles.breakdown}>
+          {GENRES.filter((genre) => (counts[genre.ordinal] ?? 0) > 0).map((genre) => {
+            const count = counts[genre.ordinal] ?? 0;
+            return (
+              <div key={genre.id} style={{ display: 'contents' }}>
+                <span>{genre.name}</span>
+                <span
+                  className={styles.bar}
+                  style={{
+                    inlineSize: `${Math.max((count / max) * 100, 2)}%`,
+                    background: elementAt(GENRE_HEX, genre.ordinal),
+                  }}
+                />
+                <span className={styles.count}>{formatInteger(count)}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ConnectionSection({
+  icon: Icon,
+  title,
+  description,
+  connections,
+  unfiltered,
+  showSourceVerse,
+  data,
+  onSelect,
+}: {
+  /** The link direction, drawn as in the reading-threads direction switch. */
+  readonly icon: IconComponent;
+  readonly title: string;
+  readonly description: string;
+  readonly connections: readonly Connection[];
+  readonly unfiltered: number;
+  readonly showSourceVerse: boolean;
+  readonly data: VizData;
+  readonly onSelect: (passage: Passage) => void;
+}) {
+  const [limit, setLimit] = useState(INITIAL_ITEMS);
+  const { versification, translation } = data;
+  const visible = connections.slice(0, limit);
+  const hiddenByFilters = unfiltered - connections.length;
+  return (
+    <section>
+      <h3 className={styles.sectionTitle}>
+        <Icon className={styles.sectionIcon} />
+        {title} <span>· {description}</span>
+      </h3>
+      <p className={styles.muted}>
+        {formatInteger(connections.length)} shown
+        {hiddenByFilters > 0 && ` · ${formatInteger(hiddenByFilters)} hidden by filters`}
+      </p>
+      {groupByBook(visible, versification).map((group) => (
+        <div
+          key={`${group.book}-${String(group.connections[0]?.otherStart)}`}
+          className={styles.group}
+        >
+          <p className={styles.groupHeader}>
+            <span
+              className={styles.key}
+              style={{ background: GENRE_COLORS[getBookGenre(group.book).id] }}
+            />
+            {getBook(group.book).name}
+            <span className={styles.count}>{formatInteger(group.connections.length)}</span>
+          </p>
+          {group.connections.map((connection) => (
+            <button
+              key={`${connection.link.id}-${connection.direction}`}
+              type="button"
+              className={styles.item}
+              onClick={() => {
+                onSelect(versePassage(connection.otherStart));
+              }}
+            >
+              <span className={styles.itemRef}>
+                <strong>
+                  {formatVerseIndexRange(versification, connection.otherStart, connection.otherEnd)}
+                </strong>
+                <span className={connection.link.votes < 0 ? styles.disputed : styles.muted}>
+                  {formatInteger(connection.link.votes)} votes
+                </span>
+                {showSourceVerse && (
+                  <span className={styles.muted}>
+                    {connection.direction === 'outgoing' ? 'from' : 'to'} v.{' '}
+                    {versification.refAt(connection.here).verse}
+                  </span>
+                )}
+              </span>
+              <span className={styles.snippet}>
+                {verseTextOrNote(translation, connection.otherStart)}
+              </span>
+            </button>
+          ))}
+        </div>
+      ))}
+      {connections.length > limit && (
+        <button
+          type="button"
+          className={styles.more}
+          onClick={() => {
+            setLimit(connections.length);
+          }}
+        >
+          Show all {formatInteger(connections.length)}
+          <ExpandIcon />
+        </button>
+      )}
+    </section>
+  );
+}

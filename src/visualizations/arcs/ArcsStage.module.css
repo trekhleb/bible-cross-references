@@ -1,0 +1,49 @@
+.stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  outline: none;
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+}
+
+.stage:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 3;
+  max-inline-size: 16rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) - 2px);
+  background: rgb(22 22 21 / 0.94);
+  font-size: 0.8125rem;
+  pointer-events: none;
+}
+
+.tooltip strong {
+  display: block;
+  font-weight: 600;
+}
+
+.tooltip span {
+  display: block;
+  color: var(--color-text-muted);
+}
+
+.tooltip .gestures {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}

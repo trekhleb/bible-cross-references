@@ -1,0 +1,8 @@
+/* Icons scale with the text around them. Lucide glyphs leave some padding inside their grid, so a
+   touch over 1em balances them with the letters. */
+.icon {
+  flex: none;
+  inline-size: 1.15em;
+  block-size: 1.15em;
+  vertical-align: -0.2em;
+}

@@ -1,0 +1,71 @@
+/*
+ * Design tokens. Every color is a light-dark() pair, so a page follows the operating system's
+ * theme by default, and a page can force a theme with <html data-theme="dark"> (or "light").
+ */
+:root {
+  color-scheme: light dark;
+
+  --color-background: light-dark(#fafaf9, #0d0d0d);
+  --color-surface: light-dark(#ffffff, #161615);
+  --color-surface-muted: light-dark(#f5f5f4, #201f1d);
+  --color-text: light-dark(#1c1917, #ecebe6);
+  --color-text-muted: light-dark(#78716c, #9a9890);
+  --color-border: light-dark(#e7e5e4, #2c2b28);
+  --color-accent: light-dark(#b45309, #f59e0b);
+  --color-accent-soft: light-dark(#fef3c7, #3a2604);
+  --color-danger: light-dark(#b91c1c, #f87171);
+  --color-danger-soft: light-dark(#fee2e2, #3b0f0f);
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 0.5rem;
+  --content-width: 72rem;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}

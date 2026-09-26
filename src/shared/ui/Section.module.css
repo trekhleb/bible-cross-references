@@ -1,0 +1,27 @@
+.section {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  scroll-margin-top: var(--space-4);
+}
+
+.header {
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.description {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+}
+
+.body {
+  display: grid;
+  gap: var(--space-6);
+}

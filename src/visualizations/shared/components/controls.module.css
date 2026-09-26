@@ -1,0 +1,199 @@
+.search {
+  position: relative;
+  flex: 1 1 14rem;
+  max-inline-size: 22rem;
+}
+
+.searchIcon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--space-3);
+  color: var(--color-text-muted);
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.search .input {
+  padding-inline-start: calc(var(--space-3) + 1.6em);
+}
+
+/* Where the controls get a row of their own, the search box starts narrower and grows into the
+   room left by the busiest view's controls. */
+@media (max-width: 79.99rem) {
+  .search {
+    flex-basis: 10rem;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .search {
+    flex-basis: 6rem;
+    max-inline-size: none;
+  }
+}
+
+.input,
+.select {
+  inline-size: 100%;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: inherit;
+}
+
+.input:focus-visible,
+.select:focus-visible,
+.button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.error {
+  position: absolute;
+  inset-block-start: calc(100% + var(--space-1));
+  inset-inline: 0;
+  z-index: 5;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-danger-soft);
+  color: var(--color-text);
+  font-size: 0.8125rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button[aria-pressed='true'] {
+  border-color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+/* The frame's 2px padding and 1px border come off the buttons' own padding, so a segmented control
+   is exactly as tall as the other controls: header rows keep one height whichever view is shown. */
+.segmented .button {
+  padding-block: calc(var(--space-1) - 3px);
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+}
+
+.segmented .button[aria-pressed='true'],
+.segmented .button[aria-current='page'] {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.menu {
+  position: relative;
+}
+
+.indicator {
+  inline-size: 0.4rem;
+  block-size: 0.4rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+/* Sized to its content up to a comfortable measure; MenuButton slides it back into the viewport
+   (keeping the same 0.75rem margin) when it would overflow a narrow screen. */
+.popover {
+  position: absolute;
+  inset-block-start: calc(100% + var(--space-2));
+  inset-inline-end: 0;
+  z-index: 10;
+  display: grid;
+  gap: var(--space-3);
+  inline-size: max-content;
+  max-inline-size: min(20rem, calc(100vw - 1.5rem));
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 0.5);
+  font-size: 0.875rem;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 0.875rem;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.shortLabel {
+  display: none;
+}
+
+/* Phones: header controls get compact. Labels shorten or give way to their icons, and menu
+   buttons show only their icon, with the "changed" dot as a badge in its corner. */
+@media (max-width: 47.99rem) {
+  .longLabel,
+  .menuLabel,
+  .segmented[data-icons-only-on-phones='true'] .optionLabel {
+    display: none;
+  }
+
+  .shortLabel {
+    display: inline;
+  }
+
+  .segmented .button {
+    gap: var(--space-1);
+    padding-inline: var(--space-2);
+  }
+
+  .menuButton {
+    position: relative;
+    justify-content: center;
+    min-inline-size: 2.5rem;
+  }
+
+  .menuButton .indicator {
+    position: absolute;
+    inset-block-start: var(--space-1);
+    inset-inline-end: var(--space-1);
+  }
+}
+
+/* Touch devices: comfortable targets, and 16px inputs so iOS Safari does not zoom on focus. */
+@media (pointer: coarse) {
+  .input,
+  .select {
+    min-block-size: 2.5rem;
+    font-size: max(1rem, 16px);
+  }
+
+  .button {
+    min-block-size: 2.5rem;
+  }
+
+  .segmented .button {
+    min-block-size: calc(2.5rem - 6px);
+  }
+}

@@ -1,0 +1,17 @@
+.list {
+  display: grid;
+  grid-template-columns: minmax(10rem, max-content) 1fr;
+  gap: var(--space-1) var(--space-6);
+  margin: 0;
+}
+
+.term {
+  color: var(--color-text-muted);
+}
+
+.value {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}

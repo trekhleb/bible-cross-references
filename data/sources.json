@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "id": "bsb",
+      "description": "Berean Standard Bible, plain text (one verse per line)",
+      "url": "https://bereanbible.com/bsb.txt",
+      "fileName": "bsb.txt",
+      "sha256": "2ac3af1de52d4e68261cba91d85c320b7eadc6560e830d99e591767b8ff5ca96",
+      "retrievedAt": "2026-09-25",
+      "license": "Public domain",
+      "homepage": "https://berean.bible/"
+    },
+    {
+      "id": "openbible",
+      "description": "OpenBible.info cross-references (TSV in a ZIP archive)",
+      "url": "https://a.openbible.info/data/cross-references.zip",
+      "fileName": "openbible-cross-references.zip",
+      "sha256": "83e9db0a08054ed99848531512729f0190dbbac85416f408f2362b5dc36d421d",
+      "retrievedAt": "2026-09-25",
+      "license": "CC BY 4.0",
+      "homepage": "https://www.openbible.info/labs/cross-references/"
+    }
+  ]
+}

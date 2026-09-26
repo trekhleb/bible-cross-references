@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- The same app as the home page, showing Threads for this path. Title and
+         description only: the build plugins in vite/ add the rest of the head. -->
+    <meta
+      name="description"
+      content="Read any chapter of the Bible while threads show where each verse's cross-references land, from Genesis to Revelation."
+    />
+    <title>Threads · %SITE_NAME%</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      Threads shows where each verse of a Bible chapter connects across the whole Bible. It needs
+      JavaScript to run.
+    </noscript>
+    <script type="module" src="/src/app/main.tsx"></script>
+  </body>
+</html>

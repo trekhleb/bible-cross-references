@@ -1,0 +1,34 @@
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-2) var(--space-4) calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.footer a {
+  color: inherit;
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: var(--color-text);
+}
+
+.owner {
+  white-space: nowrap;
+}
+
+.credits {
+  flex: 1 1 20rem;
+  text-align: end;
+}
+
+@media (max-width: 47.99rem) {
+  .credits {
+    text-align: start;
+  }
+}

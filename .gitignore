@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+*.tsbuildinfo
+
+# Data: the upstream files (data/raw/) are committed; the datasets built from them are not, since
+# `npm run dev` and `npm run build` rebuild them (see README.md → "Data").
+public/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local environment
+*.local
+.env
+.env.*
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
