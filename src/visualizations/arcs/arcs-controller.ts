@@ -191,7 +191,7 @@ export class ArcsController {
   /** Shows one link and the whole passage it points to, over the focus (which stays as is). */
   setPreview(preview: ArcPreview | null): void {
     this.#linkPreview = preview;
-    this.#scene.setHover(preview ? preview.links : this.#hover && this.#linksOfRange(this.#hover));
+    this.#scene.setPreview(preview?.links ?? null);
     this.#scheduler.request();
   }
 

@@ -37,6 +37,7 @@ export function ArcsExplorer({
   onFilterChange,
   masthead,
   passageLinks,
+  shareUrl,
 }: VisualizationProps) {
   const { index } = data.crossReferences;
   const linkIds = useMemo(
@@ -83,6 +84,7 @@ export function ArcsExplorer({
             actions={passageLinks(passage)}
             onSelect={onNavigate}
             onClose={closePanel}
+            shareUrl={shareUrl}
             onPreview={(connection) => {
               setPreview(connection && { passage, connection });
             }}

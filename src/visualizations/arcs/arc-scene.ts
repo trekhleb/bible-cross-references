@@ -54,6 +54,9 @@ type ArcObject =
 
 /** Glow brightness while a passage is focused, so its own links stand out. */
 const DIMMED_GLOW = 0.28;
+/** The focused passage's links; faded while one link is previewed on its own. */
+const FOCUS_ALPHA = 0.95;
+const FOCUS_ALPHA_UNDER_PREVIEW = 0.22;
 
 /**
  * The WebGL part of the arc diagram, drawn in three passes:
@@ -82,6 +85,7 @@ export class ArcScene {
   readonly #lines: ArcObject;
   readonly #hover: ArcObject;
   readonly #focus: ArcObject;
+  readonly #preview: ArcObject;
 
   constructor(canvas: HTMLCanvasElement) {
     this.#renderer = createRenderer(canvas);
@@ -90,9 +94,17 @@ export class ArcScene {
 
     this.#lines = this.#createObject(this.#glowScene, 'line', AdditiveBlending, 1, 1);
     this.#hover = this.#createObject(this.#overlayScene, 'ribbon', NormalBlending, 0.85, 1.4);
-    this.#focus = this.#createObject(this.#overlayScene, 'ribbon', NormalBlending, 0.95, 1.8);
+    this.#focus = this.#createObject(
+      this.#overlayScene,
+      'ribbon',
+      NormalBlending,
+      FOCUS_ALPHA,
+      1.8,
+    );
+    this.#preview = this.#createObject(this.#overlayScene, 'ribbon', NormalBlending, 1, 2);
     this.#hover.renderOrder = 1;
     this.#focus.renderOrder = 2;
+    this.#preview.renderOrder = 3;
   }
 
   setSize(width: number, height: number): void {
@@ -146,6 +158,15 @@ export class ArcScene {
     this.#replace(this.#focus, instances ?? EMPTY);
   }
 
+  /** One link on its own, on top; the focused passage's links fade meanwhile. */
+  setPreview(instances: ArcInstances | null): void {
+    this.#replace(this.#preview, instances ?? EMPTY);
+    const alpha = this.#focus.material.uniforms['u_alpha'];
+    if (alpha) {
+      alpha.value = instances ? FOCUS_ALPHA_UNDER_PREVIEW : FOCUS_ALPHA;
+    }
+  }
+
   render(): void {
     this.#renderer.clear();
     this.#glow.render(this.#glowScene, this.#camera);
@@ -153,7 +174,7 @@ export class ArcScene {
   }
 
   dispose(): void {
-    for (const object of [this.#lines, this.#hover, this.#focus]) {
+    for (const object of [this.#lines, this.#hover, this.#focus, this.#preview]) {
       object.geometry.dispose();
       object.material.dispose();
     }

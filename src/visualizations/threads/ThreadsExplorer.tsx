@@ -49,6 +49,7 @@ export function ThreadsExplorer({
   onFilterChange,
   masthead,
   passageLinks,
+  shareUrl,
 }: VisualizationProps) {
   const [direction, setDirection] = useState<ThreadDirection>('outgoing');
   const { book, chapter } = chapterOf(passage, data);
@@ -108,6 +109,7 @@ export function ThreadsExplorer({
             actions={passageLinks({ kind: 'verse', verse: selectedVerse })}
             onSelect={onNavigate}
             onClose={closePanel}
+            shareUrl={shareUrl}
             onPreview={(connection) => {
               setPreview(connection && passage && { passage, connection });
             }}

@@ -118,6 +118,17 @@ export function Explorer({ data }: { readonly data: VizData }) {
               navigate({ ...location, filter: next }, { replace: true });
             }}
             masthead={masthead}
+            shareUrl={(target) =>
+              new URL(
+                explorerUrl(
+                  HOME,
+                  { passage: target, filter: DEFAULT_LINK_FILTER },
+                  '',
+                  versification,
+                ),
+                import.meta.env.SITE_URL,
+              ).href
+            }
             passageLinks={(target) =>
               VIEWS.filter((other) => other !== view).map((other) => (
                 <InAppLink

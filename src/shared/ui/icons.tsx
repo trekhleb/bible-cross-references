@@ -5,9 +5,11 @@ import {
   LuArrowRight,
   LuArrowRightLeft,
   LuBookOpenText,
+  LuCheck,
   LuChevronDown,
   LuChevronLeft,
   LuChevronRight,
+  LuCopy,
   LuHand,
   LuMouse,
   LuMousePointerClick,
@@ -62,6 +64,8 @@ export const CloseIcon = decorative(LuX);
 export const SearchIcon = decorative(LuSearch);
 export const ResetIcon = decorative(LuRotateCcw);
 export const RetryIcon = decorative(LuRefreshCw);
+export const CopyIcon = decorative(LuCopy);
+export const CopiedIcon = decorative(LuCheck);
 
 // Gestures. A mouse's are Lucide's; Lucide has no touch gestures, so those come from Material
 // Design Icons (outlined, which sits well beside Lucide's strokes), one family for all of them.

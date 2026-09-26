@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 import { analytics } from './vite/analytics.ts';
 import { firstFrame } from './vite/first-frame.ts';
 import { offline } from './vite/offline.ts';
-import { DEPLOY_BASE, PAGES, ROOT_DIR, SITE_NAME } from './vite/site.ts';
+import { DEPLOY_BASE, PAGES, ROOT_DIR, SITE_NAME, SITE_URL } from './vite/site.ts';
 import { siteHead } from './vite/site-head.ts';
 
 // https://vite.dev/config/
@@ -14,7 +14,10 @@ export default defineConfig(({ command, isPreview = false }) => ({
   // path that ignores the base breaks in `npm run preview` rather than in production. Runtime code
   // builds every URL from `import.meta.env.BASE_URL`.
   base: process.env['BASE_PATH'] ?? (command === 'build' || isPreview ? DEPLOY_BASE : '/'),
-  define: { 'import.meta.env.SITE_NAME': JSON.stringify(SITE_NAME) },
+  define: {
+    'import.meta.env.SITE_NAME': JSON.stringify(SITE_NAME),
+    'import.meta.env.SITE_URL': JSON.stringify(SITE_URL),
+  },
   plugins: [react(), siteHead(), firstFrame(), offline(), analytics()],
   build: {
     // Three.js alone is ~550 kB minified (~140 kB gzipped); only the WebGL pages load it.

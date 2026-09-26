@@ -27,6 +27,8 @@ export interface VisualizationProps {
   readonly masthead: ReactNode;
   /** Links that open a passage in the other visualizations, for the details panel. */
   readonly passageLinks: (passage: Passage) => ReactNode;
+  /** A passage's address on the published site, for links meant for others (copied quotes). */
+  readonly shareUrl: (passage: Passage) => string;
 }
 
 /**

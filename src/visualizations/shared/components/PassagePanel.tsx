@@ -1,4 +1,4 @@
-import { Fragment, useId, useMemo, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import { getBook } from '../../../core/bible/books.ts';
 import { GENRES, getBookGenre } from '../../../core/bible/genres.ts';
 import {
@@ -17,6 +17,8 @@ import { formatInteger } from '../../../shared/lib/format.ts';
 import { useBooleanPreference } from '../../../shared/lib/preferences.ts';
 import {
   CloseIcon,
+  CopiedIcon,
+  CopyIcon,
   ExpandIcon,
   IncomingIcon,
   NextIcon,
@@ -27,6 +29,7 @@ import {
 import type { Translation } from '../../../translations/translation.ts';
 import { collectConnections, groupByBook, landingNote, type Connection } from '../connections.ts';
 import type { LinkFilter } from '../link-filter.ts';
+import { canCopy, copyQuote, quotePassage, type PassageQuote } from '../passage-quote.ts';
 import { GENRE_COLORS, GENRE_HEX } from '../palette.ts';
 import type { VizData } from '../viz-data.ts';
 import styles from './PassagePanel.module.css';
@@ -44,9 +47,66 @@ interface PassagePanelProps {
    * can show that one link, and the whole passage it points to.
    */
   readonly onPreview?: (connection: Connection | null) => void;
+  /** A passage's address on the published site, for copied quotes. */
+  readonly shareUrl: (passage: Passage) => string;
 }
 
 const INITIAL_ITEMS = 40;
+/** How long the copy button shows that it copied. */
+const COPIED_FEEDBACK_MS = 1600;
+
+/**
+ * Copies a verse or passage, in full, with its reference and link, e.g. to quote it in a
+ * discussion. It shows on hover (on touch screens, always, dimmed), and not at all where the page
+ * can't use the clipboard.
+ */
+function CopyQuoteButton({
+  reference,
+  quote,
+}: {
+  readonly reference: string;
+  readonly quote: () => PassageQuote;
+}) {
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) {
+      return undefined;
+    }
+    const timer = setTimeout(() => {
+      setCopied(false);
+    }, COPIED_FEEDBACK_MS);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [copied]);
+  if (!canCopy()) {
+    return null;
+  }
+  return (
+    <>
+      <button
+        type="button"
+        className={styles.copy}
+        data-copied={copied}
+        aria-label={`Copy ${reference} with a link`}
+        title="Copy with a link"
+        onClick={() => {
+          void copyQuote(quote()).then(
+            () => {
+              setCopied(true);
+            },
+            () => undefined,
+          );
+        }}
+      >
+        {copied ? <CopiedIcon /> : <CopyIcon />}
+      </button>
+      <span className={styles.visuallyHidden} role="status">
+        {copied ? `${reference} copied` : ''}
+      </span>
+    </>
+  );
+}
 
 function neighbor(passage: Passage, step: -1 | 1, versification: Versification): Passage | null {
   const range = passageRange(passage, versification);
@@ -127,6 +187,7 @@ export function PassagePanel({
   onSelect,
   onClose,
   onPreview,
+  shareUrl,
 }: PassagePanelProps) {
   const { versification, translation, crossReferences, verseGenres } = data;
   const connections = useMemo(
@@ -188,7 +249,21 @@ export function PassagePanel({
         {/* A verse's links follow its text; a chapter's come before its (long) list of verses. */}
         {passage.kind === 'verse' ? (
           <>
-            <p className={styles.verseText}>{verseTextOrNote(translation, passage.verse)}</p>
+            <div className={styles.quotable}>
+              <p className={styles.verseText}>{verseTextOrNote(translation, passage.verse)}</p>
+              <CopyQuoteButton
+                reference={formatPassage(passage, versification)}
+                quote={() =>
+                  quotePassage({
+                    translation,
+                    versification,
+                    start: passage.verse,
+                    end: passage.verse,
+                    url: shareUrl(passage),
+                  })
+                }
+              />
+            </div>
             {actions && <div className={styles.actions}>{actions}</div>}
           </>
         ) : (
@@ -216,6 +291,7 @@ export function PassagePanel({
           data={data}
           onSelect={onSelect}
           onPreview={onPreview}
+          shareUrl={shareUrl}
         />
         <ConnectionSection
           icon={IncomingIcon}
@@ -226,6 +302,7 @@ export function PassagePanel({
           data={data}
           onSelect={onSelect}
           onPreview={onPreview}
+          shareUrl={shareUrl}
         />
       </div>
     </div>
@@ -362,6 +439,7 @@ function ConnectionSection({
   data,
   onSelect,
   onPreview,
+  shareUrl,
 }: {
   /** The link direction, drawn as in the reading-threads direction switch. */
   readonly icon: IconComponent;
@@ -372,6 +450,7 @@ function ConnectionSection({
   readonly data: VizData;
   readonly onSelect: (passage: Passage) => void;
   readonly onPreview: ((connection: Connection | null) => void) | undefined;
+  readonly shareUrl: (passage: Passage) => string;
 }) {
   const [limit, setLimit] = useState(INITIAL_ITEMS);
   const { versification, translation } = data;
@@ -398,44 +477,59 @@ function ConnectionSection({
           </p>
           {group.connections.map((connection) => {
             const note = landingNote(connection, versification, showSourceVerse);
+            const reference = formatVerseIndexRange(
+              versification,
+              connection.otherStart,
+              connection.otherEnd,
+            );
             return (
-              <button
-                key={`${connection.link.id}-${connection.direction}`}
-                type="button"
-                className={styles.item}
-                onClick={() => {
-                  onSelect(versePassage(connection.otherStart));
-                }}
+              <div
+                key={`${String(connection.link.id)}-${connection.direction}`}
+                className={styles.quotable}
                 onPointerEnter={(event) => {
                   if (event.pointerType === 'mouse') onPreview?.(connection);
                 }}
                 onPointerLeave={() => {
                   onPreview?.(null);
                 }}
-                onFocus={() => {
-                  onPreview?.(connection);
-                }}
-                onBlur={() => {
-                  onPreview?.(null);
-                }}
               >
-                <span className={styles.itemRef}>
-                  <strong>
-                    {formatVerseIndexRange(
+                <button
+                  type="button"
+                  className={styles.item}
+                  onClick={() => {
+                    onSelect(versePassage(connection.otherStart));
+                  }}
+                  onFocus={() => {
+                    onPreview?.(connection);
+                  }}
+                  onBlur={() => {
+                    onPreview?.(null);
+                  }}
+                >
+                  <span className={styles.itemRef}>
+                    <strong>{reference}</strong>
+                    {note !== null && <span className={styles.muted}>{note}</span>}
+                  </span>
+                  <ConnectionText
+                    translation={translation}
+                    versification={versification}
+                    start={connection.otherStart}
+                    end={connection.otherEnd}
+                  />
+                </button>
+                <CopyQuoteButton
+                  reference={reference}
+                  quote={() =>
+                    quotePassage({
+                      translation,
                       versification,
-                      connection.otherStart,
-                      connection.otherEnd,
-                    )}
-                  </strong>
-                  {note !== null && <span className={styles.muted}>{note}</span>}
-                </span>
-                <ConnectionText
-                  translation={translation}
-                  versification={versification}
-                  start={connection.otherStart}
-                  end={connection.otherEnd}
+                      start: connection.otherStart,
+                      end: connection.otherEnd,
+                      url: shareUrl(versePassage(connection.otherStart)),
+                    })
+                  }
                 />
-              </button>
+              </div>
             );
           })}
         </div>

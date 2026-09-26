@@ -19,6 +19,11 @@ export const SITE_NAME = 'Bible Cross-References';
  */
 export const DEPLOY_BASE = '/bible-cross-references/';
 export const SITE_ORIGIN = process.env['SITE_ORIGIN'] ?? 'https://trekhleb.dev';
+/**
+ * The published site, e.g. `https://trekhleb.dev/bible-cross-references/`. Links meant for others
+ * (copied quotes) point here even from the dev server, which runs at the root.
+ */
+export const SITE_URL = new URL(process.env['BASE_PATH'] ?? DEPLOY_BASE, SITE_ORIGIN).href;
 
 export const AUTHOR = {
   name: 'Oleksii Trekhleb',

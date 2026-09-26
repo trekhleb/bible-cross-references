@@ -245,6 +245,58 @@
   background: var(--color-surface-muted);
 }
 
+/* A verse or passage that can be copied: its copy button shows on hover, top right. */
+.quotable {
+  position: relative;
+}
+
+.quotable .itemRef,
+.quotable .verseText {
+  padding-inline-end: 2rem;
+}
+
+/* On the reference's line, clear of the verse text below. */
+.copy {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+}
+
+.quotable:hover .copy,
+.copy:focus-visible,
+.copy[data-copied='true'] {
+  opacity: 1;
+}
+
+.copy:hover,
+.copy[data-copied='true'] {
+  color: var(--color-text);
+}
+
+/* No hover on touch screens: always there, but quiet. */
+@media (hover: none) {
+  .copy {
+    border-color: transparent;
+    background: none;
+    opacity: 0.7;
+  }
+}
+
 .itemRef {
   display: flex;
   flex-wrap: wrap;
