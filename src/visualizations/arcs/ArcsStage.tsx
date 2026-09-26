@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState }
 import { formatPassage, passageRange, type Passage } from '../../core/bible/passage.ts';
 import { formatInteger } from '../../shared/lib/format.ts';
 import { ClickIcon, PinchIcon, TapIcon } from '../../shared/ui/icons.tsx';
-import { collectConnections, connectionLinkIds } from '../shared/connections.ts';
+import { collectConnections, connectionLinkIds, type Connection } from '../shared/connections.ts';
 import type { LinkFilter } from '../shared/link-filter.ts';
 import { useElementSize } from '../shared/use-element-size.ts';
 import type { VizData } from '../shared/viz-data.ts';
@@ -18,11 +18,21 @@ interface ArcsStageProps {
   readonly linkIds: Int32Array;
   readonly filter: LinkFilter;
   readonly focus: Passage | null;
+  /** A connection pointed at in the details panel: its arc and its whole passage stand out. */
+  readonly preview: Connection | null;
   readonly onSelect: (passage: Passage | null) => void;
 }
 
 /** The arc diagram: a WebGL layer for arcs, a 2D overlay for the axis, and a hover tooltip. */
-export function ArcsStage({ data, active, linkIds, filter, focus, onSelect }: ArcsStageProps) {
+export function ArcsStage({
+  data,
+  active,
+  linkIds,
+  filter,
+  focus,
+  preview,
+  onSelect,
+}: ArcsStageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const glCanvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,6 +98,22 @@ export function ArcsStage({ data, active, linkIds, filter, focus, onSelect }: Ar
   useEffect(() => {
     controllerRef.current?.setFocus(focus && passageRange(focus, data.versification));
   }, [focus, data.versification]);
+
+  useEffect(() => {
+    const link = preview?.link;
+    controllerRef.current?.setPreview(
+      link
+        ? {
+            links: buildArcInstances(
+              data.crossReferences.index,
+              Int32Array.of(link.id),
+              data.verseGenres,
+            ),
+            passage: { start: link.targetStart, end: link.targetEnd },
+          }
+        : null,
+    );
+  }, [preview, data]);
 
   return (
     <div

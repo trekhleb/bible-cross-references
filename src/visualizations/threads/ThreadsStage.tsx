@@ -24,6 +24,11 @@ interface ThreadsStageProps {
   readonly selectedVerse: VerseIndex | null;
   readonly filter: LinkFilter;
   readonly direction: ThreadDirection;
+  /**
+   * A connection pointed at in the details panel: its thread stands out, and its whole passage is
+   * marked where the chapter holds it (the selected verse keeps its own highlight).
+   */
+  readonly preview: Connection | null;
   readonly onSelect: (passage: Passage | null) => void;
 }
 
@@ -49,6 +54,7 @@ export function ThreadsStage({
   selectedVerse,
   filter,
   direction,
+  preview,
   onSelect,
 }: ThreadsStageProps) {
   const { versification, translation, crossReferences, verseGenres } = data;
@@ -97,6 +103,16 @@ export function ThreadsStage({
 
   const emphasizedVerse = hoverVerse ?? selectedVerse;
   const emphasizedBook = spineHover?.book ?? null;
+  // Only a thread that is drawn (the direction switch may hide it) can stand out alone.
+  const emphasizedLink = useMemo(() => {
+    const id = preview?.link.id;
+    if (id === undefined) return null;
+    for (const list of connectionsByVerse.values()) {
+      if (list.some((connection) => connection.link.id === id)) return id;
+    }
+    return null;
+  }, [preview, connectionsByVerse]);
+  const linked = preview && { start: preview.link.targetStart, end: preview.link.targetEnd };
 
   // Redraw on any input change, and on every scroll frame of the reading pane.
   useEffect(() => {
@@ -136,6 +152,7 @@ export function ThreadsStage({
         chapter: { start, end },
         emphasizedVerse,
         emphasizedBook,
+        emphasizedLink,
       });
     });
     scheduler.request();
@@ -158,6 +175,7 @@ export function ThreadsStage({
     end,
     emphasizedVerse,
     emphasizedBook,
+    emphasizedLink,
   ]);
 
   // Condense the chapter header once the reader scrolls, and track the verse at the top.
@@ -279,6 +297,7 @@ export function ThreadsStage({
                   }}
                   className={styles.verse}
                   data-selected={verse === selectedVerse}
+                  data-linked={linked !== null && verse >= linked.start && verse <= linked.end}
                   onPointerEnter={(event) => {
                     if (event.pointerType === 'mouse') setHoverVerse(verse);
                   }}

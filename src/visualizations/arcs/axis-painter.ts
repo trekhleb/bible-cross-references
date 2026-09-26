@@ -12,6 +12,8 @@ export interface AxisPaint {
   readonly versification: Versification;
   readonly focus: VerseIndexRange | null;
   readonly hover: VerseIndexRange | null;
+  /** A passage a previewed link points to: a band quieter than hover's, under the focus. */
+  readonly passage: VerseIndexRange | null;
 }
 
 const TEXT = '#ecebe6';
@@ -104,6 +106,7 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
     const half = Math.max((clampAlong(to) - clampAlong(from)) / 2, width);
     fillAlong(context, layout, center - half, center + half, barFrom - 2, barTo + 2);
   };
+  highlight(paint.passage, 'rgb(236 235 230 / 0.3)', 1.5);
   highlight(paint.hover, 'rgb(236 235 230 / 0.45)', 1.5);
   highlight(paint.focus, TEXT, 2);
 
@@ -116,7 +119,7 @@ export function paintAxis(context: CanvasRenderingContext2D, paint: AxisPaint): 
 
 function paintBookLabels(
   context: CanvasRenderingContext2D,
-  { layout, versification, focus, hover }: AxisPaint,
+  { layout, versification, focus, hover, passage }: AxisPaint,
   along: (verse: number) => number,
 ): void {
   const horizontal = layout.orientation === 'horizontal';
@@ -143,7 +146,9 @@ function paintBookLabels(
         : undefined;
     if (label === undefined) continue;
     const isActive =
-      touches(focus, range.start, range.end) || touches(hover, range.start, range.end);
+      touches(focus, range.start, range.end) ||
+      touches(hover, range.start, range.end) ||
+      touches(passage, range.start, range.end);
     context.fillStyle = isActive ? TEXT : MUTED;
     const center = (from + to) / 2;
     if (horizontal) {

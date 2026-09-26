@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CANONICAL_VERSIFICATION } from '../../core/bible/versification.ts';
 import { CrossReferenceIndex } from '../../cross-references/cross-reference-index.ts';
 import { createCrossReferenceColumns, verseIndex } from '../../test-utils/fixtures.ts';
-import { collectConnections, groupByBook } from './connections.ts';
+import { collectConnections, groupByBook, landingNote } from './connections.ts';
 import { createLinkFilter } from './link-filter.ts';
 import { computeVerseGenres } from './verse-genres.ts';
 
@@ -44,6 +44,32 @@ describe('collectConnections', () => {
     expect(all.incoming).toHaveLength(2);
     const filtered = collectConnections(index, passage, createLinkFilter(0), verseGenres);
     expect(filtered.incoming.map((c) => c.link.votes)).toEqual([7]);
+  });
+});
+
+describe('landingNote', () => {
+  const { outgoing, incoming } = collectConnections(
+    index,
+    { start: JOHN_3_16, end: JOHN_3_16 },
+    createLinkFilter(-Infinity),
+    verseGenres,
+  );
+  const [intoRange, intoVerse] = incoming;
+
+  it('names the whole passage a link points to, which the verse is only part of', () => {
+    expect(intoRange && landingNote(intoRange, CANONICAL_VERSIFICATION, false)).toBe(
+      'to John 3:16–17',
+    );
+  });
+
+  it('adds nothing to a link between single verses', () => {
+    expect(intoVerse && landingNote(intoVerse, CANONICAL_VERSIFICATION, false)).toBeNull();
+  });
+
+  it("names the chapter's verse where each other link starts or lands", () => {
+    const [fromVerse] = outgoing;
+    expect(intoVerse && landingNote(intoVerse, CANONICAL_VERSIFICATION, true)).toBe('to v. 16');
+    expect(fromVerse && landingNote(fromVerse, CANONICAL_VERSIFICATION, true)).toBe('from v. 16');
   });
 });
 

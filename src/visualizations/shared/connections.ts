@@ -1,4 +1,5 @@
 import type { BookId } from '../../core/bible/books.ts';
+import { formatVerseIndexRange } from '../../core/bible/reference-format.ts';
 import type { VerseIndex } from '../../core/bible/verse-ref.ts';
 import type { VerseIndexRange, Versification } from '../../core/bible/versification.ts';
 import type {
@@ -82,6 +83,28 @@ export function collectConnections(
 export interface BookGroup {
   readonly book: BookId;
   readonly connections: readonly Connection[];
+}
+
+/**
+ * Where a connection meets the passage, when its reference alone doesn't say, or `null`:
+ * - a link into several verses names them all, since it's listed under each of them (Matthew
+ *   24:37 points to all of Genesis 6:1–7, not to 6:1 alone);
+ * - in a chapter, every other link names the chapter's verse it starts or lands on.
+ */
+export function landingNote(
+  connection: Connection,
+  versification: Versification,
+  inChapter: boolean,
+): string | null {
+  const { link, direction } = connection;
+  if (direction === 'incoming' && link.targetEnd !== link.targetStart) {
+    return `to ${formatVerseIndexRange(versification, link.targetStart, link.targetEnd)}`;
+  }
+  if (!inChapter) {
+    return null;
+  }
+  const verse = versification.refAt(connection.here).verse;
+  return `${direction === 'outgoing' ? 'from' : 'to'} v. ${String(verse)}`;
 }
 
 /** Groups connections (already sorted by their other end) by the book of the other end. */

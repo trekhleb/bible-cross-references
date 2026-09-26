@@ -1,4 +1,4 @@
-import { useId, useMemo, useState, type ReactNode } from 'react';
+import { Fragment, useId, useMemo, useState, type ReactNode } from 'react';
 import { getBook } from '../../../core/bible/books.ts';
 import { GENRES, getBookGenre } from '../../../core/bible/genres.ts';
 import {
@@ -9,7 +9,7 @@ import {
   versePassage,
   type Passage,
 } from '../../../core/bible/passage.ts';
-import { formatVerseIndexRange } from '../../../core/bible/reference-format.ts';
+import { formatVerseIndexRange, formatVerseRef } from '../../../core/bible/reference-format.ts';
 import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
 import type { Versification } from '../../../core/bible/versification.ts';
 import { elementAt } from '../../../core/lib/array.ts';
@@ -25,7 +25,7 @@ import {
   type IconComponent,
 } from '../../../shared/ui/icons.tsx';
 import type { Translation } from '../../../translations/translation.ts';
-import { collectConnections, groupByBook, type Connection } from '../connections.ts';
+import { collectConnections, groupByBook, landingNote, type Connection } from '../connections.ts';
 import type { LinkFilter } from '../link-filter.ts';
 import { GENRE_COLORS, GENRE_HEX } from '../palette.ts';
 import type { VizData } from '../viz-data.ts';
@@ -39,6 +39,11 @@ interface PassagePanelProps {
   readonly actions?: ReactNode;
   readonly onSelect: (passage: Passage) => void;
   readonly onClose: () => void;
+  /**
+   * A connection is pointed at (mouse) or focused (keyboard), or no longer is: the visualization
+   * can show that one link, and the whole passage it points to.
+   */
+  readonly onPreview?: (connection: Connection | null) => void;
 }
 
 const INITIAL_ITEMS = 40;
@@ -59,6 +64,57 @@ function verseTextOrNote(translation: Translation, verse: VerseIndex): string {
   );
 }
 
+/** A linked passage longer than this shows its first verses, and how many more there are. */
+const MAX_PASSAGE_VERSES = 12;
+
+/**
+ * The text a connection leads to, in full: a verse, or a passage's verses with their numbers (up
+ * to `MAX_PASSAGE_VERSES`; a very long passage says how much more there is).
+ */
+function ConnectionText({
+  translation,
+  versification,
+  start,
+  end,
+}: {
+  readonly translation: Translation;
+  readonly versification: Versification;
+  readonly start: VerseIndex;
+  readonly end: VerseIndex;
+}) {
+  if (start === end) {
+    return <span className={styles.snippet}>{verseTextOrNote(translation, start)}</span>;
+  }
+  const first = versification.refAt(start);
+  const last = Math.min(end, start + MAX_PASSAGE_VERSES - 1);
+  const verses = Array.from({ length: last - start + 1 }, (_, offset) => start + offset);
+  const more = end - last;
+  return (
+    <span className={styles.snippet}>
+      {verses.map((verse) => {
+        const ref = versification.refAt(verse);
+        const mark =
+          ref.book !== first.book
+            ? formatVerseRef(ref)
+            : ref.chapter !== first.chapter
+              ? `${String(ref.chapter)}:${String(ref.verse)}`
+              : String(ref.verse);
+        return (
+          <Fragment key={verse}>
+            <sup className={styles.verseMark}>{mark}</sup>
+            {verseTextOrNote(translation, verse)}{' '}
+          </Fragment>
+        );
+      })}
+      {more > 0 && (
+        <span className={styles.moreVerses}>
+          + {formatInteger(more)} more {more === 1 ? 'verse' : 'verses'}
+        </span>
+      )}
+    </span>
+  );
+}
+
 /**
  * Details of the focused passage: its text, where it connects (by genre) and every connection,
  * grouped by book. Every connection is a button that travels there, so nothing depends on hover.
@@ -70,6 +126,7 @@ export function PassagePanel({
   actions,
   onSelect,
   onClose,
+  onPreview,
 }: PassagePanelProps) {
   const { versification, translation, crossReferences, verseGenres } = data;
   const connections = useMemo(
@@ -158,6 +215,7 @@ export function PassagePanel({
           showSourceVerse={passage.kind === 'chapter'}
           data={data}
           onSelect={onSelect}
+          onPreview={onPreview}
         />
         <ConnectionSection
           icon={IncomingIcon}
@@ -167,6 +225,7 @@ export function PassagePanel({
           showSourceVerse={passage.kind === 'chapter'}
           data={data}
           onSelect={onSelect}
+          onPreview={onPreview}
         />
       </div>
     </div>
@@ -302,6 +361,7 @@ function ConnectionSection({
   showSourceVerse,
   data,
   onSelect,
+  onPreview,
 }: {
   /** The link direction, drawn as in the reading-threads direction switch. */
   readonly icon: IconComponent;
@@ -311,6 +371,7 @@ function ConnectionSection({
   readonly showSourceVerse: boolean;
   readonly data: VizData;
   readonly onSelect: (passage: Passage) => void;
+  readonly onPreview: ((connection: Connection | null) => void) | undefined;
 }) {
   const [limit, setLimit] = useState(INITIAL_ITEMS);
   const { versification, translation } = data;
@@ -335,31 +396,48 @@ function ConnectionSection({
             {getBook(group.book).name}
             <span className={styles.count}>{formatInteger(group.connections.length)}</span>
           </p>
-          {group.connections.map((connection) => (
-            <button
-              key={`${connection.link.id}-${connection.direction}`}
-              type="button"
-              className={styles.item}
-              onClick={() => {
-                onSelect(versePassage(connection.otherStart));
-              }}
-            >
-              <span className={styles.itemRef}>
-                <strong>
-                  {formatVerseIndexRange(versification, connection.otherStart, connection.otherEnd)}
-                </strong>
-                {showSourceVerse && (
-                  <span className={styles.muted}>
-                    {connection.direction === 'outgoing' ? 'from' : 'to'} v.{' '}
-                    {versification.refAt(connection.here).verse}
-                  </span>
-                )}
-              </span>
-              <span className={styles.snippet}>
-                {verseTextOrNote(translation, connection.otherStart)}
-              </span>
-            </button>
-          ))}
+          {group.connections.map((connection) => {
+            const note = landingNote(connection, versification, showSourceVerse);
+            return (
+              <button
+                key={`${connection.link.id}-${connection.direction}`}
+                type="button"
+                className={styles.item}
+                onClick={() => {
+                  onSelect(versePassage(connection.otherStart));
+                }}
+                onPointerEnter={(event) => {
+                  if (event.pointerType === 'mouse') onPreview?.(connection);
+                }}
+                onPointerLeave={() => {
+                  onPreview?.(null);
+                }}
+                onFocus={() => {
+                  onPreview?.(connection);
+                }}
+                onBlur={() => {
+                  onPreview?.(null);
+                }}
+              >
+                <span className={styles.itemRef}>
+                  <strong>
+                    {formatVerseIndexRange(
+                      versification,
+                      connection.otherStart,
+                      connection.otherEnd,
+                    )}
+                  </strong>
+                  {note !== null && <span className={styles.muted}>{note}</span>}
+                </span>
+                <ConnectionText
+                  translation={translation}
+                  versification={versification}
+                  start={connection.otherStart}
+                  end={connection.otherEnd}
+                />
+              </button>
+            );
+          })}
         </div>
       ))}
       {connections.length > limit && (

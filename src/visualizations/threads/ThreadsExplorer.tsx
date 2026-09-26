@@ -10,6 +10,7 @@ import { PassagePanel } from '../shared/components/PassagePanel.tsx';
 import { ReferenceSearch } from '../shared/components/ReferenceSearch.tsx';
 import { SegmentedControl } from '../shared/components/SegmentedControl.tsx';
 import { VizPage } from '../shared/components/VizPage.tsx';
+import type { Connection } from '../shared/connections.ts';
 import { DEFAULT_LINK_FILTER, selectLinks } from '../shared/link-filter.ts';
 import type { VizData } from '../shared/viz-data.ts';
 import type { VisualizationProps } from '../visualization.ts';
@@ -61,6 +62,12 @@ export function ThreadsExplorer({
   const closePanel = () => {
     onNavigate({ kind: 'chapter', book, chapter });
   };
+  // A connection pointed at in the panel; it belongs to the passage it was pointed at on.
+  const [preview, setPreview] = useState<{
+    readonly passage: Passage;
+    readonly connection: Connection;
+  } | null>(null);
+  const previewed = preview?.passage === passage ? preview.connection : null;
 
   return (
     <VizPage
@@ -101,6 +108,9 @@ export function ThreadsExplorer({
             actions={passageLinks({ kind: 'verse', verse: selectedVerse })}
             onSelect={onNavigate}
             onClose={closePanel}
+            onPreview={(connection) => {
+              setPreview(connection && passage && { passage, connection });
+            }}
           />
         )
       }
@@ -112,6 +122,7 @@ export function ThreadsExplorer({
         selectedVerse={selectedVerse}
         filter={filter}
         direction={direction}
+        preview={previewed}
         onSelect={onNavigate}
       />
     </VizPage>

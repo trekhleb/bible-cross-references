@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ClickIcon,
   DragIcon,
@@ -17,6 +17,8 @@ import { ReferenceSearch } from '../shared/components/ReferenceSearch.tsx';
 import { VizPage } from '../shared/components/VizPage.tsx';
 import { DEFAULT_LINK_FILTER, selectLinks } from '../shared/link-filter.ts';
 import { summarizeLinks } from '../shared/link-summary.ts';
+import type { Passage } from '../../core/bible/passage.ts';
+import type { Connection } from '../shared/connections.ts';
 import type { VisualizationProps } from '../visualization.ts';
 import { ArcsStage } from './ArcsStage.tsx';
 
@@ -48,6 +50,12 @@ export function ArcsExplorer({
   const closePanel = () => {
     onNavigate(null);
   };
+  // A connection pointed at in the panel; it belongs to the passage it was pointed at on.
+  const [preview, setPreview] = useState<{
+    readonly passage: Passage;
+    readonly connection: Connection;
+  } | null>(null);
+  const previewed = preview?.passage === passage ? preview.connection : null;
 
   return (
     <VizPage
@@ -75,6 +83,9 @@ export function ArcsExplorer({
             actions={passageLinks(passage)}
             onSelect={onNavigate}
             onClose={closePanel}
+            onPreview={(connection) => {
+              setPreview(connection && { passage, connection });
+            }}
           />
         )
       }
@@ -85,6 +96,7 @@ export function ArcsExplorer({
         linkIds={linkIds}
         filter={filter}
         focus={passage}
+        preview={previewed}
         onSelect={onNavigate}
       />
       <LinkStats

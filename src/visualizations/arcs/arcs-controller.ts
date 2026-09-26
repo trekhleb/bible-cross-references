@@ -30,6 +30,14 @@ export interface ArcHover {
   readonly input: PreviewInput;
 }
 
+/** One link shown from outside the diagram (e.g. pointed at in the details panel). */
+export interface ArcPreview {
+  /** The link's arc. */
+  readonly links: ArcInstances;
+  /** The passage it points to, marked on the axis as a whole. */
+  readonly passage: VerseIndexRange;
+}
+
 export interface ArcsControllerOptions {
   /** Receives pointer, wheel and keyboard input; should be focusable. */
   readonly container: HTMLElement;
@@ -84,6 +92,7 @@ export class ArcsController {
   #view: AxisView;
   #focus: VerseIndexRange | null = null;
   #hover: VerseIndexRange | null = null;
+  #linkPreview: ArcPreview | null = null;
   /** Where a finger previews, while it does; drives edge panning. */
   #touchPreview: GesturePoint | null = null;
   #edgePanFrame: number | null = null;
@@ -179,6 +188,13 @@ export class ArcsController {
     this.#scheduler.request();
   }
 
+  /** Shows one link and the whole passage it points to, over the focus (which stays as is). */
+  setPreview(preview: ArcPreview | null): void {
+    this.#linkPreview = preview;
+    this.#scene.setHover(preview ? preview.links : this.#hover && this.#linksOfRange(this.#hover));
+    this.#scheduler.request();
+  }
+
   resetView(): void {
     this.#animateTo(fullView(this.#options.versification.verseCount));
   }
@@ -238,6 +254,7 @@ export class ArcsController {
       versification: this.#options.versification,
       focus: this.#focus,
       hover: this.#hover,
+      passage: this.#linkPreview?.passage ?? null,
     });
   }
 

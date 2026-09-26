@@ -160,6 +160,12 @@
   background: rgb(236 235 230 / 0.04);
 }
 
+/* The passage a link pointed at in the panel refers to: quieter than the selected verse. */
+.verse[data-linked='true'] {
+  background: rgb(236 235 230 / 0.035);
+  box-shadow: inset 2px 0 0 var(--color-text-muted);
+}
+
 .verse[data-selected='true'] {
   background: var(--color-surface-muted);
   box-shadow: inset 2px 0 0 var(--color-text);

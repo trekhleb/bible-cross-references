@@ -257,16 +257,28 @@
   font-weight: 600;
 }
 
+/* Verses in full: a cut-off verse loses the context that makes the link make sense. */
 .snippet {
-  display: -webkit-box;
-  overflow: hidden;
   color: var(--color-text-muted);
   font-family: var(--font-serif);
   font-size: 0.875rem;
   line-height: 1.45;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+}
+
+/* Verse numbers inside a passage, as in a printed Bible. */
+.verseMark {
+  margin-inline-end: 0.2em;
+  font-family: var(--font-sans);
+  font-size: 0.65em;
+  font-variant-numeric: tabular-nums;
+  vertical-align: super;
+  line-height: 0;
+}
+
+.moreVerses {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  white-space: nowrap;
 }
 
 .more {
