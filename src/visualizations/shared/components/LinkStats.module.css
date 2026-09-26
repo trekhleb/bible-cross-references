@@ -12,6 +12,10 @@
   line-height: 1.45;
   text-align: end;
   pointer-events: none;
+  /* A soft halo in the background's color keeps it readable over dense arcs. */
+  text-shadow:
+    0 0 3px var(--color-background),
+    0 0 8px var(--color-background);
 }
 
 .stats strong {
@@ -19,8 +23,28 @@
   font-weight: 600;
 }
 
+/* Words and gesture icons, as in the arcs' tooltip. */
 .hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   margin-block-start: var(--space-1);
+  white-space: nowrap;
+}
+
+.touchHint {
+  display: none;
+}
+
+/* A touch screen: its own gestures, and shown on phones too. */
+@media (hover: none) and (pointer: coarse) {
+  .pointerHint {
+    display: none;
+  }
+
+  .touchHint {
+    display: flex;
+  }
 }
 
 @media (max-width: 47.99rem) {
@@ -30,7 +54,11 @@
   }
 
   .secondary,
-  .hint {
+  .pointerHint {
     display: none;
+  }
+
+  .hint {
+    margin-block-start: 0;
   }
 }

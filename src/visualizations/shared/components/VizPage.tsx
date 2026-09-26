@@ -1,5 +1,6 @@
-import { useRef, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { SiteFooter } from '../../../shared/ui/SiteFooter.tsx';
+import { useBottomSheet } from '../use-bottom-sheet.ts';
 import styles from './VizPage.module.css';
 
 interface VizPageProps {
@@ -10,56 +11,65 @@ interface VizPageProps {
   /** The details panel: a side column on wide screens, a bottom sheet on phones; omit or pass
    * `null` / `false` for none. */
   readonly panel?: ReactNode;
+  /** Closes the panel; on phones, pulling its sheet down from the collapsed height calls it. */
+  readonly onPanelClose?: () => void;
   /** Data attribution and inspiration, shown in the footer. */
   readonly credits: ReactNode;
   /** The visualization itself. */
   readonly children: ReactNode;
 }
 
-/** Vertical drag on the sheet handle beyond which it counts as a swipe rather than a tap. */
-const SWIPE_THRESHOLD_PX = 24;
-
 /** The shared frame of every visualization page. */
-export function VizPage({ masthead, controls, panel, credits, children }: VizPageProps) {
-  const [sheetExpanded, setSheetExpanded] = useState(false);
-  const swipeStart = useRef<number | null>(null);
+export function VizPage({
+  masthead,
+  controls,
+  panel,
+  onPanelClose,
+  credits,
+  children,
+}: VizPageProps) {
+  const hasPanel = panel !== undefined && panel !== null && panel !== false;
+  const { expanded, setExpanded, containerRef, sheetRef, spaceRef, scrimRef } = useBottomSheet(
+    hasPanel,
+    onPanelClose,
+  );
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.masthead}>{masthead}</div>
         <div className={styles.controls}>{controls}</div>
       </header>
-      <div className={styles.body}>
+      <div
+        ref={containerRef}
+        className={styles.body}
+        data-sheet={hasPanel ? (expanded ? 'expanded' : 'collapsed') : undefined}
+      >
         <main className={styles.stage}>{children}</main>
-        {panel !== undefined && panel !== null && panel !== false && (
-          <aside className={styles.panel} data-expanded={sheetExpanded} aria-label="Details">
-            <button
-              type="button"
-              className={styles.sheetHandle}
-              aria-label={sheetExpanded ? 'Collapse details' : 'Expand details'}
-              aria-expanded={sheetExpanded}
-              onPointerDown={(event) => {
-                swipeStart.current = event.clientY;
-              }}
-              onPointerUp={(event) => {
-                const start = swipeStart.current;
-                swipeStart.current = null;
-                const distance = start === null ? 0 : event.clientY - start;
-                if (Math.abs(distance) < SWIPE_THRESHOLD_PX) {
-                  setSheetExpanded((expanded) => !expanded); // A tap toggles.
-                } else {
-                  setSheetExpanded(distance < 0); // Swipe up expands, swipe down collapses.
-                }
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  setSheetExpanded((expanded) => !expanded);
-                }
+        {hasPanel && (
+          <>
+            {/* Phones: the collapsed sheet's room, so the visualization lays out above it. */}
+            <div ref={spaceRef} className={styles.sheetSpace} aria-hidden="true" />
+            <div
+              ref={scrimRef}
+              className={styles.sheetScrim}
+              aria-hidden="true"
+              onClick={() => {
+                setExpanded(false);
               }}
             />
-            {panel}
-          </aside>
+            <aside ref={sheetRef} className={styles.panel} aria-label="Details">
+              <button
+                type="button"
+                className={styles.sheetHandle}
+                aria-label={expanded ? 'Collapse details' : 'Expand details'}
+                aria-expanded={expanded}
+                onClick={() => {
+                  setExpanded(!expanded);
+                }}
+              />
+              {panel}
+            </aside>
+          </>
         )}
       </div>
       <SiteFooter className={styles.footer}>{credits}</SiteFooter>

@@ -64,7 +64,9 @@
   background: var(--color-surface);
 }
 
-.sheetHandle {
+.sheetHandle,
+.sheetSpace,
+.sheetScrim {
   display: none;
 }
 
@@ -88,24 +90,88 @@
     display: contents;
   }
 
-  /* Phones: the details panel is a bottom sheet that shares the height with the stage, so the
-     visualization re-lays itself out above it instead of hiding behind it. */
+  /* Phones: the details panel is a bottom sheet (see use-bottom-sheet.ts). The layout keeps room
+     for it collapsed, so the visualization lays itself out above it instead of hiding behind it;
+     expanded, it slides over the visualization, which stays as it is (no re-layout while it
+     moves). The sheet is always its expanded height; collapsing slides most of it out of view. */
   .body {
+    /* Collapsed height; the visualization still showing above the expanded sheet. */
+    --sheet-peek: 42dvh;
+    --sheet-gap: 2.5rem;
+    /* iOS's sheet spring, approximated. */
+    --sheet-motion: 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) auto;
+    overflow: clip;
+  }
+
+  /* Its content can't rise over the sheet or the scrim. */
+  .stage {
+    isolation: isolate;
+  }
+
+  .sheetSpace {
+    display: block;
+    block-size: var(--sheet-peek);
+  }
+
+  .sheetScrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgb(0 0 0 / 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--sheet-motion);
+  }
+
+  .body[data-sheet='expanded'] .sheetScrim {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .panel {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: 2;
     inline-size: auto;
-    max-block-size: 42dvh;
+    block-size: calc(100% - var(--sheet-gap));
     padding-block-end: env(safe-area-inset-bottom, 0px);
     border-inline-start: 0;
     border-block-start: 1px solid var(--color-border);
     border-radius: 0.875rem 0.875rem 0 0;
+    /* Fills in below the sheet when it's stretched past its top. */
+    box-shadow: 0 3rem 0 var(--color-surface);
+    transform: translateY(calc(100% - var(--sheet-peek)));
+    transition: transform var(--sheet-motion);
   }
 
-  .panel[data-expanded='true'] {
-    max-block-size: 78dvh;
+  /* Opening: it slides up from below. */
+  @starting-style {
+    .panel {
+      transform: translateY(100%);
+    }
+  }
+
+  .body[data-sheet='expanded'] .panel {
+    transform: none;
+  }
+
+  .body[data-sheet-closing] .panel {
+    transform: translateY(100%);
+  }
+
+  .body[data-sheet-closing] .sheetScrim {
+    opacity: 0;
+  }
+
+  /* While a finger moves it, the sheet follows the finger, not a transition. */
+  .body[data-sheet-dragging] .panel,
+  .body[data-sheet-dragging] .sheetScrim {
+    transition: none;
   }
 
   .sheetHandle {
@@ -127,5 +193,19 @@
     border-radius: 999px;
     background: var(--color-border);
     content: '';
+    transition: background-color 0.2s;
+  }
+
+  /* The grabber brightens while held. */
+  .body[data-sheet-dragging] .sheetHandle::before,
+  .sheetHandle:active::before {
+    background: var(--color-text-muted);
+  }
+}
+
+@media (max-width: 47.99rem) and (prefers-reduced-motion: reduce) {
+  .panel,
+  .sheetScrim {
+    transition: none;
   }
 }

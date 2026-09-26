@@ -57,11 +57,16 @@ export function ThreadsExplorer({
     () => selectLinks(index, data.verseGenres, filter).length,
     [index, data.verseGenres, filter],
   );
+  // Closing the details keeps the chapter.
+  const closePanel = () => {
+    onNavigate({ kind: 'chapter', book, chapter });
+  };
 
   return (
     <VizPage
       masthead={masthead}
       credits={<Credits />}
+      onPanelClose={closePanel}
       controls={
         <>
           <ReferenceSearch versification={data.versification} onSelect={onNavigate} />
@@ -95,9 +100,7 @@ export function ThreadsExplorer({
             filter={filter}
             actions={passageLinks({ kind: 'verse', verse: selectedVerse })}
             onSelect={onNavigate}
-            onClose={() => {
-              onNavigate({ kind: 'chapter', book, chapter });
-            }}
+            onClose={closePanel}
           />
         )
       }

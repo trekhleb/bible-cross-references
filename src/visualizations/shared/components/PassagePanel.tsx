@@ -155,7 +155,6 @@ export function PassagePanel({
           title="References"
           description="where this passage points"
           connections={connections.outgoing}
-          unfiltered={connections.unfilteredOutgoing}
           showSourceVerse={passage.kind === 'chapter'}
           data={data}
           onSelect={onSelect}
@@ -165,7 +164,6 @@ export function PassagePanel({
           title="Referenced by"
           description="passages that point here"
           connections={connections.incoming}
-          unfiltered={connections.unfilteredIncoming}
           showSourceVerse={passage.kind === 'chapter'}
           data={data}
           onSelect={onSelect}
@@ -301,7 +299,6 @@ function ConnectionSection({
   title,
   description,
   connections,
-  unfiltered,
   showSourceVerse,
   data,
   onSelect,
@@ -311,7 +308,6 @@ function ConnectionSection({
   readonly title: string;
   readonly description: string;
   readonly connections: readonly Connection[];
-  readonly unfiltered: number;
   readonly showSourceVerse: boolean;
   readonly data: VizData;
   readonly onSelect: (passage: Passage) => void;
@@ -319,17 +315,13 @@ function ConnectionSection({
   const [limit, setLimit] = useState(INITIAL_ITEMS);
   const { versification, translation } = data;
   const visible = connections.slice(0, limit);
-  const hiddenByFilters = unfiltered - connections.length;
   return (
     <section>
       <h3 className={styles.sectionTitle}>
         <Icon className={styles.sectionIcon} />
         {title} <span>· {description}</span>
       </h3>
-      <p className={styles.muted}>
-        {formatInteger(connections.length)} shown
-        {hiddenByFilters > 0 && ` · ${formatInteger(hiddenByFilters)} hidden by filters`}
-      </p>
+      {connections.length === 0 && <p className={styles.muted}>None</p>}
       {groupByBook(visible, versification).map((group) => (
         <div
           key={`${group.book}-${String(group.connections[0]?.otherStart)}`}
@@ -356,9 +348,6 @@ function ConnectionSection({
                 <strong>
                   {formatVerseIndexRange(versification, connection.otherStart, connection.otherEnd)}
                 </strong>
-                <span className={connection.link.votes < 0 ? styles.disputed : styles.muted}>
-                  {formatInteger(connection.link.votes)} votes
-                </span>
                 {showSourceVerse && (
                   <span className={styles.muted}>
                     {connection.direction === 'outgoing' ? 'from' : 'to'} v.{' '}

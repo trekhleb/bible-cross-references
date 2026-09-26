@@ -55,8 +55,10 @@ Threads.
 
 ![Both views on a phone: Arcs with Psalm 23:1 focused, and Threads with John 1](public/screenshots/phone.jpg)
 
-Both views work on phones, with the details in a bottom sheet. After the first visit the site loads
-instantly and works offline, and it can be installed as an app. Every passage has its own link,
+Both views work on phones. On the arcs, touch and hold, then slide, to preview passages (on the book
+bar, just slide), and pinch to zoom. The details open in a sheet that you drag up to read and pull
+down to close. After the first visit the site loads instantly and works offline, and it can be
+installed as an app. Every passage has its own link,
 filters included, e.g.
 [`?ref=John.3.16`](https://trekhleb.dev/bible-cross-references/?ref=John.3.16), so you can share
 exactly what you are looking at.
@@ -167,7 +169,7 @@ The code is released under the [MIT License](LICENSE). The data keeps its own li
 > Scripture Knowledge. Modified: re-indexed to KJV verse numbering.
 > Scripture text: Berean Standard Bible (BSB), dedicated to the public domain.
 
-UI icons are from [Lucide](https://lucide.dev/) (ISC License), plus one pinch icon from
+UI icons are from [Lucide](https://lucide.dev/) (ISC License), plus the touch-gesture icons from
 [Material Design Icons](https://fonts.google.com/icons) (Apache License 2.0), via
 [react-icons](https://react-icons.github.io/react-icons/) (MIT). The views are original designs:
 Arcs is inspired by Chris Harrison and Christoph Römhild's

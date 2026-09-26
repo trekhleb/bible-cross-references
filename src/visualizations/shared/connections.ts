@@ -25,9 +25,6 @@ export interface PassageConnections {
   readonly outgoing: readonly Connection[];
   /** Links into verses of the passage (what references the passage). */
   readonly incoming: readonly Connection[];
-  /** Counts before filtering, so the UI can say "showing N of M". */
-  readonly unfilteredOutgoing: number;
-  readonly unfilteredIncoming: number;
 }
 
 function byOtherEnd(a: Connection, b: Connection): number {
@@ -45,12 +42,9 @@ export function collectConnections(
   const outgoing: Connection[] = [];
   const incoming: Connection[] = [];
   const seenIncoming = new Set<number>();
-  let unfilteredOutgoing = 0;
-  let unfilteredIncoming = 0;
 
   for (let verse = range.start; verse <= range.end; verse += 1) {
     for (const link of index.outgoing(verse)) {
-      unfilteredOutgoing += 1;
       if (passes(link.from, link.targetStart, link.votes)) {
         outgoing.push({
           link,
@@ -67,7 +61,6 @@ export function collectConnections(
         continue;
       }
       seenIncoming.add(link.id);
-      unfilteredIncoming += 1;
       if (passes(link.from, link.targetStart, link.votes)) {
         incoming.push({
           link,
@@ -83,8 +76,6 @@ export function collectConnections(
   return {
     outgoing: outgoing.sort(byOtherEnd),
     incoming: incoming.sort(byOtherEnd),
-    unfilteredOutgoing,
-    unfilteredIncoming,
   };
 }
 

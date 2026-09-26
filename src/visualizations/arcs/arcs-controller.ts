@@ -1,6 +1,6 @@
 import { chapterPassageOf, versePassage, type Passage } from '../../core/bible/passage.ts';
 import type { VerseIndexRange, Versification } from '../../core/bible/versification.ts';
-import { attachGestures, type GesturePoint } from '../shared/gestures.ts';
+import { attachGestures, type GesturePoint, type PreviewInput } from '../shared/gestures.ts';
 import { animate, FrameScheduler, MAX_PIXEL_RATIO } from '../shared/frames.ts';
 import type { ArcInstances } from './arc-instances.ts';
 import {
@@ -26,6 +26,8 @@ export interface ArcHover {
   /** Pointer position in stage coordinates, for placing a tooltip. */
   readonly x: number;
   readonly y: number;
+  /** A mouse, or a finger, whose tooltip must stay clear of the finger. */
+  readonly input: PreviewInput;
 }
 
 export interface ArcsControllerOptions {
@@ -56,6 +58,19 @@ export function glowCeiling(arcCount: number): number {
 const INTRO_MS = 800;
 
 /**
+ * A finger put down this close to the axis line, or on its labels, previews at once: the axis
+ * works like an index strip. Elsewhere a finger previews after a hold, since a drag pans.
+ */
+const AXIS_STRIP_REACH_PX = 16;
+/**
+ * While a finger previews within this distance of an end of the axis, the view keeps panning that
+ * way, faster the closer it gets, so a zoomed-in reader can scrub past the edge.
+ */
+const EDGE_PAN_ZONE_PX = 44;
+/** Top edge-panning speed, in pixels per second. */
+const EDGE_PAN_MAX_SPEED = 900;
+
+/**
  * Drives the arc diagram imperatively (no React re-renders on every wheel tick): it owns the
  * WebGL scene, the 2D overlay, the visible window, and all input handling.
  */
@@ -69,6 +84,10 @@ export class ArcsController {
   #view: AxisView;
   #focus: VerseIndexRange | null = null;
   #hover: VerseIndexRange | null = null;
+  /** Where a finger previews, while it does; drives edge panning. */
+  #touchPreview: GesturePoint | null = null;
+  #edgePanFrame: number | null = null;
+  #edgePanTime: number | null = null;
   #linksOfRange: (range: VerseIndexRange) => ArcInstances | null = () => null;
   #cancelAnimation: (() => void) | null = null;
   /** The intro that grows the first links from their sources; runs once, when they arrive. */
@@ -97,13 +116,13 @@ export class ArcsController {
       onZoom: (factor, center) => {
         this.#zoomAt(factor, center);
       },
-      onHover: (point) => {
-        this.#hoverAt(point);
+      onHover: (point, input) => {
+        this.#preview(point, input);
       },
       onLeave: () => {
-        this.#setHover(null);
-        options.onHover(null);
+        this.#endPreview();
       },
+      previewsAt: (point) => this.#isOnAxisStrip(point),
       onTap: (point) => {
         const passage = this.#passageAt(point);
         if (passage) {
@@ -167,6 +186,7 @@ export class ArcsController {
   dispose(): void {
     this.#cancelAnimation?.();
     this.#cancelIntro?.();
+    this.#stopEdgePan();
     this.#scheduler.dispose();
     this.#detachGestures();
     this.#options.container.removeEventListener('keydown', this.#onKeyDown);
@@ -240,10 +260,87 @@ export class ArcsController {
       : versePassage(verse);
   }
 
-  #hoverAt(point: GesturePoint): void {
-    const passage = this.#passageAt(point);
+  #preview(point: GesturePoint, input: PreviewInput): void {
+    this.#hoverAt(point, input);
+    if (input === 'touch') {
+      this.#touchPreview = point;
+      this.#updateEdgePan();
+    }
+  }
+
+  #endPreview(): void {
+    this.#touchPreview = null;
+    this.#stopEdgePan();
+    this.#setHover(null);
+    this.#options.onHover(null);
+  }
+
+  #hoverAt(point: GesturePoint, input: PreviewInput): void {
+    // A finger past an end of the axis keeps previewing its first or last passage.
+    const passage = this.#passageAt(input === 'touch' ? this.#clampToAxis(point) : point);
     this.#setHover(passage && this.#rangeOf(passage));
-    this.#options.onHover(passage ? { passage, x: point.x, y: point.y } : null);
+    this.#options.onHover(passage ? { passage, x: point.x, y: point.y, input } : null);
+  }
+
+  #clampToAxis(point: GesturePoint): GesturePoint {
+    const { orientation, axisStart, axisEnd } = this.#layout;
+    const clamp = (along: number) => Math.min(Math.max(along, axisStart), axisEnd - 0.5);
+    return orientation === 'horizontal'
+      ? { x: clamp(point.x), y: point.y }
+      : { x: point.x, y: clamp(point.y) };
+  }
+
+  /** The axis line and its labels: below it when horizontal, left of it when vertical. */
+  #isOnAxisStrip(point: GesturePoint): boolean {
+    const { orientation, baseline } = this.#layout;
+    return orientation === 'horizontal'
+      ? point.y >= baseline - AXIS_STRIP_REACH_PX
+      : point.x <= baseline + AXIS_STRIP_REACH_PX;
+  }
+
+  /** Signed edge-panning speed for a finger at `point`: positive pans toward later verses. */
+  #edgePanSpeed(point: GesturePoint): number {
+    const { axisStart, axisEnd } = this.#layout;
+    const along = alongOfPoint(this.#layout, point);
+    const depth = (distanceInside: number) =>
+      Math.min(Math.max(1 - distanceInside / EDGE_PAN_ZONE_PX, 0), 1) ** 2;
+    return EDGE_PAN_MAX_SPEED * (depth(axisEnd - along) - depth(along - axisStart));
+  }
+
+  #updateEdgePan(): void {
+    const point = this.#touchPreview;
+    if (point && this.#edgePanFrame === null && this.#edgePanSpeed(point) !== 0) {
+      this.#edgePanFrame = requestAnimationFrame(this.#edgePanStep);
+    }
+  }
+
+  readonly #edgePanStep = (time: number): void => {
+    this.#edgePanFrame = null;
+    const point = this.#touchPreview;
+    const speed = point ? this.#edgePanSpeed(point) : 0;
+    if (!point || speed === 0) {
+      this.#edgePanTime = null;
+      return;
+    }
+    const last = this.#edgePanTime ?? time;
+    const before = this.#view;
+    // Capped, so a stalled frame never jumps the view.
+    this.#panByPixels((-speed * Math.min(time - last, 50)) / 1000);
+    this.#hoverAt(point, 'touch');
+    if (time !== last && this.#view.start === before.start) {
+      this.#edgePanTime = null; // Reached the end of the Bible: nothing left to pan to.
+      return;
+    }
+    this.#edgePanTime = time;
+    this.#edgePanFrame = requestAnimationFrame(this.#edgePanStep);
+  };
+
+  #stopEdgePan(): void {
+    if (this.#edgePanFrame !== null) {
+      cancelAnimationFrame(this.#edgePanFrame);
+    }
+    this.#edgePanFrame = null;
+    this.#edgePanTime = null;
   }
 
   #setHover(range: VerseIndexRange | null): void {

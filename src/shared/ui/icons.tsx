@@ -8,6 +8,8 @@ import {
   LuChevronDown,
   LuChevronLeft,
   LuChevronRight,
+  LuHand,
+  LuMouse,
   LuMousePointerClick,
   LuPalette,
   LuRainbow,
@@ -17,7 +19,7 @@ import {
   LuSlidersHorizontal,
   LuX,
 } from 'react-icons/lu';
-import { MdOutlinePinch } from 'react-icons/md';
+import { MdOutlinePinch, MdOutlineSwipeVertical, MdOutlineTouchApp } from 'react-icons/md';
 import styles from './icons.module.css';
 
 interface IconProps {
@@ -61,9 +63,13 @@ export const SearchIcon = decorative(LuSearch);
 export const ResetIcon = decorative(LuRotateCcw);
 export const RetryIcon = decorative(LuRefreshCw);
 
-// Gestures. Lucide has no pinch gesture, so that one comes from Material Design Icons (outlined,
-// which sits well beside Lucide's strokes).
+// Gestures. A mouse's are Lucide's; Lucide has no touch gestures, so those come from Material
+// Design Icons (outlined, which sits well beside Lucide's strokes), one family for all of them.
+export const ScrollIcon = decorative(LuMouse);
+export const DragIcon = decorative(LuHand);
 export const ClickIcon = decorative(LuMousePointerClick);
+export const TapIcon = decorative(MdOutlineTouchApp);
+export const HoldAndSlideIcon = decorative(MdOutlineSwipeVertical);
 export const PinchIcon = decorative(MdOutlinePinch);
 
 // Settings

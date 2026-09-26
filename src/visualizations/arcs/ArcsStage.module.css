@@ -6,6 +6,9 @@
   touch-action: none;
   cursor: crosshair;
   user-select: none;
+  -webkit-user-select: none;
+  /* A finger held down previews; it must not open the system's callout or selection. */
+  -webkit-touch-callout: none;
 }
 
 .stage:focus-visible {
@@ -29,6 +32,27 @@
   background: rgb(22 22 21 / 0.94);
   font-size: 0.8125rem;
   pointer-events: none;
+  transform-origin: top left;
+  animation: tooltip-in 120ms ease-out;
+}
+
+/* Above a finger, it grows out of the point it describes. */
+.tooltip[data-input='touch'] {
+  transform-origin: bottom center;
+  animation-duration: 160ms;
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    animation: none;
+  }
 }
 
 .tooltip strong {

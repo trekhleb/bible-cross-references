@@ -27,8 +27,17 @@
   text-align: end;
 }
 
+/* Phones: one line, owner on the left and the (shortened) credits on the right, when it fits;
+   otherwise the credits wrap below rather than lose anything. */
 @media (max-width: 47.99rem) {
+  .footer {
+    column-gap: var(--space-2);
+    padding-inline: var(--space-3);
+    font-size: 0.6875rem;
+  }
+
   .credits {
-    text-align: start;
+    flex: 0 1 auto;
+    margin-inline-start: auto;
   }
 }

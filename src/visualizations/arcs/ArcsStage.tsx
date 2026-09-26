@@ -1,7 +1,7 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { formatPassage, passageRange, type Passage } from '../../core/bible/passage.ts';
 import { formatInteger } from '../../shared/lib/format.ts';
-import { ClickIcon, PinchIcon } from '../../shared/ui/icons.tsx';
+import { ClickIcon, PinchIcon, TapIcon } from '../../shared/ui/icons.tsx';
 import { collectConnections, connectionLinkIds } from '../shared/connections.ts';
 import type { LinkFilter } from '../shared/link-filter.ts';
 import { useElementSize } from '../shared/use-element-size.ts';
@@ -95,7 +95,7 @@ export function ArcsStage({ data, active, linkIds, filter, focus, onSelect }: Ar
       className={styles.stage}
       tabIndex={0}
       role="application"
-      aria-label="Arc diagram of cross-references. Drag or use the arrow keys to pan, scroll or +/- to zoom, click to focus a passage, Escape to clear."
+      aria-label="Arc diagram of cross-references. Drag or use the arrow keys to pan, scroll or +/- to zoom, click to focus a passage, Escape to clear. On a touch screen, touch and hold to preview a passage."
     >
       <canvas ref={glCanvasRef} className={styles.canvas} />
       <canvas ref={overlayCanvasRef} className={styles.canvas} aria-hidden="true" />
@@ -104,8 +104,49 @@ export function ArcsStage({ data, active, linkIds, filter, focus, onSelect }: Ar
   );
 }
 
-/** The tooltip sits this far from the pointer, and keeps room for its largest size near the edges. */
-const TOOLTIP = { offset: 14, width: 200, height: 80 };
+interface Size {
+  readonly width: number;
+  readonly height: number;
+}
+
+/** Gap between a mouse pointer and its tooltip. */
+const MOUSE_OFFSET_PX = 14;
+/** A finger hides what's under it, so its tooltip floats this far above, like iOS's loupe. */
+const FINGER_CLEARANCE_PX = 56;
+/** The tooltip never comes closer than this to the stage's edges. */
+const EDGE_PX = 8;
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(value, Math.max(min, max)));
+}
+
+/**
+ * Places the tooltip from its measured size. Beside a mouse pointer (below and to the right, or
+ * the other side near an edge); centered above a finger, or below it when there is no room.
+ */
+function placeTooltip(tooltip: HTMLElement, hover: ArcHover, stage: Size): void {
+  const { offsetWidth: width, offsetHeight: height } = tooltip;
+  let left: number;
+  let top: number;
+  if (hover.input === 'mouse') {
+    left = hover.x + MOUSE_OFFSET_PX;
+    if (left + width > stage.width - EDGE_PX) {
+      left = hover.x - MOUSE_OFFSET_PX - width;
+    }
+    top = hover.y + MOUSE_OFFSET_PX;
+    if (top + height > stage.height - EDGE_PX) {
+      top = hover.y - MOUSE_OFFSET_PX - height;
+    }
+  } else {
+    left = hover.x - width / 2;
+    top = hover.y - FINGER_CLEARANCE_PX - height;
+    if (top < EDGE_PX) {
+      top = hover.y + FINGER_CLEARANCE_PX;
+    }
+  }
+  tooltip.style.left = `${String(clamp(left, EDGE_PX, stage.width - width - EDGE_PX))}px`;
+  tooltip.style.top = `${String(clamp(top, EDGE_PX, stage.height - height - EDGE_PX))}px`;
+}
 
 function HoverTooltip({
   hover,
@@ -116,8 +157,9 @@ function HoverTooltip({
   readonly hover: ArcHover;
   readonly data: VizData;
   readonly filter: LinkFilter;
-  readonly size: { readonly width: number; readonly height: number };
+  readonly size: Size;
 }) {
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const { versification, crossReferences, verseGenres } = data;
   const count = useMemo(() => {
     const connections = collectConnections(
@@ -128,16 +170,21 @@ function HoverTooltip({
     );
     return connectionLinkIds(connections).length;
   }, [crossReferences.index, hover.passage, versification, filter, verseGenres]);
-  const left = Math.min(hover.x + TOOLTIP.offset, size.width - TOOLTIP.width);
-  const top = Math.max(Math.min(hover.y + TOOLTIP.offset, size.height - TOOLTIP.height), 8);
+  // After every render: the content, and so the size, changes with the passage. Before paint, so
+  // the tooltip never shows in the wrong place.
+  useLayoutEffect(() => {
+    if (tooltipRef.current) {
+      placeTooltip(tooltipRef.current, hover, size);
+    }
+  });
   return (
-    <div className={styles.tooltip} style={{ left, top }}>
+    <div ref={tooltipRef} className={styles.tooltip} data-input={hover.input}>
       <strong>{formatPassage(hover.passage, versification)}</strong>
       <span>
         {formatInteger(count)} {count === 1 ? 'connection' : 'connections'}
       </span>
       <span className={styles.gestures}>
-        <ClickIcon /> to focus · <PinchIcon /> to zoom
+        {hover.input === 'touch' ? <TapIcon /> : <ClickIcon />} to focus · <PinchIcon /> to zoom
       </span>
     </div>
   );

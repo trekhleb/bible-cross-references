@@ -1,4 +1,12 @@
 import { useMemo } from 'react';
+import {
+  ClickIcon,
+  DragIcon,
+  HoldAndSlideIcon,
+  PinchIcon,
+  ScrollIcon,
+  TapIcon,
+} from '../../shared/ui/icons.tsx';
 import { Credits } from '../shared/components/Credits.tsx';
 import { FiltersMenu } from '../shared/components/FiltersMenu.tsx';
 import { GenreLegend } from '../shared/components/GenreLegend.tsx';
@@ -37,11 +45,15 @@ export function ArcsExplorer({
     () => summarizeLinks(index, linkIds, data.verseGenres),
     [index, linkIds, data.verseGenres],
   );
+  const closePanel = () => {
+    onNavigate(null);
+  };
 
   return (
     <VizPage
       masthead={masthead}
       credits={<Credits inspiration={INSPIRATION} />}
+      onPanelClose={closePanel}
       controls={
         <>
           <ReferenceSearch versification={data.versification} onSelect={onNavigate} />
@@ -62,9 +74,7 @@ export function ArcsExplorer({
             filter={filter}
             actions={passageLinks(passage)}
             onSelect={onNavigate}
-            onClose={() => {
-              onNavigate(null);
-            }}
+            onClose={closePanel}
           />
         )
       }
@@ -77,7 +87,21 @@ export function ArcsExplorer({
         focus={passage}
         onSelect={onNavigate}
       />
-      <LinkStats summary={summary} hint="Scroll to zoom · drag to pan · click to focus" />
+      <LinkStats
+        summary={summary}
+        hint={{
+          pointer: (
+            <>
+              <ScrollIcon /> to zoom · <DragIcon /> to pan · <ClickIcon /> to focus
+            </>
+          ),
+          touch: (
+            <>
+              <HoldAndSlideIcon /> hold to preview · <TapIcon /> to focus · <PinchIcon /> to zoom
+            </>
+          ),
+        }}
+      />
       <GenreLegend
         hiddenGenres={filter.hiddenGenres}
         onToggle={(genre) => {

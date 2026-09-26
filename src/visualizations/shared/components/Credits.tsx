@@ -12,7 +12,7 @@ interface CreditsProps {
 export function Credits({ inspiration }: CreditsProps) {
   return (
     <>
-      Links:{' '}
+      <span className={styles.detail}>Links: </span>
       <a href="https://www.openbible.info/labs/cross-references/" target="_blank" rel="noreferrer">
         OpenBible.info
       </a>{' '}
