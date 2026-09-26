@@ -139,7 +139,8 @@ Visualizations never import each other; `src/app/views.ts` lists them, and the a
 
 ### Deployment
 
-The site is static. It is published with GitHub Pages at
+The site is static. The CI workflow ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))
+publishes every push to `main` with GitHub Pages, once all checks pass, at
 [trekhleb.dev/bible-cross-references](https://trekhleb.dev/bible-cross-references/), so production
 builds use the base path `/bible-cross-references/`, and `npm run preview` serves the build at
 <http://localhost:4173/bible-cross-references/>. Besides the pages, the build writes:
