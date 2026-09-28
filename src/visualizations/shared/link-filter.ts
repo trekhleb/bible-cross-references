@@ -12,18 +12,19 @@ export interface LinkFilter {
 }
 
 /** Vote thresholds offered by the filter controls. */
-export const VOTE_THRESHOLDS: readonly number[] = [-Infinity, 0, 1, 2, 3, 5, 10, 20, 50, 100];
+export const VOTE_THRESHOLDS: readonly number[] = [-Infinity, 0, 1, 2, 3, 4, 5, 10, 20, 50, 100];
 
 export function createLinkFilter(minVotes: number): LinkFilter {
   return { minVotes, hiddenGenres: new Set() };
 }
 
 /**
- * The filter every visualization starts with: every link that readers did not vote down. It hides
- * only the 0.4% with negative votes (e.g. Ephesians 6:17 → 1 Samuel 17:58, at −86) and keeps
- * 99.6% of the links (OpenBible.info snapshot of 2026-09-21).
+ * The filter every visualization starts with: links with at least 4 votes, the best supported 44%
+ * (153,419 of 344,799 in the OpenBible.info snapshot of 2026-09-21). It hides the links readers
+ * voted down (0.4%, e.g. Ephesians 6:17 → 1 Samuel 17:58, at −86) and the loosest ones, which few
+ * readers found helpful; the Filters menu shows more, down to every link.
  */
-export const DEFAULT_LINK_FILTER: LinkFilter = createLinkFilter(0);
+export const DEFAULT_LINK_FILTER: LinkFilter = createLinkFilter(4);
 
 export function isDefaultFilter(filter: LinkFilter, defaults: LinkFilter): boolean {
   return filter.minVotes === defaults.minVotes && filter.hiddenGenres.size === 0;

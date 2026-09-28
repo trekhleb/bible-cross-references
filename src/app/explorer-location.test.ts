@@ -26,7 +26,7 @@ function place(url: string, base = '/') {
 }
 
 const HIDE_LAW_AND_HISTORY: LinkFilter = {
-  minVotes: 5,
+  minVotes: 10,
   hiddenGenres: new Set(['law', 'history'] as const),
 };
 
@@ -62,7 +62,7 @@ describe('parseExplorerUrl', () => {
 
   it('reads the filter: the vote threshold and the hidden genres', () => {
     expect(parse('/').filter).toEqual(DEFAULT_LINK_FILTER);
-    expect(parse('/?votes=5&hide=history,law').filter).toEqual(HIDE_LAW_AND_HISTORY);
+    expect(parse('/?votes=10&hide=history,law').filter).toEqual(HIDE_LAW_AND_HISTORY);
     expect(parse('/?votes=all').filter.minVotes).toBe(-Infinity);
   });
 
@@ -89,7 +89,7 @@ describe('explorerUrl', () => {
       '/',
       kjv,
     );
-    expect(url).toBe('/?ref=Isa.53&votes=5&hide=law,history');
+    expect(url).toBe('/?ref=Isa.53&votes=10&hide=law,history');
     const all = explorerUrl(
       ROUTES[0],
       { passage: null, filter: createLinkFilter(-Infinity) },

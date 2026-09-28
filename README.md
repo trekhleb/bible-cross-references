@@ -75,8 +75,9 @@ The app is built on two openly licensed datasets:
 A note on what the links mean: they are the _Treasury of Scripture Knowledge_'s cross-references,
 which connect passages by shared themes, words, people and events. OpenBible.info readers have
 voted on how helpful each link is; the votes rank the links, they don't prove them right or wrong.
-By default the site hides only the links that readers voted down (0.4%); the Filters menu can raise
-the minimum number of votes.
+By default the site shows the links with at least 4 votes, the best supported 44% (153,419). That
+hides the links readers voted down (0.4%) and the loosest ones; the Filters menu shows more, down to
+every link.
 
 Both files are committed to [`data/raw/`](data/raw/) exactly as downloaded, and
 [`data/sources.json`](data/sources.json) pins each one by SHA-256, so the site can always be

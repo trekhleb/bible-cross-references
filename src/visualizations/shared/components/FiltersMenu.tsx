@@ -18,14 +18,9 @@ interface FiltersMenuProps {
   readonly totalLinks: number;
 }
 
+/** Short option labels: the minimum is included, hence ≥ (e.g. "≥ 4" keeps links with 4 votes). */
 function thresholdLabel(minVotes: number): string {
-  if (minVotes === -Infinity) {
-    return 'All links, including those voted down';
-  }
-  if (minVotes === 0) {
-    return 'All but those voted down';
-  }
-  return minVotes === 1 ? 'At least 1 vote' : `At least ${minVotes} votes`;
+  return minVotes === -Infinity ? 'All' : `≥ ${String(minVotes)}`;
 }
 
 /** Low-key link filters: a button that opens a small popover. */
