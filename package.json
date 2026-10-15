@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "npm run data:build && vite",
+    "dev:esv": "TRANSLATION=esv npm run dev",
     "build": "npm run data:build && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",

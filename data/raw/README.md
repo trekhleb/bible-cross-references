@@ -15,3 +15,7 @@ Attribution for the cross-references: _Cross-reference data: OpenBible.info
 from them are re-indexed to KJV verse numbering.
 
 The MIT license of this repository's code does not apply to these files.
+
+`esv.txt` is the exception: the English Standard Version is copyrighted (© Crossway), so it is
+git-ignored and not in `../sources.json`. Supply your own copy to build the site with the ESV, for
+private use only (see the main README → "Using the ESV").

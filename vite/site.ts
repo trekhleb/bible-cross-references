@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import type { HtmlTagDescriptor } from 'vite';
+import { parseTranslationId } from '../src/translations/registry.ts';
 
 /**
  * Facts about the site that the build uses: its name, where it is served, its pages, and the
@@ -24,6 +25,12 @@ export const SITE_ORIGIN = process.env['SITE_ORIGIN'] ?? 'https://trekhleb.dev';
  * (copied quotes) point here even from the dev server, which runs at the root.
  */
 export const SITE_URL = new URL(process.env['BASE_PATH'] ?? DEPLOY_BASE, SITE_ORIGIN).href;
+
+/**
+ * The translation the site shows: `import.meta.env.TRANSLATION` in code. Set `TRANSLATION=esv` to
+ * build with a translation other than the default; `npm run data:build` reads the same variable.
+ */
+export const TRANSLATION_ID = parseTranslationId(process.env['TRANSLATION']);
 
 export const AUTHOR = {
   name: 'Oleksii Trekhleb',

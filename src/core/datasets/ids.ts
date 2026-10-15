@@ -5,7 +5,7 @@
  * dataset has, for example, both a data-pipeline importer and a runtime manifest.
  */
 
-export const TRANSLATION_IDS = ['bsb'] as const;
+export const TRANSLATION_IDS = ['bsb', 'esv'] as const;
 export type TranslationId = (typeof TRANSLATION_IDS)[number];
 
 export const CROSS_REFERENCE_SOURCE_IDS = ['openbible'] as const;

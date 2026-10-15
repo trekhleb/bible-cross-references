@@ -9,6 +9,7 @@ import {
   SITE_NAME,
   SITE_ORIGIN,
   SOCIAL_IMAGE,
+  TRANSLATION_ID,
 } from './site.ts';
 
 /**
@@ -33,7 +34,9 @@ export function siteHead(): Plugin {
       // The datasets start downloading with the page instead of after the scripts have run. Not
       // when the offline cache serves the page: it has them already, and Chrome can't hand a
       // preload over to the app's own request through a service worker (it would read them twice).
-      const datasets = JSON.stringify(vizDatasetPaths().map((path) => `${base}${path}`));
+      const datasets = JSON.stringify(
+        vizDatasetPaths(TRANSLATION_ID).map((path) => `${base}${path}`),
+      );
       tags.push({
         tag: 'script',
         children:

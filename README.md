@@ -94,6 +94,24 @@ npm run data:build               # rebuild, then review the numbers on /debug/
 
 Then commit `data/raw/` and `data/sources.json`.
 
+### Using the ESV (private builds)
+
+The site can show the English Standard Version instead of the BSB. The ESV is copyrighted by
+Crossway, so its text is never committed or published: you supply your own copy, and a site built
+with it is for your private use only.
+
+1. Put the text at `data/raw/esv.txt` (git-ignored). The format is one verse per line, with four
+   tab-separated columns: a `BBCCCVVV` code, a book abbreviation, `chapter:verse` and the text,
+   e.g. `01001001<TAB>Gn<TAB>1:1<TAB>In the beginning, God created the heavens and the earth.`
+   Chapter headings (verse `000`) are skipped.
+2. Run `npm run dev:esv`, or set `TRANSLATION=esv` for any other script, e.g.
+   `TRANSLATION=esv npm run build`.
+
+The importer ([`scripts/data/importers/esv.ts`](scripts/data/importers/esv.ts)) maps the text onto
+the KJV verse numbering the cross-references use: the 17 verses the ESV leaves out (e.g. Matthew
+17:21) stay empty, and 3 John 1:15 joins 1:14. Builds include only the chosen translation, so the
+default build (and CI, which never has the file) ships the BSB alone.
+
 ## Development
 
 Requirements: [Node.js](https://nodejs.org/) 24 or newer (see `.nvmrc`).
