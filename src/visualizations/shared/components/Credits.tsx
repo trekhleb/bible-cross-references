@@ -1,3 +1,4 @@
+import { vizDatasets } from '../viz-datasets.ts';
 import styles from './Credits.module.css';
 
 interface CreditsProps {
@@ -10,6 +11,7 @@ interface CreditsProps {
  * essential attribution only; the details appear on wider screens.
  */
 export function Credits({ inspiration }: CreditsProps) {
+  const { translation } = vizDatasets(import.meta.env.TRANSLATION);
   return (
     <>
       <span className={styles.detail}>Links: </span>
@@ -17,8 +19,9 @@ export function Credits({ inspiration }: CreditsProps) {
         OpenBible.info
       </a>{' '}
       (CC BY 4.0
-      <span className={styles.detail}>, from the Treasury of Scripture Knowledge</span>) · Text: BSB
-      <span className={styles.detail}> (public domain)</span>
+      <span className={styles.detail}>, from the Treasury of Scripture Knowledge</span>) · Text:{' '}
+      {translation.abbreviation}
+      <span className={styles.detail}> ({translation.license.name})</span>
       {inspiration && (
         <span className={styles.detail}>
           {' '}

@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 import { analytics } from './vite/analytics.ts';
 import { firstFrame } from './vite/first-frame.ts';
 import { offline } from './vite/offline.ts';
-import { DEPLOY_BASE, PAGES, ROOT_DIR, SITE_NAME, SITE_URL } from './vite/site.ts';
+import { DEPLOY_BASE, PAGES, ROOT_DIR, SITE_NAME, SITE_URL, TRANSLATION_ID } from './vite/site.ts';
 import { siteHead } from './vite/site-head.ts';
 
 // https://vite.dev/config/
@@ -17,6 +17,7 @@ export default defineConfig(({ command, isPreview = false }) => ({
   define: {
     'import.meta.env.SITE_NAME': JSON.stringify(SITE_NAME),
     'import.meta.env.SITE_URL': JSON.stringify(SITE_URL),
+    'import.meta.env.TRANSLATION': JSON.stringify(TRANSLATION_ID),
   },
   plugins: [react(), siteHead(), firstFrame(), offline(), analytics()],
   build: {

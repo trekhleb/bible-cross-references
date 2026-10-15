@@ -19,7 +19,7 @@ export interface VizData {
 }
 
 export const vizDataLoader = createCachedLoader(async (): Promise<VizData> => {
-  const { translation, crossReferences } = vizDatasets();
+  const { translation, crossReferences } = vizDatasets(import.meta.env.TRANSLATION);
   // Both files download at once (and the HTML has already started them, see vizDatasetPaths).
   const [loadedTranslation, loadedReferences] = await Promise.all([
     loadTranslation(translation),

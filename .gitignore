@@ -10,6 +10,9 @@ coverage/
 # `npm run dev` and `npm run build` rebuild them (see README.md → "Data").
 public/data/
 
+# Copyrighted texts you supply yourself (see data/raw/README.md): never committed or published.
+data/raw/esv.txt
+
 # Logs
 *.log
 npm-debug.log*
