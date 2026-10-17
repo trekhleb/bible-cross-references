@@ -53,3 +53,20 @@ describe('quotePassage', () => {
     expect(text).toMatch(/²⁰.* ²²/);
   });
 });
+
+it('keeps an unresolved Slovenian slot visibly marked in copied quotations', () => {
+  const draft = new Translation(
+    getTranslationManifest('chr1914-sl'),
+    CANONICAL_VERSIFICATION,
+    createTranslationFile(new Map([[MATT_17_21, '']])),
+  );
+  expect(
+    quotePassage({
+      translation: draft,
+      versification: CANONICAL_VERSIFICATION,
+      start: MATT_17_21,
+      end: MATT_17_21,
+      url: URL,
+    }).text,
+  ).toContain('preverjanje OCR');
+});

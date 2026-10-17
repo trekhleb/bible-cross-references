@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { useState, type SubmitEvent } from 'react';
 import { formatVerseRef } from '../../../core/bible/reference-format.ts';
 import { parseReference } from '../../../core/bible/reference-parse.ts';
@@ -49,7 +50,7 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
     const { book, chapter, verse: verseNumber = 1 } = result.reference;
     const index = versification.indexOf({ book, chapter, verse: verseNumber });
     if (index === undefined) {
-      setError('This verse does not exist.');
+      setError(t('This verse does not exist.'));
       return;
     }
     setError(null);
@@ -57,14 +58,14 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
   };
 
   const preview = (link: CrossReferenceLink, verseOfLink: VerseIndex) => {
-    const verseText = translation.verseText(verseOfLink) || '(omitted in this translation)';
+    const verseText = translation.textOrNote(verseOfLink);
     const extraVerses = link.targetEnd - link.targetStart;
     return verseOfLink === link.targetStart && extraVerses > 0
-      ? `${verseText} … (+${extraVerses} more)`
+      ? `${verseText} … (+${t('{count} more', { count: extraVerses })})`
       : verseText;
   };
   const votesColumn: DataTableColumn<CrossReferenceLink> = {
-    header: 'Votes',
+    header: t('Votes'),
     align: 'end',
     render: (link) => (
       <span className={link.votes < 0 ? styles.negative : undefined}>
@@ -73,7 +74,7 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
     ),
   };
   const idColumn: DataTableColumn<CrossReferenceLink> = {
-    header: 'Link ID',
+    header: t('Link ID'),
     align: 'end',
     render: (link) => <code>{link.id}</code>,
   };
@@ -82,20 +83,22 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
   return (
     <Section
       id={id}
-      title="Verse inspector"
-      description="Look up any verse and debug its cross-references. Accepts references like “John 3:16”, “jn 3 16”, “1co13:4”, “Ps 23” or “Gen.1.1”."
+      title={t('Verse inspector')}
+      description={t(
+        'Look up any verse and debug its cross-references. Accepts references like “John 3:16”, “jn 3 16”, “1co13:4”, “Ps 23” or “Gen.1.1”.',
+      )}
     >
       <form key={verse} className={styles.toolbar} onSubmit={handleSubmit}>
         <input
           name="reference"
           className={styles.input}
           defaultValue={formatVerseRef(ref)}
-          aria-label="Bible reference"
+          aria-label={t('Bible reference')}
           autoComplete="off"
         />
         <button type="submit" className={styles.button}>
           <SearchIcon />
-          Inspect
+          {t('Inspect')}
         </button>
         <button
           type="button"
@@ -106,7 +109,7 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
           }}
         >
           <PreviousIcon />
-          Previous
+          {t('Previous')}
         </button>
         <button
           type="button"
@@ -116,7 +119,7 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
             selectVerse(verse + 1);
           }}
         >
-          Next
+          {t('Next')}
           <NextIcon />
         </button>
       </form>
@@ -128,22 +131,20 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
 
       <article className={styles.verseCard}>
         <h3 className={styles.verseTitle}>{formatVerseRef(ref)}</h3>
-        <p className={styles.verseText}>
-          {text || <em>Omitted in the {translation.manifest.abbreviation}.</em>}
-        </p>
+        <p className={styles.verseText}>{text || <em>{translation.textOrNote(verse)}</em>}</p>
         <p className={styles.muted}>
-          OSIS <code>{toOsisId(ref)}</code> · canonical index <code>{verse}</code> ·{' '}
+          OSIS <code>{toOsisId(ref)}</code> {t('· canonical index')} <code>{verse}</code> ·{' '}
           {translation.manifest.abbreviation}
         </p>
       </article>
 
       <label className={styles.toolbar}>
-        Minimum votes
+        {t('Minimum votes')}
         <input
           type="number"
           className={styles.numberInput}
           value={minVotes ?? ''}
-          placeholder="any"
+          placeholder={t('any')}
           onChange={(event) => {
             setMinVotes(parseMinVotes(event.target.value));
           }}
@@ -159,31 +160,37 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
           <div key={manifest.id} className={styles.stack}>
             <h3 className={styles.subheading}>{manifest.name}</h3>
             <DataTable
-              caption={`Outgoing links: ${formatInteger(shownOutgoing.length)} of ${formatInteger(outgoing.length)}`}
+              caption={t('Outgoing links: {shown} of {total}', {
+                shown: formatInteger(shownOutgoing.length),
+                total: formatInteger(outgoing.length),
+              })}
               rows={shownOutgoing}
               rowKey={(link) => link.id}
-              emptyMessage="No outgoing links."
+              emptyMessage={t('No outgoing links.')}
               columns={[
                 {
-                  header: 'To',
+                  header: t('To'),
                   render: (link) => (
                     <VerseLink verse={link.targetStart} rangeEnd={link.targetEnd} />
                   ),
                 },
                 votesColumn,
-                { header: 'Text', render: (link) => preview(link, link.targetStart) },
+                { header: t('Text'), render: (link) => preview(link, link.targetStart) },
                 idColumn,
               ]}
             />
             <DataTable
-              caption={`Incoming links: ${formatInteger(shownIncoming.length)} of ${formatInteger(incoming.length)}`}
+              caption={t('Incoming links: {shown} of {total}', {
+                shown: formatInteger(shownIncoming.length),
+                total: formatInteger(incoming.length),
+              })}
               rows={shownIncoming}
               rowKey={(link) => link.id}
-              emptyMessage="No incoming links."
+              emptyMessage={t('No incoming links.')}
               columns={[
-                { header: 'From', render: (link) => <VerseLink verse={link.from} /> },
+                { header: t('From'), render: (link) => <VerseLink verse={link.from} /> },
                 {
-                  header: 'Target',
+                  header: t('Target'),
                   render: (link) =>
                     link.targetStart === link.targetEnd ? (
                       'this verse'
@@ -192,7 +199,7 @@ export function VerseInspector({ id, verse, translation, datasets }: VerseInspec
                     ),
                 },
                 votesColumn,
-                { header: 'Text', render: (link) => preview(link, link.from) },
+                { header: t('Text'), render: (link) => preview(link, link.from) },
                 idColumn,
               ]}
             />

@@ -1,3 +1,4 @@
+import { parseTranslationTextFile } from '../../src/core/datasets/formats.ts';
 import type {
   CrossReferencesFile,
   OriginalWordsFile,
@@ -8,6 +9,7 @@ import type {
   TranslationId,
   WordSourceId,
 } from '../../src/core/datasets/ids.ts';
+
 import {
   crossReferencesDatasetPath,
   originalWordsDatasetPath,
@@ -43,6 +45,16 @@ function provenanceOf({ url, sha256, retrievedAt }: RawSource) {
 
 /** One builder per translation: the compiler enforces that every translation ID has one. */
 const TRANSLATION_BUILDERS: Readonly<Record<TranslationId, DatasetBuilder>> = {
+  'chr1914-sl': {
+    outputPath: translationDatasetPath('chr1914-sl'),
+    build: async (readSource) => {
+      const { content } = await readSource('chr1914-sl');
+      return parseTranslationTextFile(JSON.parse(content.toString('utf8')), {
+        id: 'chr1914-sl',
+        versification: 'kjv',
+      });
+    },
+  },
   bsb: {
     outputPath: translationDatasetPath('bsb'),
     build: async (readSource) => {

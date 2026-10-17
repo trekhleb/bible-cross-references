@@ -1,3 +1,4 @@
+import { getDisplayBookName } from '../../core/bible/book-labels.ts';
 import { getBook, type BookId } from '../../core/bible/books.ts';
 import type { VerseIndex } from '../../core/bible/verse-ref.ts';
 import type { VerseIndexRange } from '../../core/bible/versification.ts';
@@ -135,7 +136,9 @@ function drawSpine(context: CanvasRenderingContext2D, drawing: ThreadsDrawing): 
     if (height < (compact ? 12 : 10) && !isHovered) continue;
     const book = getBook(segment.book);
     const room = drawing.width - labelX - 2;
-    const label = [book.name, book.id].find((text) => context.measureText(text).width <= room);
+    const label = [getDisplayBookName(book), book.id].find(
+      (text) => context.measureText(text).width <= room,
+    );
     if (label === undefined) continue;
     context.fillStyle = isHovered ? TEXT : MUTED;
     context.fillText(label, labelX, (segment.top + segment.bottom) / 2);

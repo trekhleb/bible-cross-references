@@ -1,3 +1,5 @@
+import { t, connectionCount } from '../../locales/ui.ts';
+import { getDisplayBookName } from '../../core/bible/book-labels.ts';
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { getBook, type BookId } from '../../core/bible/books.ts';
 import { getBookGenre } from '../../core/bible/genres.ts';
@@ -244,36 +246,36 @@ export function ThreadsStage({
           <div className={styles.column}>
             <p className={styles.eyebrow}>
               <span className={styles.key} style={{ background: GENRE_COLORS[genre.id] }} />
-              {genre.name} · {genre.testament === 'OT' ? 'Old Testament' : 'New Testament'}
+              {t(genre.name)} · {genre.testament === 'OT' ? t('Old Testament') : t('New Testament')}
             </p>
             <div className={styles.titleRow}>
               <h2 className={styles.title}>
-                {getBook(book).name} {chapter}
+                {getDisplayBookName(getBook(book))} {chapter}
                 {condensed && topVerse !== null && (
                   <span className={styles.position}>:{versification.refAt(topVerse).verse}</span>
                 )}
               </h2>
-              <nav className={styles.chapterNav} aria-label="Chapters">
+              <nav className={styles.chapterNav} aria-label={t('Chapters')}>
                 <button
                   type="button"
                   disabled={!previousChapter}
-                  aria-label="Previous chapter"
+                  aria-label={t('Previous chapter')}
                   onClick={() => {
                     if (previousChapter) onSelect(previousChapter);
                   }}
                 >
                   <PreviousIcon />
-                  <span className={styles.navLabel}>Previous chapter</span>
+                  <span className={styles.navLabel}>{t('Previous chapter')}</span>
                 </button>
                 <button
                   type="button"
                   disabled={!nextChapter}
-                  aria-label="Next chapter"
+                  aria-label={t('Next chapter')}
                   onClick={() => {
                     if (nextChapter) onSelect(nextChapter);
                   }}
                 >
-                  <span className={styles.navLabel}>Next chapter</span>
+                  <span className={styles.navLabel}>{t('Next chapter')}</span>
                   <NextIcon />
                 </button>
               </nav>
@@ -315,16 +317,15 @@ export function ThreadsStage({
                   <button
                     type="button"
                     className={styles.number}
-                    aria-label={`Verse ${offset + 1}: show its connections`}
+                    aria-label={t('Verse {number}: show its connections', { number: offset + 1 })}
                     aria-pressed={verse === selectedVerse}
                   >
                     {offset + 1}
                   </button>
                   <span className={text ? styles.text : `${styles.text} ${styles.omitted}`}>
-                    {text ||
-                      `Omitted in the ${translation.manifest.abbreviation} (not in the earliest manuscripts).`}
+                    {translation.textOrNote(verse)}
                   </span>
-                  <span className={styles.count} title={`${count} connections`}>
+                  <span className={styles.count} title={connectionCount(count)}>
                     {count > 0 ? formatInteger(count) : ''}
                   </span>
                 </li>
@@ -364,14 +365,16 @@ export function ThreadsStage({
           ref={canvasRef}
           className={styles.canvas}
           role="img"
-          aria-label="Threads from the verses of this chapter to where their cross-references land in the Bible, shown as a vertical bar of all 66 books."
+          aria-label={t(
+            'Threads from the verses of this chapter to where their cross-references land in the Bible, shown as a vertical bar of all 66 books.',
+          )}
         />
         {spineHover && (
           <div className={styles.tooltip} style={{ top: spineHover.y }}>
-            {getBook(spineHover.book).name}{' '}
+            {getDisplayBookName(getBook(spineHover.book))}{' '}
             <span>
               · {formatInteger(spineHover.count)} {spineHover.count === 1 ? 'thread' : 'threads'}{' '}
-              from here · click to read
+              {t('from here · click to read')}
             </span>
           </div>
         )}

@@ -3,8 +3,5 @@ import type { Translation } from './translation.ts';
 
 /** A verse's text, or a note in its place where the translation leaves the verse out. */
 export function verseTextOrNote(translation: Translation, verse: VerseIndex): string {
-  return (
-    translation.verseText(verse) ||
-    `Omitted in the ${translation.manifest.abbreviation} (not in the earliest manuscripts).`
-  );
+  return translation.textOrNote(verse);
 }

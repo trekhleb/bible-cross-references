@@ -1,3 +1,5 @@
+import { t } from '../../locales/ui.ts';
+import { getDisplayBookName } from '../../core/bible/book-labels.ts';
 import { BOOKS } from '../../core/bible/books.ts';
 import { GENRES, getBookGenre, getGenreBooks } from '../../core/bible/genres.ts';
 import type { VerseIndexRange, Versification } from '../../core/bible/versification.ts';
@@ -138,7 +140,7 @@ function paintBookLabels(
     const to = Math.min(along(range.end + 1), layout.axisEnd);
     const room = to - from;
     if (room <= 0) continue;
-    const candidates = [book.name, book.id];
+    const candidates = [getDisplayBookName(book), book.id];
     const label = horizontal
       ? candidates.find((text) => context.measureText(text).width + 8 <= room)
       : room >= 12
@@ -174,7 +176,7 @@ function paintGenreLabels(
     if (!first || !last) continue;
     const from = Math.max(along(versification.bookRange(first).start), layout.axisStart);
     const to = Math.min(along(versification.bookRange(last).end + 1), layout.axisEnd);
-    const label = genre.name.toUpperCase();
+    const label = t(genre.name).toUpperCase();
     if (to - from < context.measureText(label).width + 16) continue;
     const center = (from + to) / 2;
     const textWidth = context.measureText(label).width;

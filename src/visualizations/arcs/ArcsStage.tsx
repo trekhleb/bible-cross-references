@@ -1,3 +1,4 @@
+import { t } from '../../locales/ui.ts';
 import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { formatPassage, passageRange, type Passage } from '../../core/bible/passage.ts';
 import { formatInteger } from '../../shared/lib/format.ts';
@@ -121,7 +122,9 @@ export function ArcsStage({
       className={styles.stage}
       tabIndex={0}
       role="application"
-      aria-label="Arc diagram of cross-references. Drag or use the arrow keys to pan, scroll or +/- to zoom, click to focus a passage, Escape to clear. On a touch screen, touch and hold to preview a passage."
+      aria-label={t(
+        'Arc diagram of cross-references. Drag or use the arrow keys to pan, scroll or +/- to zoom, click to focus a passage, Escape to clear. On a touch screen, touch and hold to preview a passage.',
+      )}
     >
       <canvas ref={glCanvasRef} className={styles.canvas} />
       <canvas ref={overlayCanvasRef} className={styles.canvas} aria-hidden="true" />
@@ -210,7 +213,8 @@ function HoverTooltip({
         {formatInteger(count)} {count === 1 ? 'connection' : 'connections'}
       </span>
       <span className={styles.gestures}>
-        {hover.input === 'touch' ? <TapIcon /> : <ClickIcon />} to focus · <PinchIcon /> to zoom
+        {hover.input === 'touch' ? <TapIcon /> : <ClickIcon />} {t('to focus ·')} <PinchIcon />{' '}
+        {t('to zoom')}
       </span>
     </div>
   );

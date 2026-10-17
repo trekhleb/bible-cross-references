@@ -109,6 +109,16 @@
       "retrievedAt": "2026-10-16",
       "license": "CC BY 4.0",
       "homepage": "https://github.com/STEPBible/STEPBible-Data"
+    },
+    {
+      "id": "chr1914-sl",
+      "description": "Bundled, corrected Chr\u00e1ska 1914 text prepared from the dLib source; see README for provenance",
+      "url": "data/raw/chr1914-sl.draft.json",
+      "fileName": "chr1914-sl.draft.json",
+      "sha256": "0c63672c1a34bf219216cc1cc917b6df7c5de28d4479cb49a05db5f228024afc",
+      "retrievedAt": "2026-10-16",
+      "license": "Unverified; local preview only",
+      "homepage": "https://www.dlib.si/details/URN%3ANBN%3ASI%3Adoc-ME2U9X4P"
     }
   ]
 }

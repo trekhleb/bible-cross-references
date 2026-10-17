@@ -1,3 +1,4 @@
+import { t } from '../../locales/ui.ts';
 import { useMemo, useState } from 'react';
 import {
   ClickIcon,
@@ -108,12 +109,14 @@ export function ArcsExplorer({
         hint={{
           pointer: (
             <>
-              <ScrollIcon /> to zoom · <DragIcon /> to pan · <ClickIcon /> to focus
+              <ScrollIcon /> {t('to zoom ·')} <DragIcon /> {t('to pan ·')} <ClickIcon />{' '}
+              {t('to focus')}
             </>
           ),
           touch: (
             <>
-              <HoldAndSlideIcon /> hold to preview · <TapIcon /> to focus · <PinchIcon /> to zoom
+              <HoldAndSlideIcon /> {t('hold to preview ·')} <TapIcon /> {t('to focus ·')}{' '}
+              <PinchIcon /> {t('to zoom')}
             </>
           ),
         }}

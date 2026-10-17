@@ -1,3 +1,4 @@
+import { t } from '../locales/ui.ts';
 import { useEffect, useMemo, useOptimistic, useRef, useState, useTransition, use } from 'react';
 import { formatPassage, type Passage } from '../core/bible/passage.ts';
 import { ErrorBoundary } from '../shared/ui/ErrorBoundary.tsx';
@@ -64,8 +65,8 @@ export function Explorer({ core }: { readonly core: VizCore }) {
 
   const title = [
     passage && formatPassage(passage, versification),
-    active === HOME ? null : active.title,
-    import.meta.env.SITE_NAME,
+    active === HOME ? null : t(active.title),
+    t(import.meta.env.SITE_NAME),
   ]
     .filter((part) => part !== null)
     .join(' · ');
@@ -110,7 +111,9 @@ export function Explorer({ core }: { readonly core: VizCore }) {
             await translationLoader(id).load();
           } catch {
             resetTranslation(id);
-            setTranslationError(`${getTranslationManifest(id).name} could not be loaded.`);
+            setTranslationError(
+              t('{name} could not be loaded.', { name: getTranslationManifest(id).name }),
+            );
             return;
           }
           if (requestedTranslation.current !== id) {
@@ -142,7 +145,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
             setGeneration((value) => value + 1);
           }}
         >
-          {import.meta.env.SITE_NAME}
+          {t(import.meta.env.SITE_NAME)}
         </InAppLink>
       </h1>
       <ViewSwitch
@@ -173,7 +176,10 @@ export function Explorer({ core }: { readonly core: VizCore }) {
           fallback={(error) => (
             <VizPage masthead={masthead} credits={<Credits translation={translation.manifest} />}>
               <p role="alert" className={styles.error}>
-                {view.title} could not start: {error.message}
+                {t('{view} could not start: {error}', {
+                  view: t(view.title),
+                  error: error.message,
+                })}
               </p>
             </VizPage>
           )}
@@ -208,7 +214,9 @@ export function Explorer({ core }: { readonly core: VizCore }) {
                   // translation of them.
                   null,
                 ),
-                import.meta.env.SITE_URL,
+                data.translation.manifest.previewNotice
+                  ? window.location.origin
+                  : import.meta.env.SITE_URL,
               ).href
             }
             passageLinks={(target) =>
@@ -222,7 +230,7 @@ export function Explorer({ core }: { readonly core: VizCore }) {
                   }}
                 >
                   <other.icon />
-                  {other.openLabel}
+                  {t(other.openLabel)}
                 </InAppLink>
               ))
             }

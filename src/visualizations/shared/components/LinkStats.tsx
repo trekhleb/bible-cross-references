@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import type { ReactNode } from 'react';
 import { formatInteger, formatShare } from '../../../shared/lib/format.ts';
 import type { LinkSummary } from '../link-summary.ts';
@@ -16,15 +17,15 @@ interface LinkStatsProps {
 export function LinkStats({ summary, hint }: LinkStatsProps) {
   const { verseCount, shownLinks, totalLinks, connectedVerses, crossTestamentLinks } = summary;
   return (
-    <div className={styles.stats} aria-label="Summary">
+    <div className={styles.stats} aria-label={t('Summary')}>
       <span>
-        <strong>{formatInteger(verseCount)}</strong> verses ·{' '}
+        <strong>{formatInteger(verseCount)}</strong> {t('verses ·')}{' '}
         <strong>{formatInteger(shownLinks)}</strong>
-        {shownLinks < totalLinks && ` of ${formatInteger(totalLinks)}`} links shown
+        {shownLinks < totalLinks && ` ${t('of')} ${formatInteger(totalLinks)}`} {t('links shown')}
       </span>
       <span className={styles.secondary}>
-        <strong>{formatShare(connectedVerses, verseCount)}</strong> of verses connected ·{' '}
-        <strong>{formatInteger(crossTestamentLinks)}</strong> links between the testaments
+        <strong>{formatShare(connectedVerses, verseCount)}</strong> {t('of verses connected ·')}{' '}
+        <strong>{formatInteger(crossTestamentLinks)}</strong> {t('links between the testaments')}
       </span>
       {hint !== undefined && (
         <>

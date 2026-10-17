@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { useState } from 'react';
 import { CloseIcon, GenresIcon } from '../../../shared/ui/icons.tsx';
 import styles from './GenreLegend.module.css';
@@ -10,11 +11,11 @@ import { GenreToggles, type GenreTogglesProps } from './GenreToggles.tsx';
 export function GenreLegend(toggles: GenreTogglesProps) {
   const [open, setOpen] = useState(false);
   return (
-    <section className={styles.legend} data-open={open} aria-label="Genres">
+    <section className={styles.legend} data-open={open} aria-label={t('Genres')}>
       <button
         type="button"
         className={styles.toggle}
-        aria-label={open ? 'Hide genres' : 'Show genres'}
+        aria-label={open ? t('Hide genres') : t('Show genres')}
         aria-expanded={open}
         onClick={() => {
           setOpen((value) => !value);

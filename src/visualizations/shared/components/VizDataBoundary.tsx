@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { Suspense, use, type ReactNode } from 'react';
 import { ErrorBoundary } from '../../../shared/ui/ErrorBoundary.tsx';
 import { RetryIcon } from '../../../shared/ui/icons.tsx';
@@ -34,13 +35,13 @@ export function VizDataBoundary({ children }: VizDataBoundaryProps) {
             }}
           >
             <RetryIcon />
-            Retry
+            {t('Retry')}
           </button>
         </div>
       )}
     >
       <Suspense
-        fallback={<LoadingArcs label="Loading 31,102 verses and 344,799 cross-references…" />}
+        fallback={<LoadingArcs label={t('Loading 31,102 verses and 344,799 cross-references…')} />}
       >
         <Loaded>{children}</Loaded>
       </Suspense>

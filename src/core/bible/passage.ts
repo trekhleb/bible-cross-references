@@ -1,4 +1,5 @@
-import { getBook, getReferenceName, isBookId, type BookId } from './books.ts';
+import { getDisplayReferenceName } from './book-labels.ts';
+import { getBook, isBookId, type BookId } from './books.ts';
 import type { ParsedReference } from './reference-parse.ts';
 import { toOsisId, parseOsisId, type VerseIndex } from './verse-ref.ts';
 import type { VerseIndexRange, Versification } from './versification.ts';
@@ -46,9 +47,9 @@ export function isSamePassage(a: Passage | null, b: Passage | null): boolean {
 export function formatPassage(passage: Passage, versification: Versification): string {
   if (passage.kind === 'verse') {
     const ref = versification.refAt(passage.verse);
-    return `${getReferenceName(getBook(ref.book))} ${ref.chapter}:${ref.verse}`;
+    return `${getDisplayReferenceName(getBook(ref.book))} ${ref.chapter}:${ref.verse}`;
   }
-  return `${getReferenceName(getBook(passage.book))} ${passage.chapter}`;
+  return `${getDisplayReferenceName(getBook(passage.book))} ${passage.chapter}`;
 }
 
 /** Formats a passage as an OSIS ID, e.g. `Isa.53` or `Isa.53.5`. */

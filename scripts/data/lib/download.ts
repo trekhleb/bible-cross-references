@@ -4,6 +4,11 @@ import type { RawSource } from './sources.ts';
 
 /** Downloads a URL into memory. */
 export async function download(url: string): Promise<Buffer> {
+  if (!/^https?:\/\//i.test(url)) {
+    throw new Error(
+      `Bundled source "${url}" is not downloadable. Restore the pinned file from Git.`,
+    );
+  }
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`GET ${url} failed: HTTP ${response.status}`);

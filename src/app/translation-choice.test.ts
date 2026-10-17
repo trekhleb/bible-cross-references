@@ -29,6 +29,12 @@ describe('translationFromParams', () => {
     expect(translationFromParams(new URLSearchParams('t=kjv'))).toBe('kjv');
   });
 
+  it('uses only t for both English and Slovenian choices', () => {
+    expect(translationFromParams(new URLSearchParams('t=chr1914-sl'))).toBe('chr1914-sl');
+    expect(translationFromParams(new URLSearchParams('translation=chr1914-sl'))).toBeNull();
+    expect(translationFromParams(new URLSearchParams('t=nope&translation=chr1914-sl'))).toBeNull();
+  });
+
   it('ignores a missing or unknown one', () => {
     expect(translationFromParams(new URLSearchParams(''))).toBeNull();
     expect(translationFromParams(new URLSearchParams('t=nope'))).toBeNull();

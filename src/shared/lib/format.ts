@@ -1,21 +1,21 @@
-const integerFormat = new Intl.NumberFormat('en-US');
-const decimalFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
-const percentFormat = new Intl.NumberFormat('en-US', {
-  style: 'percent',
-  maximumFractionDigits: 1,
+import { uiLanguage } from '../../locales/ui.ts';
+const formats = (language: string) => ({
+  integer: new Intl.NumberFormat(language),
+  decimal: new Intl.NumberFormat(language, { maximumFractionDigits: 2 }),
+  percent: new Intl.NumberFormat(language, { style: 'percent', maximumFractionDigits: 1 }),
 });
-
+const LOCALE_FORMATS = { en: formats('en-US'), sl: formats('sl-SI') };
 export function formatInteger(value: number): string {
-  return integerFormat.format(value);
+  return LOCALE_FORMATS[uiLanguage()].integer.format(value);
 }
 
 export function formatDecimal(value: number): string {
-  return decimalFormat.format(value);
+  return LOCALE_FORMATS[uiLanguage()].decimal.format(value);
 }
 
 /** Formats `part / whole` as a percentage; `—` when the whole is zero. */
 export function formatShare(part: number, whole: number): string {
-  return whole === 0 ? '—' : percentFormat.format(part / whole);
+  return whole === 0 ? '—' : LOCALE_FORMATS[uiLanguage()].percent.format(part / whole);
 }
 
 export function formatBytes(bytes: number): string {
@@ -26,11 +26,11 @@ export function formatBytes(bytes: number): string {
     value /= 1024;
     unitIndex += 1;
   }
-  return `${decimalFormat.format(value)} ${units[unitIndex] ?? 'B'}`;
+  return `${LOCALE_FORMATS[uiLanguage()].decimal.format(value)} ${units[unitIndex] ?? 'B'}`;
 }
 
 export function formatDuration(milliseconds: number): string {
   return milliseconds < 1000
     ? `${Math.round(milliseconds)} ms`
-    : `${decimalFormat.format(milliseconds / 1000)} s`;
+    : `${LOCALE_FORMATS[uiLanguage()].decimal.format(milliseconds / 1000)} s`;
 }

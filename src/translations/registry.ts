@@ -1,7 +1,7 @@
 import type { TranslationId } from '../core/datasets/ids.ts';
 import type { TranslationManifest } from './translation-manifest.ts';
 
-const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
+export const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
   bsb: {
     id: 'bsb',
     name: 'Berean Standard Bible',
@@ -33,6 +33,26 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
       'Crown and administered by the Crown’s patentee, Cambridge University Press.',
     homepage: 'https://ebible.org/Scriptures/details.php?id=eng-kjv2006',
     access: 'bundled',
+  },
+  'chr1914-sl': {
+    id: 'chr1914-sl',
+    name: 'Chráska 1914',
+    abbreviation: 'CHR',
+    language: 'sl',
+    direction: 'ltr',
+    versification: 'kjv',
+    license: {
+      name: 'Local OCR preview; distribution status unverified',
+      url: 'https://www.dlib.si/',
+    },
+    attribution:
+      'Slovenian text: Chráska (1914), public-domain source digitized by dLib.si. OCR errors corrected for this app.',
+    homepage: 'https://www.dlib.si/details/URN%3ANBN%3ASI%3Adoc-ME2U9X4P',
+    access: 'bundled',
+    previewVerseCount: 31102,
+    previewNotice:
+      'Slovenian draft · 31,102 of 31,102 verses available. Unresolved verses are marked. Text is still being reviewed.',
+    emptyVerseNote: 'Besedilo še ni pripravljeno — preverjanje OCR in številčenja še poteka.',
   },
 };
 

@@ -1,3 +1,5 @@
+import { SLOVENIAN_BOOK_ABBREVIATIONS } from '../../locales/sl/book-abbreviations.ts';
+import { SLOVENIAN_BOOKS } from '../../locales/sl/books.ts';
 import { BOOKS, getReferenceName, type Book } from './books.ts';
 
 export type BookLookupResult =
@@ -13,12 +15,22 @@ export function normalizeBookName(value: string): string {
   return value
     .trim()
     .toLowerCase()
-    .replace(/^(i{1,3})\s+/, (_match: string, numeral: string) => String(numeral.length))
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/^(i{1,3})\.?\s+/, (_match: string, numeral: string) => String(numeral.length))
     .replace(/[\s.]+/g, '');
 }
 
 function bookNames(book: Book): string[] {
-  return [book.name, getReferenceName(book)];
+  const sl = SLOVENIAN_BOOKS[book.id];
+  return [
+    book.name,
+    getReferenceName(book),
+    sl.name,
+    sl.sourceTitle.replace(/\s*\([^)]*\)/g, ''),
+    ...sl.aliases,
+    ...SLOVENIAN_BOOK_ABBREVIATIONS[book.id],
+  ];
 }
 
 function buildExactIndex(): ReadonlyMap<string, Book> {

@@ -1,3 +1,4 @@
+import { t } from '../locales/ui.ts';
 import type { VerseIndex } from '../core/bible/verse-ref.ts';
 import type { Versification } from '../core/bible/versification.ts';
 import type {
@@ -59,7 +60,18 @@ export class Translation {
   }
 
   isOmitted(index: VerseIndex): boolean {
-    return this.verseText(index) === '';
+    return this.verseText(index) === '' && !this.manifest.emptyVerseNote;
+  }
+
+  /** Display text distinguishes unresolved OCR slots from true translation omissions. */
+  textOrNote(index: VerseIndex): string {
+    return (
+      this.verseText(index) ||
+      (this.manifest.emptyVerseNote ??
+        t('Omitted in the {translation} (not in the earliest manuscripts).', {
+          translation: this.manifest.abbreviation,
+        }))
+    );
   }
 
   /** Finds verses containing `query` (case-insensitive, ignoring quote styles). */

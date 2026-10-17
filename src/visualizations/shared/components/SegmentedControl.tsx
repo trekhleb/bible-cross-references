@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import type { IconComponent } from '../../../shared/ui/icons.tsx';
 import styles from './controls.module.css';
 
@@ -38,15 +39,15 @@ export function SegmentedControl<Value extends string>({
           type="button"
           className={styles.button}
           // Named explicitly, since the label may be hidden; the tooltip says it on a pointer.
-          aria-label={optionLabel}
-          title={iconsOnlyWhenNarrow ? optionLabel : undefined}
+          aria-label={t(optionLabel)}
+          title={iconsOnlyWhenNarrow ? t(optionLabel) : undefined}
           aria-pressed={optionValue === value}
           onClick={() => {
             onChange(optionValue);
           }}
         >
           {Icon && <Icon />}
-          <span className={styles.optionLabel}>{optionLabel}</span>
+          <span className={styles.optionLabel}>{t(optionLabel)}</span>
         </button>
       ))}
     </div>

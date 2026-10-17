@@ -1,4 +1,5 @@
-import { Suspense, use } from 'react';
+import { t, uiLanguage } from '../../locales/ui.ts';
+import { Suspense, use, useEffect } from 'react';
 import { CROSS_REFERENCE_SOURCE_MANIFESTS } from '../../cross-references/registry.ts';
 import { ErrorBoundary } from '../../shared/ui/ErrorBoundary.tsx';
 import { RetryIcon } from '../../shared/ui/icons.tsx';
@@ -8,14 +9,14 @@ import { debugDataLoader } from './debug-data.ts';
 import styles from './DebugPage.module.css';
 
 const NAVIGATION: readonly { readonly id: string; readonly label: string }[] = [
-  { id: SECTION_IDS.datasets, label: 'Datasets' },
-  { id: SECTION_IDS.translation, label: 'Translation' },
+  { id: SECTION_IDS.datasets, label: t('Datasets') },
+  { id: SECTION_IDS.translation, label: t('Translation') },
   ...CROSS_REFERENCE_SOURCE_MANIFESTS.map((manifest) => ({
     id: crossReferencesSectionId(manifest.id),
-    label: 'Cross-references',
+    label: t('Cross-references'),
   })),
-  { id: SECTION_IDS.inspector, label: 'Verse inspector' },
-  { id: SECTION_IDS.search, label: 'Text search' },
+  { id: SECTION_IDS.inspector, label: t('Verse inspector') },
+  { id: SECTION_IDS.search, label: t('Text search') },
 ];
 
 function LoadedDashboard() {
@@ -25,11 +26,11 @@ function LoadedDashboard() {
 function LoadError({ error, onRetry }: { readonly error: Error; readonly onRetry: () => void }) {
   return (
     <div role="alert" className={styles.loadError}>
-      <h2>Could not load the datasets</h2>
+      <h2>{t('Could not load the datasets')}</h2>
       <p>{error.message}</p>
       <button type="button" className={styles.button} onClick={onRetry}>
         <RetryIcon />
-        Retry
+        {t('Retry')}
       </button>
     </div>
   );
@@ -37,17 +38,20 @@ function LoadError({ error, onRetry }: { readonly error: Error; readonly onRetry
 
 /** Internal page for inspecting the datasets the app is built on. */
 export function DebugPage() {
+  useEffect(() => {
+    document.documentElement.lang = uiLanguage();
+  }, []);
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.eyebrow}>Internal · for development</p>
+        <p className={styles.eyebrow}>{t('Internal · for development')}</p>
         <h1 className={styles.title}>
           <a className={styles.home} href={import.meta.env.BASE_URL}>
             {import.meta.env.SITE_NAME}
           </a>{' '}
-          · Data debug
+          {t('· Data debug')}
         </h1>
-        <nav aria-label="Sections">
+        <nav aria-label={t('Sections')}>
           <ul className={styles.navigation}>
             {NAVIGATION.map(({ id, label }) => (
               <li key={id}>
@@ -69,7 +73,7 @@ export function DebugPage() {
             />
           )}
         >
-          <Suspense fallback={<p className={styles.muted}>Loading datasets…</p>}>
+          <Suspense fallback={<p className={styles.muted}>{t('Loading datasets…')}</p>}>
             <LoadedDashboard />
           </Suspense>
         </ErrorBoundary>

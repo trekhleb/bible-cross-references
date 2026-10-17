@@ -1,5 +1,7 @@
+import { t } from '../../locales/ui.ts';
+import { getDisplayReferenceName, getDisplayBookName } from './book-labels.ts';
 import { lookupBook } from './book-lookup.ts';
-import { getReferenceName, type BookId } from './books.ts';
+import { type BookId } from './books.ts';
 import type { Versification } from './versification.ts';
 
 /** A reference entered by a user: a whole chapter (no verse) or a single verse. */
@@ -14,11 +16,11 @@ export type ReferenceParseResult =
   | { readonly ok: false; readonly error: string };
 
 /**
- * `<book> <chapter>[<separator><verse>]`, where the book may start with 1–3 or a roman numeral and
+ * `<book> <chapter>[<separator><verse>]`, where the book may start with 1–5 or a roman numeral and
  * the separator is `:`, `.` or whitespace. Matches e.g. `John 3:16`, `1 Cor 13`, `Gen.1.1`.
  */
 const REFERENCE_PATTERN =
-  /^(?<book>(?:[1-3]\s*)?[a-z][a-z\s.]*?)\s*(?<chapter>\d+)(?:\s*[:.\s]\s*(?<verse>\d+))?$/i;
+  /^(?<book>(?:[1-5]\.?\s*)?\p{L}[\p{L}\s.]*?)\s*(?<chapter>\d+)(?:\s*[:.\s]\s*(?<verse>\d+))?$/iu;
 
 function failure(error: string): ReferenceParseResult {
   return { ok: false, error };
@@ -27,7 +29,7 @@ function failure(error: string): ReferenceParseResult {
 function formatCandidates(names: readonly string[]): string {
   return names.length <= 1
     ? names.join('')
-    : `${names.slice(0, -1).join(', ')} or ${names.slice(-1).join('')}`;
+    : `${names.slice(0, -1).join(', ')} ${t('or')} ${names.slice(-1).join('')}`;
 }
 
 /**
@@ -37,17 +39,20 @@ function formatCandidates(names: readonly string[]): string {
 export function parseReference(input: string, versification: Versification): ReferenceParseResult {
   const match = REFERENCE_PATTERN.exec(input.trim());
   if (!match?.groups) {
-    return failure('Enter a reference like "John 3:16" or "Ps 23".');
+    return failure(t('Enter a reference like "John 3:16" or "Ps 23".'));
   }
   const { book: bookQuery = '', chapter: chapterText = '', verse: verseText } = match.groups;
 
   const lookup = lookupBook(bookQuery);
   switch (lookup.kind) {
     case 'unknown':
-      return failure(`Unknown book "${bookQuery.trim()}".`);
+      return failure(t('Unknown book "{book}".', { book: bookQuery.trim() }));
     case 'ambiguous':
       return failure(
-        `"${bookQuery.trim()}" could be ${formatCandidates(lookup.candidates.map((book) => book.name))}.`,
+        t('"{book}" could be {candidates}.', {
+          book: bookQuery.trim(),
+          candidates: formatCandidates(lookup.candidates.map((book) => getDisplayBookName(book))),
+        }),
       );
     case 'found':
       break;
@@ -57,7 +62,12 @@ export function parseReference(input: string, versification: Versification): Ref
   const chapter = Number(chapterText);
   const verseCount = versification.verseCountOf(book.id, chapter);
   if (verseCount === undefined) {
-    return failure(`${book.name} has ${versification.chapterCountOf(book.id)} chapters.`);
+    return failure(
+      t('{book} has {count} chapters.', {
+        book: getDisplayBookName(book),
+        count: versification.chapterCountOf(book.id),
+      }),
+    );
   }
 
   if (verseText === undefined) {
@@ -65,7 +75,13 @@ export function parseReference(input: string, versification: Versification): Ref
   }
   const verse = Number(verseText);
   if (verse < 1 || verse > verseCount) {
-    return failure(`${getReferenceName(book)} ${chapter} has ${verseCount} verses.`);
+    return failure(
+      t('{book} {chapter} has {count} verses.', {
+        book: getDisplayReferenceName(book),
+        chapter,
+        count: verseCount,
+      }),
+    );
   }
   return { ok: true, reference: { book: book.id, chapter, verse } };
 }

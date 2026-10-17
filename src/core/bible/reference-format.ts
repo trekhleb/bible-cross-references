@@ -1,10 +1,11 @@
-import { getBook, getReferenceName } from './books.ts';
+import { getDisplayReferenceName } from './book-labels.ts';
+import { getBook } from './books.ts';
 import type { VerseIndex, VerseRef } from './verse-ref.ts';
 import type { Versification } from './versification.ts';
 
 /** Formats a verse for display, e.g. `Genesis 1:1` or `Psalm 23:4`. */
 export function formatVerseRef(ref: VerseRef): string {
-  return `${getReferenceName(getBook(ref.book))} ${ref.chapter}:${ref.verse}`;
+  return `${getDisplayReferenceName(getBook(ref.book))} ${ref.chapter}:${ref.verse}`;
 }
 
 /**

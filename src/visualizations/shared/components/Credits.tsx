@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import type { TranslationManifest } from '../../../translations/translation-manifest.ts';
 import styles from './Credits.module.css';
 
@@ -24,7 +25,7 @@ interface CreditsProps {
 export function Credits({ translation, inspiration }: CreditsProps) {
   return (
     <>
-      <span className={styles.detail}>Links: </span>
+      <span className={styles.detail}>{t('Links:')} </span>
       <a href="https://www.openbible.info/labs/cross-references/" target="_blank" rel="noreferrer">
         OpenBible.info
       </a>{' '}
@@ -32,23 +33,23 @@ export function Credits({ translation, inspiration }: CreditsProps) {
       <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">
         CC BY 4.0
       </a>
-      <span className={styles.wide}>, from the Treasury of Scripture Knowledge</span>
+      <span className={styles.wide}>{t(', from the Treasury of Scripture Knowledge')}</span>
       <span className={styles.detail}>
         , re-indexed<span className={styles.wide}> to KJV verse numbering</span>
       </span>
       )
       <span className={styles.text}>
         {' '}
-        · Text:{' '}
+        {t('· Text:')}{' '}
         <a href={translation.homepage} target="_blank" rel="noreferrer">
           {translation.abbreviation}
         </a>
-        <span className={styles.detail}> ({translation.license.name.toLowerCase()})</span>
+        <span className={styles.detail}> ({t(translation.license.name)})</span>
       </span>
       {inspiration && (
         <span className={styles.wide}>
           {' '}
-          · Inspired by{' '}
+          {t('· Inspired by')}{' '}
           {/* The work's own name is this app's name too, so saying it here reads as a stutter and
               costs the line the room it needs; the link, and its tooltip, still carry it. */}
           <a

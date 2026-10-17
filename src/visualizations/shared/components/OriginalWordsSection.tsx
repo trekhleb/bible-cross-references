@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { useEffect, useState } from 'react';
 import { formatPassage, versePassage, type Passage } from '../../../core/bible/passage.ts';
 import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
@@ -81,10 +82,10 @@ export function OriginalWordsSection({
       <PanelSection
         id="same-word"
         icon={WordsIcon}
-        title={`Same ${language} word`}
-        description="where else it is used"
+        title={t(language === 'Hebrew' ? 'Same Hebrew word' : 'Same Greek word')}
+        description={t('where else it is used')}
         count={inVerse.length}
-        countLabel="words"
+        countLabel={t('words')}
       >
         {visible.map((word) => {
           const open = openWord === word.index;
@@ -134,14 +135,14 @@ export function OriginalWordsSection({
               setExpanded(true);
             }}
           >
-            Show {formatInteger(inVerse.length - INITIAL_WORDS)} more
+            {t('Show {count} more', { count: formatInteger(inVerse.length - INITIAL_WORDS) })}
           </button>
         )}
       </PanelSection>
       {/* Outside the section's body: the credit is a condition of using the data, so it does
           not go away when a reader folds the words out of sight. */}
       <p className={styles.credit}>
-        Words:{' '}
+        {t('Words:')}{' '}
         <a href={words.manifest.homepage} target="_blank" rel="noreferrer">
           STEP Bible
         </a>{' '}
@@ -149,8 +150,10 @@ export function OriginalWordsSection({
         <a href={words.manifest.license.url} target="_blank" rel="noreferrer">
           {words.manifest.license.name}
         </a>
-        ), based on work at Tyndale House, Cambridge; reduced to dictionary forms. Words used in
-        more than {formatInteger(words.maxVerses)} verses are left out.
+        {t(
+          '), based on work at Tyndale House, Cambridge; reduced to dictionary forms. Words used in more than {count} verses are left out.',
+          { count: formatInteger(words.maxVerses) },
+        )}
       </p>
     </>
   );

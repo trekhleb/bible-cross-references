@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import type { Testament } from '../../../core/bible/books.ts';
 import { GENRES, type GenreId } from '../../../core/bible/genres.ts';
 import { GENRE_COLORS } from '../palette.ts';
@@ -19,20 +20,24 @@ export function GenreToggles({ hiddenGenres, onToggle }: GenreTogglesProps) {
     <div className={styles.columns}>
       {TESTAMENTS.map((testament) => (
         <div key={testament.id} className={styles.testament}>
-          <p className={styles.heading}>{testament.label}</p>
+          <p className={styles.heading}>{t(testament.label)}</p>
           {GENRES.filter((genre) => genre.testament === testament.id).map((genre) => (
             <button
               key={genre.id}
               type="button"
               className={styles.item}
               aria-pressed={!hiddenGenres.has(genre.id)}
-              title={hiddenGenres.has(genre.id) ? `Show ${genre.name}` : `Hide ${genre.name}`}
+              title={
+                hiddenGenres.has(genre.id)
+                  ? t('Show {name}', { name: t(genre.name) })
+                  : t('Hide {name}', { name: t(genre.name) })
+              }
               onClick={() => {
                 onToggle(genre.id);
               }}
             >
               <span className={styles.key} style={{ background: GENRE_COLORS[genre.id] }} />
-              {genre.name}
+              {t(genre.name)}
             </button>
           ))}
         </div>

@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { formatInteger } from '../../../shared/lib/format.ts';
 import { FiltersIcon, ResetIcon } from '../../../shared/ui/icons.tsx';
 import {
@@ -20,7 +21,7 @@ interface FiltersMenuProps {
 
 /** Short option labels: the minimum is included, hence ≥ (e.g. "≥ 4" keeps links with 4 votes). */
 function thresholdLabel(minVotes: number): string {
-  return minVotes === -Infinity ? 'All' : `≥ ${String(minVotes)}`;
+  return minVotes === -Infinity ? t('All') : `≥ ${String(minVotes)}`;
 }
 
 /** Low-key link filters: a button that opens a small popover. */
@@ -33,9 +34,9 @@ export function FiltersMenu({
 }: FiltersMenuProps) {
   const isDefault = isDefaultFilter(filter, defaults);
   return (
-    <MenuButton label="Filters" icon={FiltersIcon} indicator={!isDefault}>
+    <MenuButton label={t('Filters')} icon={FiltersIcon} indicator={!isDefault}>
       <label className={styles.field}>
-        Community votes
+        {t('Community votes')}
         <select
           className={styles.select}
           value={String(filter.minVotes)}
@@ -51,12 +52,20 @@ export function FiltersMenu({
         </select>
       </label>
       <p className={styles.hint}>
-        Votes rank how helpful OpenBible.info readers found a link; they don’t prove it right or
-        wrong. Showing {formatInteger(shownLinks)} of {formatInteger(totalLinks)} links (
-        {describeThreshold(filter.minVotes)}
-        {filter.hiddenGenres.size > 0 && `, ${filter.hiddenGenres.size} genres hidden`}).
+        {t(
+          'Votes rank how helpful OpenBible.info readers found a link; they don’t prove it right or wrong.',
+        )}{' '}
+        {t('Showing {shown} of {total} links ({threshold}{hidden}).', {
+          shown: formatInteger(shownLinks),
+          total: formatInteger(totalLinks),
+          threshold: describeThreshold(filter.minVotes),
+          hidden:
+            filter.hiddenGenres.size > 0
+              ? ', ' + t('{count} genres hidden', { count: filter.hiddenGenres.size })
+              : '',
+        })}
       </p>
-      <p className={styles.hint}>Tip: tap a genre in the legend to hide or show it.</p>
+      <p className={styles.hint}>{t('Tip: tap a genre in the legend to hide or show it.')}</p>
       <button
         type="button"
         className={styles.button}
@@ -66,7 +75,7 @@ export function FiltersMenu({
         }}
       >
         <ResetIcon />
-        Reset filters
+        {t('Reset filters')}
       </button>
     </MenuButton>
   );

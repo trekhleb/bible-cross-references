@@ -1,3 +1,4 @@
+import { t } from '../../locales/ui.ts';
 import { useMemo, useState } from 'react';
 import type { BookId } from '../../core/bible/books.ts';
 import { passageRange, type Passage } from '../../core/bible/passage.ts';
@@ -81,7 +82,7 @@ export function ThreadsExplorer({
           <ReferenceSearch versification={data.versification} onSelect={onNavigate} />
           {translationMenu}
           <SegmentedControl
-            label="Thread direction"
+            label={t('Thread direction')}
             options={DIRECTIONS}
             value={direction}
             onChange={setDirection}

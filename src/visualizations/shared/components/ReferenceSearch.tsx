@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { useId, useState, type SubmitEvent } from 'react';
 import { passageFromReference, type Passage } from '../../../core/bible/passage.ts';
 import { parseReference } from '../../../core/bible/reference-parse.ts';
@@ -39,8 +40,8 @@ export function ReferenceSearch({ versification, onSelect }: ReferenceSearchProp
         name="reference"
         type="search"
         className={styles.input}
-        placeholder="Go to… John 3:16, Ps 23"
-        aria-label="Go to a Bible reference"
+        placeholder={t('Go to… John 3:16, Ps 23')}
+        aria-label={t('Go to a Bible reference')}
         aria-invalid={error !== null}
         aria-describedby={error === null ? undefined : errorId}
         autoComplete="off"

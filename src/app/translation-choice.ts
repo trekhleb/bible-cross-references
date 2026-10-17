@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { translationIdFromParams } from '../translations/selection.ts';
 import { isTranslationId, type TranslationId } from '../core/datasets/ids.ts';
 import { readPreference, useStringPreference } from '../shared/lib/preferences.ts';
 import { DEFAULT_TRANSLATION_ID } from '../translations/registry.ts';
@@ -16,8 +17,7 @@ const PREFERENCE_KEY = 'translation';
 
 /** The translation a URL names, or `null` if it names none the app knows. */
 export function translationFromParams(params: URLSearchParams): TranslationId | null {
-  const id = params.get(TRANSLATION_PARAM);
-  return id !== null && isTranslationId(id) ? id : null;
+  return translationIdFromParams(params);
 }
 
 /** The reader's last choice, outside React (the app starts its download before it renders). */

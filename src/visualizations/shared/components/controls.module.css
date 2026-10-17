@@ -266,3 +266,24 @@
     min-block-size: calc(2.5rem - 6px);
   }
 }
+
+.translationGroup {
+  display: grid;
+  gap: var(--space-1);
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.translationGroup + .translationGroup {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+
+.translationLanguage {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
