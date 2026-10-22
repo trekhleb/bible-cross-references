@@ -13,6 +13,19 @@ import type { LocaleId } from './locale-id.ts';
 export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, string>>>> = {
   // English is not compared against itself.
   en: {},
+  sl: {
+    'messages.footer.sourceLabel': 'GitHub is a product name.',
+    'messages.menu.filters.votes.atLeast': 'A mathematical comparison has the same notation.',
+    'install.ios.label': 'iPhone is a product name.',
+    'install.android.label': 'Android is a product name.',
+    'books.Ezra.name': 'This biblical proper name is spelled identically in Slovenian.',
+    'books.Job.name': 'This biblical proper name is spelled identically in Slovenian.',
+    'books.Ezek.name': 'This biblical proper name is spelled identically in Slovenian.',
+    'books.Dan.name': 'This biblical proper name is spelled identically in Slovenian.',
+    'books.Joel.name': 'This biblical proper name is spelled identically in Slovenian.',
+    'books.Amos.name': 'This biblical proper name is spelled identically in Slovenian.',
+    'books.Nah.name': 'This biblical proper name is spelled identically in Slovenian.',
+  },
   pt: {
     'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
     'messages.menu.filters.votes.atLeast':

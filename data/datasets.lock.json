@@ -29,6 +29,17 @@
       "verses": 31102
     }
   },
+  "data/translations/chr1914-sl.json": {
+    "sha256": "4212efaf8aeaa8f024ccb905f0b2ebd4d0a0605b82795515b2c1f25bcadc4f35",
+    "bytes": 3659381,
+    "shape": {
+      "characters": 3486051,
+      "digits": 0,
+      "empty": 0,
+      "supplied": 42,
+      "verses": 31102
+    }
+  },
   "data/translations/kjv.json": {
     "sha256": "23046fa73190698708f6f8b9aaaaa8a3de6e97245d66ac9df72e5902161d9527",
     "bytes": 4253974,

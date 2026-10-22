@@ -9,6 +9,8 @@ import type { Emphasized } from './types.ts';
  * and each language can put the words in its own order and use as many plural forms as it needs.
  */
 export const en = {
+  'attribution.chr1914-sl':
+    'Slovenian text: Chráska 1914, public-domain source digitized by dLib.si. OCR errors corrected for this app.',
   'app.name': 'Bible Cross-References',
   // Shown instead of the full name where the header has no room for it.
   'app.name.short': 'Cross-References',

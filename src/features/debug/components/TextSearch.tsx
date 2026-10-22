@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import { useMemo, useState, type SubmitEvent } from 'react';
 import { formatInteger } from '../../../shared/lib/format.ts';
 import { DataTable } from '../../../shared/ui/DataTable.tsx';
@@ -27,35 +28,43 @@ export function TextSearch({ id, translation }: TextSearchProps) {
   return (
     <Section
       id={id}
-      title="Text search"
-      description={`Case-insensitive phrase search in the ${translation.manifest.abbreviation} text.`}
+      title={t('Text search')}
+      description={t(t('Case-insensitive phrase search in the {translation} text.'), {
+        translation: translation.manifest.abbreviation,
+      })}
     >
       <form className={styles.toolbar} onSubmit={handleSubmit}>
         <input
           name="query"
           type="search"
           className={styles.input}
-          placeholder="e.g. living water"
-          aria-label="Search text"
+          placeholder={t('e.g. living water')}
+          aria-label={t('Search text')}
         />
         <button type="submit" className={styles.button}>
           <SearchIcon />
-          Search
+          {t('Search')}
         </button>
       </form>
       {query !== '' && (
         <>
           <p className={styles.muted}>
-            {formatInteger(result.totalCount)} verses contain “{query}”
-            {result.totalCount > RESULT_LIMIT && `; showing the first ${RESULT_LIMIT}`}.
+            {t('{count} verses contain “{query}”{more}.', {
+              count: formatInteger(result.totalCount),
+              query,
+              more:
+                result.totalCount > RESULT_LIMIT
+                  ? t(t('; showing the first {count}'), { count: RESULT_LIMIT })
+                  : '',
+            })}
           </p>
           <DataTable
             rows={result.verses}
             rowKey={(verse) => verse}
-            emptyMessage="No verses match."
+            emptyMessage={t('No verses match.')}
             columns={[
-              { header: 'Verse', render: (verse) => <VerseLink verse={verse} /> },
-              { header: 'Text', render: (verse) => translation.verseText(verse) },
+              { header: t('Verse'), render: (verse) => <VerseLink verse={verse} /> },
+              { header: t('Text'), render: (verse) => translation.verseText(verse) },
             ]}
           />
         </>

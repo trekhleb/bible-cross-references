@@ -453,3 +453,51 @@ UI icons are from [Lucide](https://lucide.dev/) (ISC License), plus the touch-ge
 Arcs is inspired by Chris Harrison and Christoph Römhild's
 [Bible Cross-References](https://www.chrisharrison.net/index.php/Visualizations/BibleViz), and the
 genre colors by Drawing with Data's [Bible Fascinator](https://designs.drawingwithdata.com/fascinator).
+
+### Local Slovenian OCR preview
+
+Choose **Chráska 1914 (CHR)** under **Slovenščina** in the translation picker, or open
+`/threads/?t=chr1914-sl&ref=Gen.1`. BSB and KJV are listed under English.
+All 66 books and 31,102 canonical verse slots are populated. Slovenian book names,
+reference aliases and interface labels follow the selected translation. Text completeness
+and automated alignment checks do not certify an independently proofread edition.
+
+The [1914 dLib source](https://www.dlib.si/details/URN%3ANBN%3ASI%3Adoc-ME2U9X4P)
+is labeled with the [Public Domain Mark 1.0](https://creativecommons.org/publicdomain/mark/1.0/).
+The app credit reads: “Slovenian text: Chráska (1914), public-domain source digitized by
+dLib.si. OCR errors corrected for this app.”
+
+For maintainer review: this prepared dataset also includes wording and punctuation
+accepted during comparison against Biblija.net's 2017 spelling revision, including
+whole-passage approvals. The public-domain mark on the 1914 source does not establish
+the reuse status of all those adopted changes. Distribution metadata remains unverified;
+this is a local preview pending provenance review.
+
+To refresh the preview after editing the working TXT, run from the workspace root:
+
+```sh
+python3 translation-prep/prepare_slovenian.py
+python3 translation-prep/sync_app_preview.py
+cd bible-cross-references
+npm run data:build
+```
+
+The draft is pinned at `data/raw/chr1914-sl.draft.json`; it is for local testing, with distribution
+metadata still unverified. No publication or upstream contribution is included in this preview.
+
+### Book-name localization
+
+`src/locales/sl/books.ts` maps all 66 OSIS book IDs to Slovenian display names,
+cleaned headings from the 1914 TXT contents, and search aliases. Labels follow the selected
+Bible's language. Canonical IDs, English importer names and verse numbering remain unchanged.
+
+Slovenian search accepts full names, abbreviations (`1 Mz 1:1`, `Jn 3:16`), ordinal dots,
+Roman numerals, and unaccented typing. Chráska's `Matevž` / `Lukež` are displayed;
+`Matej` / `Luka` also work as search aliases. The historical alternative Samuel/Kings numbering
+printed in parentheses is retained as source metadata, not as conflicting search aliases.
+
+### Interface languages
+
+Slovenian uses upstream's shared localization system in `src/i18n/`: messages, book names, genres, installation instructions, and page metadata. Interface language and Bible translation can be chosen independently. `/sl/threads/?t=chr1914-sl&ref=Gen.1.1` opens both in Slovenian; existing `?t=chr1914-sl` links still select the Chráska text. Book IDs and OSIS references remain stable. The older `src/locales/` helpers remain for the internal debug page.
+
+The prepared Slovenian JSON is bundled in this repository and checksum-pinned. Its source entry uses a repository-relative path rather than a download URL; restore the file from Git if it is missing or modified. The dLib record identifies the original source, not a download of this corrected JSON.

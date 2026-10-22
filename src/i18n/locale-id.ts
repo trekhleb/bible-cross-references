@@ -11,7 +11,7 @@
  * São Paulo, and filing them under `pt-BR` would leave European readers on English for the sake
  * of a handful of words.
  */
-export const LOCALE_IDS = ['en', 'pt', 'de', 'it', 'es', 'uk'] as const;
+export const LOCALE_IDS = ['en', 'pt', 'de', 'it', 'es', 'uk', 'sl'] as const;
 export type LocaleId = (typeof LOCALE_IDS)[number];
 
 /** Whether a string from outside (a URL, a stored preference) names a locale. */

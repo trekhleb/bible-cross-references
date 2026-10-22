@@ -154,7 +154,7 @@ function ConnectionText({
   if (start === end) {
     return (
       <span className={styles.snippet} lang={lang} dir={dir}>
-        {verseTextOrNote(translation, start)}
+        {verseTextOrNote(translation, start, t('panel.omitted')(translation.manifest.abbreviation))}
       </span>
     );
   }
@@ -175,7 +175,11 @@ function ConnectionText({
         return (
           <Fragment key={verse}>
             <sup className={styles.verseMark}>{mark}</sup>
-            {verseTextOrNote(translation, verse)}{' '}
+            {verseTextOrNote(
+              translation,
+              verse,
+              t('panel.omitted')(translation.manifest.abbreviation),
+            )}{' '}
           </Fragment>
         );
       })}
@@ -273,7 +277,11 @@ export function PassagePanel({
                 lang={translation.manifest.language}
                 dir={translation.manifest.direction}
               >
-                {verseTextOrNote(translation, passage.verse)}
+                {verseTextOrNote(
+                  translation,
+                  passage.verse,
+                  t('panel.omitted')(translation.manifest.abbreviation),
+                )}
               </p>
               <CopyQuoteButton
                 reference={formatPassage(passage, versification, books)}
@@ -380,7 +388,13 @@ function ChapterVerses({
           }}
         >
           <span className={styles.verseNumber}>{offset + 1}</span>
-          <span className={styles.snippet}>{verseTextOrNote(translation, verse)}</span>
+          <span className={styles.snippet}>
+            {verseTextOrNote(
+              translation,
+              verse,
+              t('panel.omitted')(translation.manifest.abbreviation),
+            )}
+          </span>
           <span className={styles.count}>{n(counts.get(verse) ?? 0)}</span>
         </button>
       ))}

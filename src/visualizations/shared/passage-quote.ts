@@ -51,7 +51,7 @@ export function quotePassage({
   const first = versification.refAt(start);
   const verses: { readonly mark: string | null; readonly text: string }[] = [];
   for (let verse = start; verse <= end; verse += 1) {
-    const text = translation.verseText(verse);
+    const text = translation.verseText(verse) || (translation.manifest.emptyVerseNote ?? '');
     if (text === '') {
       continue;
     }

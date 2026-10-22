@@ -181,6 +181,7 @@ describe('TranslationMenu', () => {
       'Português',
       'Italiano',
       'Español',
+      'Slovenščina',
     ]);
   });
 
