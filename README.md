@@ -33,9 +33,9 @@ arcs](public/screenshots/arcs.jpg)
 - Zoom from the whole Bible down to single verses; hover a passage to see how many connections it
   has.
 - Search for any reference ("John 3:16", "Ps 23") or click a passage to see where its links land.
-- Read it in six translations — English (Berean Standard Bible, King James Version), Portuguese,
-  German, Italian and Spanish — with the interface in any of six languages: English, Portuguese,
-  German, Italian, Spanish or Ukrainian; the choice is remembered and travels in the link you share
+- Read it in seven translations — English (Berean Standard Bible, King James Version), Portuguese,
+  German, Italian, Spanish and Polish — with the interface in any of seven languages: English,
+  Portuguese, German, Italian, Spanish, Ukrainian or Polish; the choice is remembered and travels in the link you share
   ([`?t=kjv`](https://trekhleb.dev/bible-cross-references/?ref=John.3.16&t=kjv)).
 
 ### Focus a passage
@@ -101,7 +101,7 @@ that installed the app has already done the work.
 
 ## Languages
 
-The app speaks English, Portuguese, German, Italian, Spanish and Ukrainian. Each has pages of its
+The app speaks English, Portuguese, German, Italian, Spanish, Ukrainian and Polish. Each has pages of its
 own: English at the root,
 every other language one path segment down
 ([`/pt/`](https://trekhleb.dev/bible-cross-references/pt/?t=blivre)). Which language a visit
@@ -207,6 +207,7 @@ The app is built on openly licensed datasets only:
 | Bible text       | [Lutherbibel 1912](https://ebible.org/Scriptures/details.php?id=deu1912) (LUT), German, from eBible.org                               | [Public domain](https://ebible.org/Scriptures/details.php?id=deu1912)                          |
 | Bible text       | [Riveduta 1927](https://ebible.org/Scriptures/details.php?id=ita1927) (RIV), Italian, the revision made under Giovanni Luzzi          | [Public domain](https://ebible.org/Scriptures/details.php?id=ita1927)                          |
 | Bible text       | [Versión Biblia Libre](https://ebible.org/Scriptures/details.php?id=spavbl) (VBL), Spanish                                            | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)                                |
+| Bible text       | [Uwspółcześniona Biblia Gdańska](https://ebible.org/Scriptures/details.php?id=polubg) (UBG), Polish                                   | [CC BY-ND 4.0](https://creativecommons.org/licenses/by-nd/4.0/)                                |
 | Cross-references | [OpenBible.info](https://www.openbible.info/labs/cross-references/), largely from the public-domain _Treasury of Scripture Knowledge_ | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 | Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge             | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 
@@ -243,6 +244,13 @@ part company with the KJV's in a few dozen places — Hebrew Bibles close Genesi
 app uses, which in a handful of verses means two of the edition's verses are joined into one. No
 verse is missing and none is empty; the text of both is complete. Where the edition's own number
 was left in the text, the build removes it, and the counts are in `data/raw/README.md`.
+
+A note on the Polish: the Uwspółcześniona Biblia Gdańska (© 2018 Fundacja Wrota Nadziei) is a
+modern revision of the 1632 Gdańsk Bible under CC BY-ND 4.0, which allows it to be shared but not
+changed — "any of the actual words or punctuation". It is therefore served exactly as eBible
+publishes it: every one of its 31,102 verses is byte for byte the source's, the brackets that mark
+words the translators supplied included. It follows the Textus Receptus and the KJV's numbering,
+so nothing had to be remapped.
 
 A note on the Spanish: the Versión Biblia Libre is a modern translation under CC BY-SA 4.0 rather
 than a public-domain one, so its credit and licence travel with every copy and anyone who
