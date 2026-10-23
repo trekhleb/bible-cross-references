@@ -46,5 +46,6 @@ describe('SOURCE_DEFECTS', () => {
     expect(defectsFor('bsb').size).toBe(0);
     expect(defectsFor('kjv').size).toBe(0);
     expect(defectsFor('vbl').size).toBe(0);
+    expect(defectsFor('ubg').size).toBe(0);
   });
 });

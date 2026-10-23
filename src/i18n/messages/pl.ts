@@ -90,6 +90,8 @@ export const pl: LocaleMessages = {
     'https://ebible.org/Scriptures/details.php?id=spavbl, na licencji CC BY-SA 4.0. ' +
     'Zmiany: w jednym wersecie przesunięto spację przed dwukropkiem; żadnego słowa nie ' +
     'zmieniono.',
+  'attribution.ubg':
+    'Tekst Biblii: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, na licencji CC BY-ND 4.0. Nie zmieniono żadnego słowa ani znaku interpunkcyjnego.',
   'license.publicDomain': 'Domena publiczna',
   'menu.translation': 'Przekład',
   'menu.translation.failed': (name) => `Nie udało się wczytać: ${name}.`,
