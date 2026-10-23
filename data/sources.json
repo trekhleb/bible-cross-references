@@ -65,6 +65,17 @@
       "homepage": "https://ebible.org/Scriptures/details.php?id=spavbl"
     },
     {
+      "id": "ubg",
+      "description": "Uwspółcześniona Biblia Gdańska, eBible.org edition, verse-per-line text in a ZIP archive",
+      "url": "https://ebible.org/Scriptures/polubg_vpl.zip",
+      "fileName": "polubg_vpl.zip",
+      "sha256": "a1e5338b20d50fe0853e0ec4e8cff2221a0be8dec9dcf967a15377f84bc6820d",
+      "member": "polubg_vpl.txt",
+      "retrievedAt": "2026-10-23",
+      "license": "CC BY-ND 4.0",
+      "homepage": "https://ebible.org/Scriptures/details.php?id=polubg"
+    },
+    {
       "id": "openbible",
       "description": "OpenBible.info cross-references (TSV in a ZIP archive)",
       "url": "https://a.openbible.info/data/cross-references.zip",

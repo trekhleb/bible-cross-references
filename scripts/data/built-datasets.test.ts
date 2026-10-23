@@ -19,10 +19,11 @@ import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
 import { toOsisId } from '../../src/core/bible/verse-ref.ts';
 import { TRANSLATION_IDS, type TranslationId } from '../../src/core/datasets/ids.ts';
 import {
+  parseOriginalWordsFile,
   parseTranslationTextFile,
   type TranslationTextFile,
 } from '../../src/core/datasets/formats.ts';
-import { translationDatasetPath } from '../../src/core/datasets/paths.ts';
+import { originalWordsDatasetPath, translationDatasetPath } from '../../src/core/datasets/paths.ts';
 import { expectRecord, expectString } from '../../src/core/lib/validation.ts';
 import { sha256Hex } from './lib/files.ts';
 import { MANIFEST_FILE, publicFilePath } from './lib/paths.ts';
@@ -121,4 +122,42 @@ describe('the built translation datasets', () => {
       expect(dataset.provenance.retrievedAt, 'retrieval date').toBe(pin.retrievedAt);
     });
   });
+});
+
+/**
+ * The Polish glosses are a translation of the English ones, kept in the tree rather than built,
+ * so nothing in the pipeline would notice the two drifting apart when STEPBible is re-pinned:
+ * a new word would quietly show its English gloss to a Polish reader. This is where they meet.
+ */
+describe('the Polish glosses', () => {
+  const wordsPath = publicFilePath(originalWordsDatasetPath('stepbible'));
+  const present = existsSync(wordsPath);
+
+  it.runIf(present)(
+    'give every word of the built dataset a Polish gloss, shaped like its English one',
+    () => {
+      const words = parseOriginalWordsFile(JSON.parse(readFileSync(wordsPath, 'utf8')), {
+        id: 'stepbible',
+        versification: 'kjv',
+      }).words;
+      const polish = expectRecord(
+        JSON.parse(readFileSync('src/words/glosses/pl.json', 'utf8')),
+        'src/words/glosses/pl.json',
+      );
+      const problems: string[] = [];
+      words.strongs.forEach((strongs, index) => {
+        const english = words.gloss[index] ?? '';
+        const entry = polish[strongs];
+        const translated = typeof entry === 'string' ? entry : undefined;
+        if (translated === undefined || translated.trim() === '') {
+          problems.push(`${strongs}: no Polish gloss for “${english}”`);
+        } else if (translated.split(' / ').length !== english.split(' / ').length) {
+          problems.push(
+            `${strongs}: “${english}” has a different number of senses in “${translated}”`,
+          );
+        }
+      });
+      expect(problems).toEqual([]);
+    },
+  );
 });

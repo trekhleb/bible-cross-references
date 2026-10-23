@@ -69,4 +69,12 @@ export const SAME_AS_ENGLISH: Readonly<Record<LocaleId, Readonly<Record<string, 
     'install.ios.label': 'iPhone is a product name and is not translated.',
     'install.android.label': 'Android is a product name and is not translated.',
   },
+  pl: {
+    'messages.footer.sourceLabel': 'GitHub is a proper noun and is not translated.',
+    'messages.menu.filters.votes.atLeast':
+      'A mathematical symbol and a number (“≥ 4”), which read the same in both languages.',
+    'install.ios.label': 'iPhone is a product name and is not translated.',
+    'install.android.label': 'Android is a product name and is not translated.',
+    'books.Ps.referenceName': 'Polish cites a psalm as “Psalm 23”, the same word as English.',
+  },
 };

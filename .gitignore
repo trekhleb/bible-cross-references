@@ -19,6 +19,7 @@ data/raw/eng-kjv2006_vpl.zip
 data/raw/deu1912_vpl.zip
 data/raw/ita1927_vpl.zip
 data/raw/spavbl_vpl.zip
+data/raw/polubg_vpl.zip
 # And these: 96 MB of tagged Hebrew and Greek, which STEPBible asks to be fetched from them
 # rather than passed on second-hand. The build downloads them against their pins too.
 data/raw/stepbible-*.txt

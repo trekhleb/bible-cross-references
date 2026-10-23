@@ -70,6 +70,8 @@ export const it: LocaleMessages = {
     'https://ebible.org/Scriptures/details.php?id=spavbl, con licenza CC BY-SA 4.0. ' +
     'Modifiche: in un versetto è stato spostato uno spazio prima dei due punti; nessuna parola ' +
     'è stata cambiata.',
+  'attribution.ubg':
+    'Testo biblico: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, con licenza CC BY-ND 4.0. Nessuna parola né punteggiatura è stata modificata.',
   'license.publicDomain': 'Pubblico dominio',
   'menu.translation': 'Traduzione',
   'menu.translation.failed': (name) => `Non è stato possibile caricare ${name}.`,

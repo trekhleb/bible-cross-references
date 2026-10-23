@@ -12,6 +12,7 @@ export const TRANSLATION_IDS = [
   'luther1912',
   'riveduta1927',
   'vbl',
+  'ubg',
 ] as const;
 export type TranslationId = (typeof TRANSLATION_IDS)[number];
 

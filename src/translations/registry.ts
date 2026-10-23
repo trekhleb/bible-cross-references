@@ -129,6 +129,27 @@ const TRANSLATIONS: Readonly<Record<TranslationId, TranslationManifest>> = {
     homepage: 'https://ebible.org/Scriptures/details.php?id=spavbl',
     access: 'bundled',
   },
+  ubg: {
+    id: 'ubg',
+    name: 'Uwspółcześniona Biblia Gdańska',
+    abbreviation: 'UBG',
+    language: 'pl',
+    direction: 'ltr',
+    versification: 'kjv',
+    license: {
+      name: 'CC BY-ND 4.0',
+      url: 'https://creativecommons.org/licenses/by-nd/4.0/',
+    },
+    // CC BY-ND forbids changing "any of the actual words or punctuation", so the text is served
+    // exactly as eBible publishes it — the brackets that mark words the translators supplied
+    // included. The credit carries the copyright line and the source, which the licence asks for.
+    attribution:
+      'Scripture text: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, ' +
+      'https://ebible.org/Scriptures/details.php?id=polubg, licensed under CC BY-ND 4.0. ' +
+      'No word or punctuation was changed.',
+    homepage: 'https://ebible.org/Scriptures/details.php?id=polubg',
+    access: 'bundled',
+  },
 };
 
 /** Every translation the app can show, in the order the picker lists them. */
