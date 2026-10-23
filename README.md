@@ -210,6 +210,7 @@ The app is built on openly licensed datasets only:
 | Bible text       | [Uwspółcześniona Biblia Gdańska](https://ebible.org/Scriptures/details.php?id=polubg) (UBG), Polish                                   | [CC BY-ND 4.0](https://creativecommons.org/licenses/by-nd/4.0/)                                |
 | Cross-references | [OpenBible.info](https://www.openbible.info/labs/cross-references/), largely from the public-domain _Treasury of Scripture Knowledge_ | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 | Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge             | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
+| Polish glosses   | Machine translation of the STEPBible glosses above, in [`src/words/glosses/pl.json`](src/words/glosses/pl.json)                       | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 
 A note on the KJV: it is public domain in the United States and most of the world, but in the
 United Kingdom letters patent that do not expire reserve the right to **print** it, and to import
@@ -251,6 +252,13 @@ changed — "any of the actual words or punctuation". It is therefore served exa
 publishes it: every one of its 31,102 verses is byte for byte the source's, the brackets that mark
 words the translators supplied included. It follows the Textus Receptus and the KJV's numbering,
 so nothing had to be remapped.
+
+A note on the Polish glosses: STEPBible publishes its glosses in English only, so the Polish ones
+are a machine translation of them, one per word, kept in the tree as
+[`src/words/glosses/pl.json`](src/words/glosses/pl.json). They render what the English gloss says
+and nothing more, keep its senses apart with the same `/`, and are loaded only by the Polish
+interface. They have not been reviewed by a Hebraist or a Hellenist; a correction is an edit to
+that one file. `npm run test:built` fails if a word of the built dataset has no Polish gloss.
 
 A note on the Spanish: the Versión Biblia Libre is a modern translation under CC BY-SA 4.0 rather
 than a public-domain one, so its credit and licence travel with every copy and anyone who

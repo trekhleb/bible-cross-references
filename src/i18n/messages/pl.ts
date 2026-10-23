@@ -172,8 +172,9 @@ export const pl: LocaleMessages = {
   'language.hebrew': 'hebrajskie',
   'language.greek': 'greckie',
   'words.credit': (max) =>
-    `, na podstawie pracy Tyndale House w Cambridge; sprowadzone do form słownikowych. Słowa ` +
-    `występujące w więcej niż ${max} wersetach pominięto.`,
+    `, na podstawie pracy Tyndale House w Cambridge; sprowadzone do form słownikowych, ` +
+    `a ich znaczenia przetłumaczone maszynowo z angielskiego. Słowa występujące w więcej niż ` +
+    `${max} wersetach pominięto.`,
   'words.creditLabel': 'Słowa:',
 
   'loading.data': (verses, links) => `Wczytywanie ${verses} wersetów i ${links} odnośników…`,
