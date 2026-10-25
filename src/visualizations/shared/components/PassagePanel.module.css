@@ -78,6 +78,17 @@
   overscroll-behavior: contain;
 }
 
+/* The verse being read, held still above the scrolling links so each one can be compared with
+   it. A very long verse (Esther 8:9 runs to ninety words) scrolls inside its own box rather
+   than pushing the links off a phone's screen. */
+.pinnedVerse {
+  flex-shrink: 0;
+  max-block-size: 35vh;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+  border-block-end: 1px solid var(--color-border);
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

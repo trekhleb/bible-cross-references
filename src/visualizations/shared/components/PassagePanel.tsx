@@ -292,39 +292,42 @@ export function PassagePanel({
         </button>
       </header>
 
+      {/* Outside the scrolling part, so the verse stays in view beside every passage it is
+          compared with as the reader scrolls through them. */}
+      {passage.kind === 'verse' && (
+        <div className={`${styles.quotable} ${styles.pinnedVerse}`}>
+          <p
+            className={styles.verseText}
+            lang={translation.manifest.language}
+            dir={translation.manifest.direction}
+          >
+            {verseTextOrNote(translation, passage.verse)}
+          </p>
+          {/* A verse this translation leaves out has nothing to put on a card. */}
+          {translation.verseText(passage.verse) !== '' && (
+            <ShareVerseButton
+              reference={formatPassage(passage, versification, books)}
+              onShare={() => {
+                openVerseShare(
+                  buildVerseShareRequest({
+                    data,
+                    filter,
+                    verse: passage.verse,
+                    url: shareUrl(passage),
+                    localization,
+                  }),
+                );
+              }}
+            />
+          )}
+        </div>
+      )}
+
       {/* Keyed by passage: following a link starts the new passage's details at the top. */}
       <div key={toPassageOsisId(passage, versification)} className={styles.scroll}>
         {/* A verse's links follow its text; a chapter's come before its (long) list of verses. */}
         {passage.kind === 'verse' ? (
-          <>
-            <div className={styles.quotable}>
-              <p
-                className={styles.verseText}
-                lang={translation.manifest.language}
-                dir={translation.manifest.direction}
-              >
-                {verseTextOrNote(translation, passage.verse)}
-              </p>
-              {/* A verse this translation leaves out has nothing to put on a card. */}
-              {translation.verseText(passage.verse) !== '' && (
-                <ShareVerseButton
-                  reference={formatPassage(passage, versification, books)}
-                  onShare={() => {
-                    openVerseShare(
-                      buildVerseShareRequest({
-                        data,
-                        filter,
-                        verse: passage.verse,
-                        url: shareUrl(passage),
-                        localization,
-                      }),
-                    );
-                  }}
-                />
-              )}
-            </div>
-            {actions && <div className={styles.actions}>{actions}</div>}
-          </>
+          <>{actions && <div className={styles.actions}>{actions}</div>}</>
         ) : (
           <>
             {actions && <div className={styles.actions}>{actions}</div>}
