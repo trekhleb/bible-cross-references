@@ -35,6 +35,7 @@ import {
 } from '../../../translations/external-translations.ts';
 import type { Translation } from '../../../translations/translation.ts';
 import { verseTextOrNote } from '../../../translations/verse-text.ts';
+import type { AlignedSpan } from '../../../words/translation-alignment.ts';
 import {
   collectConnections,
   groupByBook,
@@ -46,6 +47,7 @@ import type { LinkFilter } from '../link-filter.ts';
 import { canCopy, copyQuote, quotePassage, type PassageQuote } from '../passage-quote.ts';
 import { GENRE_COLORS, GENRE_HEX } from '../palette.ts';
 import { OriginalWordsSection } from './OriginalWordsSection.tsx';
+import { LinkEvidence, linkMarks, markedText, useLinkWords } from './LinkEvidence.tsx';
 import { PanelSection } from './PanelSection.tsx';
 import type { VizData } from '../viz-data.ts';
 import { buildVerseShareRequest } from '../verse-share.ts';
@@ -149,11 +151,14 @@ function ConnectionText({
   versification,
   start,
   end,
+  marks,
 }: {
   readonly translation: Translation;
   readonly versification: Versification;
   readonly start: VerseIndex;
   readonly end: VerseIndex;
+  /** Where in a verse the words this passage shares with the one being read stand. */
+  readonly marks?: ((verse: VerseIndex) => readonly AlignedSpan[]) | undefined;
 }) {
   const { t, books, n } = useLocalization();
   // The text is in the translation's language, which is not always the interface's: a reader
@@ -161,10 +166,15 @@ function ConnectionText({
   // pronounce it, and a right-to-left text lay itself out.
   const lang = translation.manifest.language;
   const dir = translation.manifest.direction;
+  // A verse the translation leaves out is a note, and has no words of its own to mark.
+  const textOf = (verse: VerseIndex) =>
+    marks && !translation.isOmitted(verse)
+      ? markedText(translation.verseText(verse), marks(verse))
+      : verseTextOrNote(translation, verse);
   if (start === end) {
     return (
       <span className={styles.snippet} lang={lang} dir={dir}>
-        {verseTextOrNote(translation, start)}
+        {textOf(start)}
       </span>
     );
   }
@@ -185,7 +195,7 @@ function ConnectionText({
         return (
           <Fragment key={verse}>
             <sup className={styles.verseMark}>{mark}</sup>
-            {verseTextOrNote(translation, verse)}{' '}
+            {textOf(verse)}{' '}
           </Fragment>
         );
       })}
@@ -583,6 +593,98 @@ function GenreBreakdown({
   );
 }
 
+/**
+ * One linked passage: a button that travels there, its text with the words it shares with the
+ * verse being read marked, and the badge that says what those words are.
+ */
+function ConnectionItem({
+  connection,
+  showSourceVerse,
+  data,
+  onSelect,
+  onPreview,
+  shareUrl,
+}: {
+  readonly connection: Connection;
+  readonly showSourceVerse: boolean;
+  readonly data: VizData;
+  readonly onSelect: (passage: Passage) => void;
+  readonly onPreview: ((connection: Connection | null) => void) | undefined;
+  readonly shareUrl: (passage: Passage) => string;
+}) {
+  const localization = useLocalization();
+  const { books } = localization;
+  const { versification, translation } = data;
+  const link = useLinkWords(connection, translation);
+  const note = landingNote(connection, versification, showSourceVerse);
+  const reference = formatVerseIndexRange(
+    versification,
+    books,
+    connection.otherStart,
+    connection.otherEnd,
+  );
+  return (
+    <div
+      className={styles.quotable}
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse') onPreview?.(connection);
+      }}
+      onPointerLeave={() => {
+        onPreview?.(null);
+      }}
+    >
+      <button
+        type="button"
+        className={styles.item}
+        onClick={() => {
+          onSelect(versePassage(connection.otherStart));
+        }}
+        onFocus={() => {
+          onPreview?.(connection);
+        }}
+        onBlur={() => {
+          onPreview?.(null);
+        }}
+      >
+        <span className={styles.itemRef}>
+          <strong>{reference}</strong>
+          {note !== null && (
+            <span className={styles.muted}>
+              {describeLandingNote(note, versification, localization)}
+            </span>
+          )}
+        </span>
+        <ConnectionText
+          translation={translation}
+          versification={versification}
+          start={connection.otherStart}
+          end={connection.otherEnd}
+          marks={link ? (verse) => linkMarks(link, verse) : undefined}
+        />
+      </button>
+      <CopyQuoteButton
+        reference={reference}
+        quote={() =>
+          quotePassage({
+            translation,
+            versification,
+            names: books,
+            start: connection.otherStart,
+            end: connection.otherEnd,
+            url: shareUrl(versePassage(connection.otherStart)),
+          })
+        }
+      />
+      <LinkEvidence
+        connection={connection}
+        link={link}
+        translation={translation}
+        versification={versification}
+      />
+    </div>
+  );
+}
+
 function ConnectionSection({
   id,
   icon: Icon,
@@ -614,7 +716,7 @@ function ConnectionSection({
   const localization = useLocalization();
   const { t, books, n } = localization;
   const [limit, setLimit] = useState(INITIAL_ITEMS);
-  const { versification, translation } = data;
+  const { versification } = data;
   const visible = connections.slice(0, limit);
   return (
     <PanelSection
@@ -639,69 +741,17 @@ function ConnectionSection({
             {books[group.book].name}
             <span className={styles.count}>{n(group.connections.length)}</span>
           </p>
-          {group.connections.map((connection) => {
-            const note = landingNote(connection, versification, showSourceVerse);
-            const reference = formatVerseIndexRange(
-              versification,
-              books,
-              connection.otherStart,
-              connection.otherEnd,
-            );
-            return (
-              <div
-                key={`${String(connection.link.id)}-${connection.direction}`}
-                className={styles.quotable}
-                onPointerEnter={(event) => {
-                  if (event.pointerType === 'mouse') onPreview?.(connection);
-                }}
-                onPointerLeave={() => {
-                  onPreview?.(null);
-                }}
-              >
-                <button
-                  type="button"
-                  className={styles.item}
-                  onClick={() => {
-                    onSelect(versePassage(connection.otherStart));
-                  }}
-                  onFocus={() => {
-                    onPreview?.(connection);
-                  }}
-                  onBlur={() => {
-                    onPreview?.(null);
-                  }}
-                >
-                  <span className={styles.itemRef}>
-                    <strong>{reference}</strong>
-                    {note !== null && (
-                      <span className={styles.muted}>
-                        {describeLandingNote(note, versification, localization)}
-                      </span>
-                    )}
-                  </span>
-                  <ConnectionText
-                    translation={translation}
-                    versification={versification}
-                    start={connection.otherStart}
-                    end={connection.otherEnd}
-                  />
-                </button>
-                <CopyQuoteButton
-                  reference={reference}
-                  quote={() =>
-                    quotePassage({
-                      translation,
-                      versification,
-                      names: books,
-                      start: connection.otherStart,
-                      end: connection.otherEnd,
-                      url: shareUrl(versePassage(connection.otherStart)),
-                    })
-                  }
-                />
-              </div>
-            );
-          })}
+          {group.connections.map((connection) => (
+            <ConnectionItem
+              key={`${String(connection.link.id)}-${connection.direction}`}
+              connection={connection}
+              showSourceVerse={showSourceVerse}
+              data={data}
+              onSelect={onSelect}
+              onPreview={onPreview}
+              shareUrl={shareUrl}
+            />
+          ))}
         </div>
       ))}
       {connections.length > limit && (

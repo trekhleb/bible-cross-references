@@ -117,7 +117,42 @@ export interface OriginalWordsFile extends DatasetFileBase<'original-words'> {
    * nothing about the verse it is in, and the pairs for it outweigh all the rest together.
    */
   readonly maxVerses: number;
+  /**
+   * Nouns, verbs and adjectives are kept up to this many verses, past `maxVerses`, so that two
+   * passages can be compared on "love" or "neighbour" — words too common to list beside a verse,
+   * but far from meaningless when both ends of a link use them. Grammatical words never are.
+   * Absent in a file built before it existed, which kept nothing past `maxVerses`.
+   */
+  readonly contentWordMaxVerses?: number;
   readonly words: OriginalWordColumns;
+}
+
+/**
+ * How each word is used in each verse it appears in, aligned position for position with
+ * `OriginalWordColumns.verses`: entry `i` here describes the word and verse at entry `i` there.
+ * Kept apart from the words because nothing needs it until a reader asks why two passages are
+ * linked, and most readers never do.
+ *
+ * Only Tyndale's tagging is kept — the grammar code and the English it gives the word in that
+ * verse — never the word as it is spelled in the verse, for the reason the words keep only the
+ * dictionary form (see the STEPBible importer).
+ */
+export interface WordOccurrenceColumns {
+  /** Every grammar code, once; `grammarAt` points into it. E.g. `V-AAI-3S`, `Vqp3ms`. */
+  readonly grammar: readonly string[];
+  /** Per verse entry: the grammar of the word's first use in that verse, as an index. */
+  readonly grammarAt: readonly number[];
+  /** Per verse entry: the English the tagging gives the word there, e.g. `he created`. */
+  readonly english: readonly string[];
+}
+
+export interface WordOccurrencesFile extends DatasetFileBase<'word-occurrences'> {
+  readonly sourceId: WordSourceId;
+  readonly license: LicenseInfo;
+  readonly attribution: string;
+  /** How many verse entries the words dataset it belongs to has, so a mismatch is caught. */
+  readonly verseEntries: number;
+  readonly occurrences: WordOccurrenceColumns;
 }
 
 function parseProvenance(value: unknown, path: string): DatasetProvenance {
@@ -242,6 +277,14 @@ export function parseOriginalWordsFile(
     license: expectLicense(record['license']),
     attribution: expectString(record['attribution'], 'attribution'),
     maxVerses: expectInteger(record['maxVerses'], 'maxVerses'),
+    ...(record['contentWordMaxVerses'] === undefined
+      ? {}
+      : {
+          contentWordMaxVerses: expectInteger(
+            record['contentWordMaxVerses'],
+            'contentWordMaxVerses',
+          ),
+        }),
     words: {
       strongs: expectStringArray(words['strongs'], 'words.strongs'),
       lemma: expectStringArray(words['lemma'], 'words.lemma'),
@@ -250,5 +293,31 @@ export function parseOriginalWordsFile(
       offsets: expectIntegerArray(words['offsets'], 'words.offsets'),
       verses: expectIntegerArray(words['verses'], 'words.verses'),
     },
+  };
+}
+
+export function parseWordOccurrencesFile(
+  json: unknown,
+  expected: ExpectedDataset<WordSourceId>,
+): WordOccurrencesFile {
+  const { record, base } = parseFileBase(json, 'word-occurrences', expected.versification);
+  const occurrences = expectRecord(record['occurrences'], 'occurrences');
+  const verseEntries = expectInteger(record['verseEntries'], 'verseEntries');
+  const grammar = expectStringArray(occurrences['grammar'], 'occurrences.grammar');
+  const grammarAt = expectIntegerArray(occurrences['grammarAt'], 'occurrences.grammarAt');
+  const english = expectStringArray(occurrences['english'], 'occurrences.english');
+  if (grammarAt.length !== verseEntries || english.length !== verseEntries) {
+    throw new ValidationError('occurrences', 'expected one entry per verse entry of the words');
+  }
+  if (grammarAt.some((index) => index < 0 || index >= grammar.length)) {
+    throw new ValidationError('occurrences.grammarAt', 'points outside occurrences.grammar');
+  }
+  return {
+    ...base,
+    sourceId: expectOneOf(record['sourceId'], [expected.id], 'sourceId'),
+    license: expectLicense(record['license']),
+    attribution: expectString(record['attribution'], 'attribution'),
+    verseEntries,
+    occurrences: { grammar, grammarAt, english },
   };
 }

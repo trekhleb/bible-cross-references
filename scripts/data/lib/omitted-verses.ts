@@ -73,6 +73,7 @@ const OMISSIONS_ALLOWED: Readonly<Record<TranslationId, ReadonlySet<string>>> = 
   blivre: NO_OMISSIONS,
   luther1912: NO_OMISSIONS,
   riveduta1927: NO_OMISSIONS,
+  ubg: NO_OMISSIONS,
 };
 
 export function omittedVerseNotices(

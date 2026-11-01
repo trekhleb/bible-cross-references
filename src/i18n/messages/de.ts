@@ -74,6 +74,8 @@ export const de: LocaleMessages = {
     'https://ebible.org/Scriptures/details.php?id=spavbl, lizenziert unter CC BY-SA 4.0. ' +
     'Geändert: In einem Vers wurde ein Leerzeichen vor einem Doppelpunkt verschoben; kein Wort ' +
     'wurde verändert.',
+  'attribution.ubg':
+    'Bibeltext: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, lizenziert unter CC BY-ND 4.0. Kein Wort und kein Satzzeichen wurde verändert.',
   'license.publicDomain': 'Gemeinfrei',
   'menu.translation': 'Übersetzung',
   'menu.translation.failed': (name) => `${name} konnte nicht geladen werden.`,
@@ -156,6 +158,19 @@ export const de: LocaleMessages = {
     `, auf Grundlage der Arbeit des Tyndale House, Cambridge; auf die Wörterbuchformen ` +
     `reduziert. Wörter, die in mehr als ${max} Versen vorkommen, bleiben außen vor.`,
   'words.creditLabel': 'Wörter:',
+  'evidence.sharedWord': (words, count) =>
+    count === 1 ? `gemeinsames Wort · ${words}` : `gemeinsame Wörter · ${words}`,
+  'evidence.sameMeaning': (words) => `gleiche Bedeutung · ${words}`,
+  'evidence.thematic': 'thematisch',
+  'evidence.sharedWord.note':
+    'Dasselbe Wort steht im Hebräischen oder Griechischen in beiden Stellen, nach der Auszeichnung von STEPBible.',
+  'evidence.sameMeaning.note':
+    'Kein Wort ist gemeinsam, aber diese Wörter haben im Lexikon dieselbe Glosse: eine Ähnlichkeit der Bedeutung, nicht dasselbe Wort.',
+  'evidence.thematic.note':
+    'Abgesehen von grammatischen und den allerhäufigsten Wörtern wie Gott und HERR verbindet kein Wort des Urtexts diese Stellen. Der Verweis beruht auf dem Urteil der Herausgeber der Treasury of Scripture Knowledge.',
+  'evidence.verses': (count, plural) =>
+    plural === 1 ? `in ${count} Vers der Bibel` : `in ${count} Versen der Bibel`,
+  'evidence.loading': 'Der Gebrauch der Wörter wird geladen…',
 
   'loading.data': (verses, links) => `${verses} Verse und ${links} Querverweise werden geladen…`,
   'error.datasetUnavailable':

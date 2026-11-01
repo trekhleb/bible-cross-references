@@ -17,3 +17,7 @@ export function crossReferencesDatasetPath(id: CrossReferenceSourceId): string {
 export function originalWordsDatasetPath(id: WordSourceId): string {
   return `${DATASETS_DIRECTORY}/words/${id}.json`;
 }
+
+export function wordOccurrencesDatasetPath(id: WordSourceId): string {
+  return `${DATASETS_DIRECTORY}/words/${id}-occurrences.json`;
+}

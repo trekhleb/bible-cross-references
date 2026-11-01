@@ -83,6 +83,8 @@ export const en = {
     'Barrios de Avila, with Gustavo Sanabria and Rebekah Põldaas, ' +
     'https://ebible.org/Scriptures/details.php?id=spavbl, licensed under CC BY-SA 4.0. ' +
     'Changed: a space before a colon was moved in one verse; no word was altered.',
+  'attribution.ubg':
+    'Scripture text: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, licensed under CC BY-ND 4.0. No word or punctuation was changed.',
   'license.publicDomain': 'Public domain',
   'menu.translation': 'Translation',
   'menu.translation.failed': (name: string) => `${name} could not be loaded.`,
@@ -176,6 +178,19 @@ export const en = {
     `, based on work at Tyndale House, Cambridge; reduced to dictionary forms. Words used in ` +
     `more than ${max} verses are left out.`,
   'words.creditLabel': 'Words:',
+  'evidence.sharedWord': (words: string, count: number) =>
+    count === 1 ? `shared word · ${words}` : `shared words · ${words}`,
+  'evidence.sameMeaning': (words: string) => `same meaning · ${words}`,
+  'evidence.thematic': 'thematic',
+  'evidence.sharedWord.note':
+    'The same word stands in both passages in the Hebrew or Greek, as STEPBible tags it.',
+  'evidence.sameMeaning.note':
+    'No word is shared, but these words are glossed alike in the lexicon: a likeness of meaning, not the same word.',
+  'evidence.thematic.note':
+    'No word of the original links these passages, leaving aside grammatical words and the very commonest, such as God and LORD. The link rests on the judgement of the Treasury of Scripture Knowledge’s editors.',
+  'evidence.verses': (count: string, plural: number) =>
+    plural === 1 ? `in ${count} verse of the Bible` : `in ${count} verses of the Bible`,
+  'evidence.loading': 'Loading how the words are used…',
 
   'loading.data': (verses: string, links: string) =>
     `Loading ${verses} verses and ${links} cross-references…`,

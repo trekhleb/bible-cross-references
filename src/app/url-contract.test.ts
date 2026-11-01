@@ -139,6 +139,7 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/?t=luther1912', { translation: 'luther1912' }],
   ['/bible-cross-references/?t=riveduta1927', { translation: 'riveduta1927' }],
   ['/bible-cross-references/?t=vbl', { translation: 'vbl' }],
+  ['/bible-cross-references/?t=ubg', { translation: 'ubg' }],
 
   // The language in the query, which is how every link shared before the language paths
   // existed names it. These are the rows that must never change: they are in people's
@@ -154,6 +155,7 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/?lang=it', { locale: 'it', translation: 'riveduta1927' }],
   ['/bible-cross-references/?lang=es', { locale: 'es', translation: 'vbl' }],
   ['/bible-cross-references/?lang=uk', { locale: 'uk' }],
+  ['/bible-cross-references/?lang=pl', { locale: 'pl', translation: 'ubg' }],
   [
     '/bible-cross-references/threads/?lang=pt&ref=John.3.16',
     { view: 'threads', ref: 'John.3.16', locale: 'pt', translation: 'blivre' },
@@ -195,6 +197,8 @@ const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
   ['/bible-cross-references/uk/?lang=en', { locale: 'uk' }],
   ['/bible-cross-references/uk/?ref=John.3.16', { ref: 'John.3.16', locale: 'uk' }],
   ['/bible-cross-references/uk/?t=luther1912', { locale: 'uk', translation: 'luther1912' }],
+  ['/bible-cross-references/pl/', { locale: 'pl', translation: 'ubg' }],
+  ['/bible-cross-references/pl/threads/', { view: 'threads', locale: 'pl', translation: 'ubg' }],
   [
     '/bible-cross-references/pt/threads/?ref=John.3.16&votes=10&hide=law,acts&t=kjv',
     {

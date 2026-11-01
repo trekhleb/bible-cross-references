@@ -154,7 +154,9 @@ measured on, and that no panel scrolls sideways in any language the app offers.
 ## Data and licences
 
 The datasets are built from CC BY sources (OpenBible.info and STEP Bible / Tyndale House under
-CC BY 4.0, Bíblia Livre under CC BY 3.0 BR) and public-domain texts. Every dataset carries its own
+CC BY 4.0, Bíblia Livre under CC BY 3.0 BR), the Versión Biblia Libre under CC BY-SA 4.0, the
+Uwspółcześniona Biblia Gdańska under CC BY-ND 4.0 (served unchanged, as the licence requires) and
+public-domain texts. Every dataset carries its own
 licence and attribution fields, because each is served on its own and kept on readers' devices by
 the offline cache; the app shows them in the footer, in the translation picker and beside the
 words. A credit under a licence names that licence, with a link to it, wherever the text is

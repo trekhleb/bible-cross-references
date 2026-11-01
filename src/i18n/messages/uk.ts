@@ -96,6 +96,8 @@ export const uk: LocaleMessages = {
     'Barrios de Avila, за участю Gustavo Sanabria і Rebekah Põldaas, ' +
     'https://ebible.org/Scriptures/details.php?id=spavbl, за ліцензією CC BY-SA 4.0. ' +
     'Зміни: в одному вірші пробіл перед двокрапкою пересунуто; жодного слова не змінено.',
+  'attribution.ubg':
+    'Біблійний текст: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, за ліцензією CC BY-ND 4.0. Жодного слова чи розділового знака не змінено.',
   'license.publicDomain': 'Суспільне надбання',
   'menu.translation': 'Переклад',
   'menu.translation.failed': (name) => `Не вдалося завантажити ${name}.`,
@@ -182,6 +184,19 @@ export const uk: LocaleMessages = {
     `, на основі праці Tyndale House, Кембридж; зведено до словникових форм. Слова, що ` +
     `вживаються більш ніж у ${max} віршах, не включено.`,
   'words.creditLabel': 'Слова:',
+  'evidence.sharedWord': (words, count) =>
+    count === 1 ? `спільне слово · ${words}` : `спільні слова · ${words}`,
+  'evidence.sameMeaning': (words) => `те саме значення · ${words}`,
+  'evidence.thematic': 'тематичне',
+  'evidence.sharedWord.note':
+    'Те саме слово стоїть в обох уривках у єврейському чи грецькому тексті, за розміткою STEPBible.',
+  'evidence.sameMeaning.note':
+    'Жодне слово не повторюється, але ці слова мають у словнику однакове значення: це схожість значення, а не те саме слово.',
+  'evidence.thematic.note':
+    'Крім граматичних і найчастіших слів, як-от Бог і ГОСПОДЬ, жодне слово оригіналу не пов’язує ці уривки. Посилання спирається на судження редакторів Treasury of Scripture Knowledge.',
+  'evidence.verses': (count, plural) =>
+    `у ${count} ${formOf(plural, 'вірші', 'віршах', 'віршах')} Біблії`,
+  'evidence.loading': 'Завантаження вжитку слів…',
 
   'loading.data': (verses, links) =>
     `Завантаження ${verses} віршів і ${links} перехресних посилань…`,

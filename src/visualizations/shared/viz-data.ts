@@ -5,6 +5,7 @@ import {
   type CrossReferenceDataset,
 } from '../../cross-references/load-cross-references.ts';
 import { createCachedLoader, type CachedLoader } from '../../shared/lib/cached-loader.ts';
+import { loadWordOccurrences, type WordOccurrences } from '../../words/load-word-occurrences.ts';
 import { loadTranslation } from '../../translations/load-translation.ts';
 import { getTranslationManifest } from '../../translations/registry.ts';
 import type { Translation } from '../../translations/translation.ts';
@@ -95,3 +96,12 @@ export function originalWordsIfLoaded(): OriginalWordsDataset | null {
 export function resetOriginalWords(): void {
   originalWordsLoader.reset();
 }
+
+/**
+ * How each word is used in each of its verses. Fetched only when a reader opens the evidence of
+ * a link, and only after the words it belongs to.
+ */
+export const wordOccurrencesLoader = createCachedLoader(async (): Promise<WordOccurrences> => {
+  const words = await originalWordsLoader.load();
+  return loadWordOccurrences(getWordSourceManifest('stepbible'), words.index.verseEntries);
+});

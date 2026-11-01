@@ -4,6 +4,7 @@ import { CROSS_REFERENCE_SOURCE_MANIFESTS } from '../../cross-references/registr
 import { loadTranslation } from '../../translations/load-translation.ts';
 import { getTranslationManifest } from '../../translations/registry.ts';
 import { loadOriginalWords } from '../../words/load-original-words.ts';
+import { loadWordOccurrences } from '../../words/load-word-occurrences.ts';
 import { getWordSourceManifest } from '../../words/registry.ts';
 import {
   createCrossReferenceColumns,
@@ -136,5 +137,64 @@ describe('loadOriginalWords', () => {
       },
     });
     await expect(loadOriginalWords(manifest)).rejects.toThrow();
+  });
+});
+
+describe('loadWordOccurrences', () => {
+  const manifest = getWordSourceManifest('stepbible');
+
+  function occurrencesFile(overrides: Record<string, unknown> = {}) {
+    return {
+      format: 'word-occurrences',
+      schemaVersion: 1,
+      versification: 'kjv',
+      provenance: PROVENANCE,
+      notices: [],
+      sourceId: 'stepbible',
+      license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+      attribution: 'Original-language words: STEP Bible (CC BY 4.0).',
+      verseEntries: 2,
+      occurrences: {
+        grammar: ['HNcfsa', 'V-AAI-3S'],
+        grammarAt: [0, 1],
+        english: ['beginning', 'loved'],
+      },
+      ...overrides,
+    };
+  }
+
+  it('reads how each word is used in each verse', async () => {
+    serve(occurrencesFile());
+    const occurrences = await loadWordOccurrences(manifest, 2);
+    expect(occurrences.useAt(1)).toEqual({ grammar: 'V-AAI-3S', english: 'loved' });
+  });
+
+  it('answers with nothing for an entry it does not have', async () => {
+    serve(occurrencesFile());
+    const occurrences = await loadWordOccurrences(manifest, 2);
+    expect(occurrences.useAt(5)).toEqual({ grammar: '', english: '' });
+  });
+
+  it('refuses a file built from a different words dataset', async () => {
+    serve(occurrencesFile());
+    await expect(loadWordOccurrences(manifest, 3)).rejects.toThrow(/different words dataset/);
+  });
+
+  it('refuses a file whose columns do not line up', async () => {
+    serve(
+      occurrencesFile({
+        occurrences: { grammar: ['HNcfsa'], grammarAt: [0], english: ['beginning', 'loved'] },
+      }),
+    );
+    await expect(loadWordOccurrences(manifest, 2)).rejects.toThrow();
+  });
+
+  it('refuses a grammar index that points nowhere', async () => {
+    serve(
+      occurrencesFile({
+        occurrences: { grammar: ['HNcfsa'], grammarAt: [0, 4], english: ['a', 'b'] },
+      }),
+    );
+    await expect(loadWordOccurrences(manifest, 2)).rejects.toThrow();
   });
 });

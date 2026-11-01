@@ -4,6 +4,7 @@ import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
 import { ExpandIcon, WordsIcon } from '../../../shared/ui/icons.tsx';
 import { verseTextOrNote } from '../../../translations/verse-text.ts';
 import type { OriginalWordsDataset } from '../../../words/load-original-words.ts';
+import { localizedGloss, useGlosses } from '../../../words/glosses.ts';
 import { originalWordsIfLoaded, originalWordsLoader, resetOriginalWords } from '../viz-data.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
 import { PanelSection } from './PanelSection.tsx';
@@ -18,7 +19,7 @@ const INITIAL_WORDS = 6;
  * never opens a verse never pays for it. `null` until it arrives, which is when the section
  * appears; a failed download leaves the panel exactly as it was.
  */
-function useOriginalWords(): OriginalWordsDataset | null {
+export function useOriginalWords(): OriginalWordsDataset | null {
   const [words, setWords] = useState<OriginalWordsDataset | null>(originalWordsIfLoaded);
   useEffect(() => {
     if (words) {
@@ -61,8 +62,9 @@ export function OriginalWordsSection({
   readonly data: VizData;
   readonly onSelect: (passage: Passage) => void;
 }) {
-  const { t, books, n } = useLocalization();
+  const { t, books, n, locale } = useLocalization();
   const words = useOriginalWords();
+  const glosses = useGlosses(locale.id);
   const [expanded, setExpanded] = useState(false);
   const [openWord, setOpenWord] = useState<number | null>(null);
   const { versification, translation } = data;
@@ -70,7 +72,9 @@ export function OriginalWordsSection({
   if (!words) {
     return null;
   }
-  const inVerse = words.index.wordsOf(verse);
+  // The index also holds common nouns and verbs, for comparing links; the list beside a verse
+  // keeps to the words rare enough to say something about it.
+  const inVerse = words.index.wordsOf(verse).filter((word) => word.verseCount <= words.maxVerses);
   if (inVerse.length === 0) {
     return null;
   }
@@ -106,7 +110,7 @@ export function OriginalWordsSection({
                   <span className={styles.count}>{n(word.verseCount)}</span>
                   <ExpandIcon className={styles.chevron} />
                 </span>
-                <span className={styles.snippet}>{word.gloss}</span>
+                <span className={styles.snippet}>{localizedGloss(word, glosses)}</span>
               </button>
               {open &&
                 words.index.versesOf(word.index).map((other) => (

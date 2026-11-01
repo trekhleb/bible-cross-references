@@ -70,6 +70,8 @@ export const it: LocaleMessages = {
     'https://ebible.org/Scriptures/details.php?id=spavbl, con licenza CC BY-SA 4.0. ' +
     'Modifiche: in un versetto è stato spostato uno spazio prima dei due punti; nessuna parola ' +
     'è stata cambiata.',
+  'attribution.ubg':
+    'Testo biblico: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, con licenza CC BY-ND 4.0. Nessuna parola né punteggiatura è stata modificata.',
   'license.publicDomain': 'Pubblico dominio',
   'menu.translation': 'Traduzione',
   'menu.translation.failed': (name) => `Non è stato possibile caricare ${name}.`,
@@ -153,6 +155,19 @@ export const it: LocaleMessages = {
     `, sulla base del lavoro della Tyndale House di Cambridge; ridotto alle forme del ` +
     `dizionario. Le parole che compaiono in più di ${max} versetti sono escluse.`,
   'words.creditLabel': 'Parole:',
+  'evidence.sharedWord': (words, count) =>
+    count === 1 ? `parola in comune · ${words}` : `parole in comune · ${words}`,
+  'evidence.sameMeaning': (words) => `stesso significato · ${words}`,
+  'evidence.thematic': 'tematico',
+  'evidence.sharedWord.note':
+    'La stessa parola compare in entrambi i passi in ebraico o in greco, secondo la marcatura di STEPBible.',
+  'evidence.sameMeaning.note':
+    'Nessuna parola è in comune, ma queste hanno la stessa glossa nel lessico: una somiglianza di significato, non la stessa parola.',
+  'evidence.thematic.note':
+    'A parte le parole grammaticali e le più comuni, come Dio e SIGNORE, nessuna parola dell’originale collega questi passi. Il riferimento si basa sul giudizio dei curatori del Treasury of Scripture Knowledge.',
+  'evidence.verses': (count, plural) =>
+    plural === 1 ? `in ${count} versetto della Bibbia` : `in ${count} versetti della Bibbia`,
+  'evidence.loading': 'Caricamento dell’uso delle parole…',
 
   'loading.data': (verses, links) =>
     `Caricamento di ${verses} versetti e ${links} riferimenti incrociati…`,

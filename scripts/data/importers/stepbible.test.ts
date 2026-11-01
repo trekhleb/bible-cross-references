@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { CANONICAL_VERSIFICATION } from '../../../src/core/bible/versification.ts';
-import { importStepBibleWords, type LexiconFile, type TaggedTextFile } from './stepbible.ts';
+import {
+  importStepBibleOccurrences,
+  importStepBibleWords,
+  type LexiconFile,
+  type TaggedTextFile,
+} from './stepbible.ts';
 
 const LICENSE = { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' };
 const ATTRIBUTION = 'Original-language words: STEP Bible (CC BY 4.0).';
@@ -316,5 +321,82 @@ describe('importStepBibleWords', () => {
       { maxVerses: 100, license: LICENSE, attribution: ATTRIBUTION, provenance: PROVENANCE },
     );
     expect(dataset.words.gloss).toEqual(['to be']);
+  });
+});
+
+describe('importStepBibleOccurrences', () => {
+  function occurrences(files: readonly TaggedTextFile[]) {
+    return importStepBibleOccurrences(files, LEXICONS, {
+      maxVerses: 100,
+      license: LICENSE,
+      attribution: ATTRIBUTION,
+      provenance: PROVENANCE,
+    });
+  }
+
+  function useOf(file: ReturnType<typeof occurrences>, entry: number) {
+    const { grammar, grammarAt, english } = file.occurrences;
+    return { grammar: grammar[grammarAt[entry] ?? -1], english: english[entry] };
+  }
+
+  it('lines up entry for entry with the words it belongs to', () => {
+    const files: TaggedTextFile[] = [
+      {
+        language: 'hebrew',
+        text: [hebrew('Gen.1.1#01=L', '{H7225G}'), hebrew('Gen.1.2#01=L', '{H1961}')].join('\n'),
+      },
+    ];
+    const words = build(files);
+    const file = occurrences(files);
+    expect(file.format).toBe('word-occurrences');
+    expect(file.verseEntries).toBe(words.words.verses.length);
+    expect(file.occurrences.english).toHaveLength(words.words.verses.length);
+  });
+
+  it('takes the part of a Hebrew line that carries the word, with its language put back', () => {
+    const line = [
+      'Gen.1.1#01=L',
+      'בְּ/רֵאשִׁית',
+      'be./re.Shit',
+      'in/ beginning',
+      'H9003/{H7225G}',
+      'HR/Ncfsa',
+    ].join('\t');
+    const file = occurrences([{ language: 'hebrew', text: line }]);
+    expect(useOf(file, 0)).toEqual({ grammar: 'HNcfsa', english: 'beginning' });
+  });
+
+  it('keeps the whole English where a Hebrew line does not split evenly', () => {
+    const line = ['Gen.1.1#01=L', 'w', 'w', 'in the beginning', 'H9003/{H7225G}', 'HR/Ncfsa'].join(
+      '\t',
+    );
+    expect(useOf(occurrences([{ language: 'hebrew', text: line }]), 0).english).toBe(
+      'in the beginning',
+    );
+  });
+
+  it('takes the grammar written beside a Greek number, even in a word made of two', () => {
+    const line = [
+      'Mat.2.8#19=NKO',
+      'κἀγὼ (kagō)',
+      'I myself also',
+      'G1473=P-1NS + G2532=CONJ',
+    ].join('\t');
+    const file = occurrences([{ language: 'greek', text: line }]);
+    const words = build([{ language: 'greek', text: line }]);
+    const at = (strongs: string) => words.words.offsets[words.words.strongs.indexOf(strongs)] ?? -1;
+    expect(useOf(file, at('G1473'))).toEqual({ grammar: 'P-1NS', english: 'I myself also' });
+    expect(useOf(file, at('G2532')).grammar).toBe('CONJ');
+  });
+
+  it('describes a word by its first use in a verse that uses it twice', () => {
+    const lines = [
+      ['Luk.5.6#01=NKO', 'w', 'first', 'G4128=N-NSN'].join('\t'),
+      ['Luk.5.6#02=NKO', 'w', 'second', 'G4128=N-ASN'].join('\t'),
+    ].join('\n');
+    expect(useOf(occurrences([{ language: 'greek', text: lines }]), 0)).toEqual({
+      grammar: 'N-NSN',
+      english: 'first',
+    });
   });
 });

@@ -62,6 +62,17 @@
       "verses": 31102
     }
   },
+  "data/translations/ubg.json": {
+    "sha256": "ff57cdd86daa6c0471b5c542794972c185e95b0fdbdcbee7545a34e7e4d3c50a",
+    "bytes": 3981079,
+    "shape": {
+      "characters": 3635550,
+      "digits": 0,
+      "empty": 0,
+      "supplied": 8284,
+      "verses": 31102
+    }
+  },
   "data/translations/vbl.json": {
     "sha256": "c8317a7eb2bc1343d091e71e91a798a54de932a1f29da642ae6c6da4f2b7d41c",
     "bytes": 4259104,
@@ -73,13 +84,22 @@
       "verses": 31102
     }
   },
+  "data/words/stepbible-occurrences.json": {
+    "sha256": "5e7c29da5d21f219fbfeef924c2722734588181d7fcba644074ec1a788d41dd8",
+    "bytes": 3943286,
+    "shape": {
+      "grammarCodes": 1630,
+      "untranslated": 0,
+      "verseEntries": 237070
+    }
+  },
   "data/words/stepbible.json": {
-    "sha256": "f372b62acc700a5a62c621888500dcf1d7f7e244f17f9bee43cb3199c56d2e43",
-    "bytes": 1585580,
+    "sha256": "a603d51222179687c4d0b1bf74021c540a3091d1dae1c3bde09d36d379810377",
+    "bytes": 2239880,
     "shape": {
       "maxVerses": 100,
-      "verseEntries": 124791,
-      "words": 16384
+      "verseEntries": 237070,
+      "words": 16840
     }
   }
 }

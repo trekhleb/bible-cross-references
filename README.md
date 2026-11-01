@@ -33,9 +33,9 @@ arcs](public/screenshots/arcs.jpg)
 - Zoom from the whole Bible down to single verses; hover a passage to see how many connections it
   has.
 - Search for any reference ("John 3:16", "Ps 23") or click a passage to see where its links land.
-- Read it in six translations — English (Berean Standard Bible, King James Version), Portuguese,
-  German, Italian and Spanish — with the interface in any of six languages: English, Portuguese,
-  German, Italian, Spanish or Ukrainian; the choice is remembered and travels in the link you share
+- Read it in seven translations — English (Berean Standard Bible, King James Version), Portuguese,
+  German, Italian, Spanish and Polish — with the interface in any of seven languages: English,
+  Portuguese, German, Italian, Spanish, Ukrainian or Polish; the choice is remembered and travels in the link you share
   ([`?t=kjv`](https://trekhleb.dev/bible-cross-references/?ref=John.3.16&t=kjv)).
 
 ### Focus a passage
@@ -63,6 +63,28 @@ cross-reference is somebody's judgement that two passages belong together, while
 fact that they share a word. Acts 5:14 and Luke 5:6, for instance, share πλῆθος (_plēthos_,
 "multitude"), which no cross-reference joins. Words used in more than 100 verses are left out, and
 the text of the verse in its original language is never shown: only the dictionary form.
+
+Each linked passage also says what it shares with the verse being read, in the original
+languages, in a small badge beneath it:
+
+- **shared word** — the same Hebrew or Greek word stands in both, e.g. μονογενής in John 3:16
+  and 1:14. It is a fact about the texts, and the rarer the word the more it says;
+- **same meaning** — no word is shared, but words of each are glossed alike, e.g. אָהַב and
+  ἀγαπάω, "to love", in Leviticus 19:18 and Matthew 22:39. It is the only kind of evidence a link
+  between the Testaments can have, and an approximation;
+- **thematic** — neither, leaving aside grammatical words and the commonest of all (God, LORD).
+  The link rests on the judgement of the Treasury of Scripture Knowledge's editors, and the
+  badge says so.
+
+The badge names the words as the reader's translation renders them, and they are underlined in
+the linked passage. Opening it shows every word, how rare it is, each verse's words around it,
+its grammar, and the English Tyndale's tagging gives it there. No translation the app ships is
+tagged word by word, so which word of the text renders which original word is learned from the
+texts in the browser: a word of the translation found in most verses of a Hebrew or Greek word
+and in few others renders it, each word of a verse going to one original word at most. A weak
+pairing is left unmarked rather than guessed. Comparing two passages keeps nouns, verbs and
+adjectives used in up to 1,000 verses, past the 100 that the word list stops at, so that a link
+sharing "love" and "neighbour" is not called thematic.
 
 ### Send a verse to somebody
 
@@ -128,7 +150,7 @@ that installed the app has already done the work.
 
 ## Languages
 
-The app speaks English, Portuguese, German, Italian, Spanish and Ukrainian. Each has pages of its
+The app speaks English, Portuguese, German, Italian, Spanish, Ukrainian and Polish. Each has pages of its
 own: English at the root,
 every other language one path segment down
 ([`/pt/`](https://trekhleb.dev/bible-cross-references/pt/?t=blivre)). Which language a visit
@@ -234,8 +256,10 @@ The app is built on openly licensed datasets only:
 | Bible text       | [Lutherbibel 1912](https://ebible.org/Scriptures/details.php?id=deu1912) (LUT), German, from eBible.org                               | [Public domain](https://ebible.org/Scriptures/details.php?id=deu1912)                          |
 | Bible text       | [Riveduta 1927](https://ebible.org/Scriptures/details.php?id=ita1927) (RIV), Italian, the revision made under Giovanni Luzzi          | [Public domain](https://ebible.org/Scriptures/details.php?id=ita1927)                          |
 | Bible text       | [Versión Biblia Libre](https://ebible.org/Scriptures/details.php?id=spavbl) (VBL), Spanish                                            | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)                                |
+| Bible text       | [Uwspółcześniona Biblia Gdańska](https://ebible.org/Scriptures/details.php?id=polubg) (UBG), Polish                                   | [CC BY-ND 4.0](https://creativecommons.org/licenses/by-nd/4.0/)                                |
 | Cross-references | [OpenBible.info](https://www.openbible.info/labs/cross-references/), largely from the public-domain _Treasury of Scripture Knowledge_ | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 | Original words   | [STEPBible](https://github.com/STEPBible/STEPBible-Data) (TAHOT, TAGNT and their lexicons), from Tyndale House, Cambridge             | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
+| Polish glosses   | Machine translation of the STEPBible glosses above, in [`src/words/glosses/pl.json`](src/words/glosses/pl.json)                       | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                                      |
 
 A note on the KJV: it is public domain in the United States and most of the world, but in the
 United Kingdom letters patent that do not expire reserve the right to **print** it, and to import
@@ -270,6 +294,20 @@ part company with the KJV's in a few dozen places — Hebrew Bibles close Genesi
 app uses, which in a handful of verses means two of the edition's verses are joined into one. No
 verse is missing and none is empty; the text of both is complete. Where the edition's own number
 was left in the text, the build removes it, and the counts are in `data/raw/README.md`.
+
+A note on the Polish: the Uwspółcześniona Biblia Gdańska (© 2018 Fundacja Wrota Nadziei) is a
+modern revision of the 1632 Gdańsk Bible under CC BY-ND 4.0, which allows it to be shared but not
+changed — "any of the actual words or punctuation". It is therefore served exactly as eBible
+publishes it: every one of its 31,102 verses is byte for byte the source's, the brackets that mark
+words the translators supplied included. It follows the Textus Receptus and the KJV's numbering,
+so nothing had to be remapped.
+
+A note on the Polish glosses: STEPBible publishes its glosses in English only, so the Polish ones
+are a machine translation of them, one per word, kept in the tree as
+[`src/words/glosses/pl.json`](src/words/glosses/pl.json). They render what the English gloss says
+and nothing more, keep its senses apart with the same `/`, and are loaded only by the Polish
+interface. They have not been reviewed by a Hebraist or a Hellenist; a correction is an edit to
+that one file. `npm run test:built` fails if a word of the built dataset has no Polish gloss.
 
 A note on the Spanish: the Versión Biblia Libre is a modern translation under CC BY-SA 4.0 rather
 than a public-domain one, so its credit and licence travel with every copy and anyone who

@@ -41,6 +41,7 @@ function dataset(): OriginalWordsDataset {
     },
     notices: [],
     maxVerses: 100,
+    contentWordMaxVerses: 100,
     index: new OriginalWordIndex(columns(), CANONICAL_VERSIFICATION.verseCount),
   };
 }

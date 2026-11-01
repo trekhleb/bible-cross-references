@@ -1,11 +1,13 @@
 import type {
   CrossReferencesFile,
   OriginalWordsFile,
+  WordOccurrencesFile,
   TranslationTextFile,
 } from '../../../src/core/datasets/formats.ts';
 import { sha256Hex } from './files.ts';
 
-export type DatasetFile = TranslationTextFile | CrossReferencesFile | OriginalWordsFile;
+export type DatasetFile =
+  TranslationTextFile | CrossReferencesFile | OriginalWordsFile | WordOccurrencesFile;
 
 /**
  * What a generated dataset contains, in numbers small enough to read in a diff.
@@ -56,6 +58,12 @@ function shapeOf(dataset: DatasetFile): Readonly<Record<string, number>> {
         words: dataset.words.strongs.length,
         verseEntries: dataset.words.verses.length,
         maxVerses: dataset.maxVerses,
+      };
+    case 'word-occurrences':
+      return {
+        verseEntries: dataset.verseEntries,
+        grammarCodes: dataset.occurrences.grammar.length,
+        untranslated: dataset.occurrences.english.filter((english) => english === '').length,
       };
   }
 }

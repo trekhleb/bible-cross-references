@@ -15,6 +15,8 @@ export interface OriginalWordsDataset {
   readonly notices: readonly ImportNotice[];
   /** Words used in more verses than this are not in the dataset at all. */
   readonly maxVerses: number;
+  /** Nouns, verbs and adjectives are in the index up to this many verses, for comparing links. */
+  readonly contentWordMaxVerses: number;
   readonly index: OriginalWordIndex;
 }
 
@@ -38,6 +40,7 @@ export async function loadOriginalWords(
         provenance: file.provenance,
         notices: file.notices,
         maxVerses: file.maxVerses,
+        contentWordMaxVerses: file.contentWordMaxVerses ?? file.maxVerses,
         index: new OriginalWordIndex(file.words, CANONICAL_VERSIFICATION.verseCount),
       };
     },

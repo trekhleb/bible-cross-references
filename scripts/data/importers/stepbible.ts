@@ -7,6 +7,7 @@ import {
   type DatasetProvenance,
   type ImportNotice,
   type OriginalWordsFile,
+  type WordOccurrencesFile,
 } from '../../../src/core/datasets/formats.ts';
 import { stripByteOrderMark } from '../lib/files.ts';
 import { createNotice } from '../lib/notices.ts';
@@ -53,6 +54,11 @@ export interface LexiconFile {
 export interface StepBibleImportOptions {
   /** Words used in more verses than this are dropped; see `OriginalWordsFile.maxVerses`. */
   readonly maxVerses: number;
+  /**
+   * Nouns, verbs and adjectives are kept up to this many verses instead; see
+   * `OriginalWordsFile.contentWordMaxVerses`. Left out, nothing is kept past `maxVerses`.
+   */
+  readonly contentWordMaxVerses?: number;
   /** Written into the dataset, which is served as a file in its own right. */
   readonly license: LicenseInfo;
   readonly attribution: string;
@@ -94,6 +100,65 @@ const GREEK_WORD = /G\d{4,5}[A-Za-z]?/g;
 
 /** Where each file keeps the tagging, counting tabs from zero. */
 const STRONGS_COLUMN: Readonly<Record<TaggedLanguage, number>> = { hebrew: 4, greek: 3 };
+
+/** Where each file keeps the English its tagging gives a word, counting tabs from zero. */
+const ENGLISH_COLUMN: Readonly<Record<TaggedLanguage, number>> = { hebrew: 3, greek: 2 };
+
+/** Where the Hebrew keeps its grammar codes; the Greek writes them beside each number. */
+const HEBREW_GRAMMAR_COLUMN = 5;
+
+/** How a word is used in one verse: Tyndale's grammar code and the English it gives it there. */
+interface Occurrence {
+  readonly grammar: string;
+  readonly english: string;
+}
+
+/**
+ * The grammar and English of one word on a tagged line.
+ *
+ * A Hebrew line is a word with its prefixes and suffixes, and its three columns split the same
+ * way at each `/`: `in/ beginning`, `H9003/{H7225G}`, `HR/Ncfsa`. The part that carries the
+ * number carries its grammar and its English. The grammar's first letter says the language —
+ * `H` Hebrew, `A` Aramaic — and is written once for the whole line, so it is put back on the part.
+ *
+ * A Greek line writes the grammar beside each number (`G1473=P-1NS + G2532=CONJ`), and its
+ * English belongs to the whole word, which is the best there is for a word made of two.
+ */
+function occurrenceOn(
+  columns: readonly string[],
+  language: TaggedLanguage,
+  strongs: string,
+): Occurrence {
+  const english = columns[ENGLISH_COLUMN[language]]?.trim() ?? '';
+  if (language === 'greek') {
+    const tagging = columns[STRONGS_COLUMN.greek] ?? '';
+    const grammar = new RegExp(`${strongs}=([^\\s+]+)`).exec(tagging)?.[1] ?? '';
+    return { grammar, english };
+  }
+  const parts = (columns[STRONGS_COLUMN.hebrew] ?? '').split('/');
+  const at = parts.findIndex((part) => part.includes(strongs));
+  const grammarColumn = columns[HEBREW_GRAMMAR_COLUMN]?.trim() ?? '';
+  const prefix = grammarColumn.slice(0, 1);
+  const grammarParts = grammarColumn.slice(1).split('/');
+  const englishParts = english.split('/');
+  const aligned = at >= 0 && grammarParts.length === parts.length;
+  return {
+    grammar: aligned ? `${prefix}${grammarParts[at] ?? ''}` : '',
+    english:
+      aligned && englishParts.length === parts.length ? (englishParts[at]?.trim() ?? '') : english,
+  };
+}
+
+/**
+ * Whether a word is a noun, a verb or an adjective, by the grammar of its first use: the parts of
+ * speech that can carry what a passage is about. Articles, conjunctions, prepositions, particles
+ * and pronouns are grammar, however a word happens to be counted.
+ */
+function isContentWord(used: ReadonlyMap<VerseIndex, Occurrence> | undefined): boolean {
+  const grammar = used?.values().next().value?.grammar ?? '';
+  const part = /^[HA][A-Z]/.test(grammar) ? grammar.slice(1, 2) : grammar.split('-')[0];
+  return part === 'N' || part === 'V' || part === 'A';
+}
 
 /** An extended Strong's number: a letter, four digits, and a letter when a word is split. */
 const STRONGS_NUMBER = /^[GH]\d{4}[A-Za-z]?$/;
@@ -222,11 +287,67 @@ function parseLexicon(text: string): Map<string, LexiconEntry> {
   return primary;
 }
 
+interface TaggedWords {
+  readonly file: OriginalWordsFile;
+  /** By word, then by verse: how the word is used there, for the first time it is. */
+  readonly occurrences: ReadonlyMap<string, ReadonlyMap<VerseIndex, Occurrence>>;
+}
+
 export function importStepBibleWords(
   files: readonly TaggedTextFile[],
   lexicons: readonly LexiconFile[],
-  { maxVerses, license, attribution, provenance }: StepBibleImportOptions,
+  options: StepBibleImportOptions,
 ): OriginalWordsFile {
+  return readTaggedWords(files, lexicons, options).file;
+}
+
+/**
+ * How each word of `importStepBibleWords` is used in each of its verses, in that dataset's order,
+ * so the two line up entry for entry.
+ */
+export function importStepBibleOccurrences(
+  files: readonly TaggedTextFile[],
+  lexicons: readonly LexiconFile[],
+  options: StepBibleImportOptions,
+): WordOccurrencesFile {
+  const { file, occurrences } = readTaggedWords(files, lexicons, options);
+  const grammarCodes = new Map<string, number>();
+  const grammarAt: number[] = [];
+  const english: string[] = [];
+  file.words.strongs.forEach((strongs, word) => {
+    const start = file.words.offsets[word] ?? 0;
+    const end = file.words.offsets[word + 1] ?? start;
+    for (let at = start; at < end; at += 1) {
+      const verse = file.words.verses[at] ?? 0;
+      const found = occurrences.get(strongs)?.get(verse) ?? { grammar: '', english: '' };
+      let code = grammarCodes.get(found.grammar);
+      if (code === undefined) {
+        code = grammarCodes.size;
+        grammarCodes.set(found.grammar, code);
+      }
+      grammarAt.push(code);
+      english.push(found.english);
+    }
+  });
+  return {
+    format: 'word-occurrences',
+    schemaVersion: DATASET_SCHEMA_VERSION,
+    versification: file.versification,
+    provenance: file.provenance,
+    notices: [],
+    sourceId: 'stepbible',
+    license: file.license,
+    attribution: file.attribution,
+    verseEntries: file.words.verses.length,
+    occurrences: { grammar: [...grammarCodes.keys()], grammarAt, english },
+  };
+}
+
+function readTaggedWords(
+  files: readonly TaggedTextFile[],
+  lexicons: readonly LexiconFile[],
+  { maxVerses, contentWordMaxVerses, license, attribution, provenance }: StepBibleImportOptions,
+): TaggedWords {
   const versification = CANONICAL_VERSIFICATION;
   const bookIds = bookIdsByStepCode();
 
@@ -237,6 +358,7 @@ export function importStepBibleWords(
     }
   }
 
+  const uses = new Map<string, Map<VerseIndex, Occurrence>>();
   const versesByWord = new Map<string, Set<VerseIndex>>();
   const unknownBooks: string[] = [];
   const unknownReferences: string[] = [];
@@ -280,9 +402,18 @@ export function importStepBibleWords(
         unknownReferences.push(`${code}.${String(chapterNumber)}.${String(verseNumber)}`);
         continue;
       }
-      const tagging = line.split('\t')[column] ?? '';
+      const columns = line.split('\t');
+      const tagging = columns[column] ?? '';
       for (const strongs of tagging.match(pattern) ?? []) {
         wordCount += 1;
+        let used = uses.get(strongs);
+        if (!used) {
+          used = new Map();
+          uses.set(strongs, used);
+        }
+        if (!used.has(verse)) {
+          used.set(verse, occurrenceOn(columns, language, strongs));
+        }
         let verses = versesByWord.get(strongs);
         if (!verses) {
           verses = new Set();
@@ -319,7 +450,8 @@ export function importStepBibleWords(
 
   for (const key of [...versesByWord.keys()].sort()) {
     const occurrences = versesByWord.get(key) ?? new Set<VerseIndex>();
-    if (occurrences.size > maxVerses) {
+    const keptUpTo = isContentWord(uses.get(key)) ? (contentWordMaxVerses ?? maxVerses) : maxVerses;
+    if (occurrences.size > Math.max(maxVerses, keptUpTo)) {
       tooCommon.push(key);
       continue;
     }
@@ -354,7 +486,7 @@ export function importStepBibleWords(
     );
   }
 
-  return {
+  const file: OriginalWordsFile = {
     format: 'original-words',
     schemaVersion: DATASET_SCHEMA_VERSION,
     versification: versification.id,
@@ -364,6 +496,8 @@ export function importStepBibleWords(
     license,
     attribution,
     maxVerses,
+    ...(contentWordMaxVerses === undefined ? {} : { contentWordMaxVerses }),
     words: { strongs, lemma, transliteration, gloss, offsets, verses },
   };
+  return { file, occurrences: uses };
 }

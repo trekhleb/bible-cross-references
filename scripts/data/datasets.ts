@@ -2,6 +2,7 @@ import type {
   CrossReferencesFile,
   OriginalWordsFile,
   TranslationTextFile,
+  WordOccurrencesFile,
 } from '../../src/core/datasets/formats.ts';
 import type {
   CrossReferenceSourceId,
@@ -12,12 +13,17 @@ import {
   crossReferencesDatasetPath,
   originalWordsDatasetPath,
   translationDatasetPath,
+  wordOccurrencesDatasetPath,
 } from '../../src/core/datasets/paths.ts';
 import { importBsbText } from './importers/bsb.ts';
 import { importEbibleVerseLines } from './importers/ebible-vpl.ts';
 import { importOpenBibleCrossReferences } from './importers/openbible.ts';
 import { getWordSourceManifest } from '../../src/words/registry.ts';
-import { importStepBibleWords, type TaggedLanguage } from './importers/stepbible.ts';
+import {
+  importStepBibleOccurrences,
+  importStepBibleWords,
+  type TaggedLanguage,
+} from './importers/stepbible.ts';
 import { expectMember } from './lib/sources.ts';
 import { extractZipTextEntry } from './lib/files.ts';
 import type { RawSource } from './lib/sources.ts';
@@ -35,7 +41,7 @@ export interface DatasetBuilder {
   readonly outputPath: string;
   readonly build: (
     readSource: RawSourceReader,
-  ) => Promise<TranslationTextFile | CrossReferencesFile | OriginalWordsFile>;
+  ) => Promise<TranslationTextFile | CrossReferencesFile | OriginalWordsFile | WordOccurrencesFile>;
 }
 
 function provenanceOf({ url, sha256, retrievedAt }: RawSource) {
@@ -99,6 +105,7 @@ const TRANSLATION_BUILDERS: Readonly<Record<TranslationId, DatasetBuilder>> = {
   luther1912: ebibleTranslation('luther1912'),
   riveduta1927: ebibleTranslation('riveduta1927'),
   vbl: ebibleTranslation('vbl'),
+  ubg: ebibleTranslation('ubg'),
 };
 
 /** One builder per cross-reference source. */
@@ -138,29 +145,60 @@ const LEXICON_SOURCES: readonly { readonly id: string; readonly language: Tagged
  */
 const MAX_VERSES_PER_WORD = 100;
 
+/**
+ * Nouns, verbs and adjectives are kept further, for comparing the two ends of a link: "love" and
+ * "neighbour" are too common to list beside a verse, but a link that shares them is no mere
+ * matter of theme. Past this, a word is "God" or "LORD", which every page shares — in both
+ * languages: Greek θεός is in 1,172 verses and Hebrew אֱלֹהִים in 2,088, so a higher cutoff would
+ * keep the one and not the other.
+ */
+const MAX_VERSES_PER_CONTENT_WORD = 1000;
+
+/** The tagged texts and lexicons, read as `importStepBibleWords` and its companion take them. */
+async function readStepBible(readSource: RawSourceReader) {
+  const read = async ({ id, language }: { id: string; language: TaggedLanguage }) => {
+    const { source, content } = await readSource(id);
+    return { source, language, text: content.toString('utf8') };
+  };
+  const files = await Promise.all(TAGGED_SOURCES.map(read));
+  const lexicons = await Promise.all(LEXICON_SOURCES.map(read));
+  const first = files[0];
+  if (!first) {
+    throw new Error('No tagged sources are configured.');
+  }
+  const manifest = getWordSourceManifest('stepbible');
+  const options = {
+    maxVerses: MAX_VERSES_PER_WORD,
+    contentWordMaxVerses: MAX_VERSES_PER_CONTENT_WORD,
+    license: manifest.license,
+    attribution: manifest.attribution,
+    // Every file is pinned; the first stands for the set in the dataset's provenance, and the
+    // rest are listed beside it in data/sources.json.
+    provenance: provenanceOf(first.source),
+  };
+  return { files, lexicons, options };
+}
+
+/**
+ * How each word is used in each of its verses, for explaining a link. Built from the same files
+ * as the words and in their order, so the two line up entry for entry.
+ */
+const WORD_OCCURRENCE_BUILDERS: Readonly<Record<WordSourceId, DatasetBuilder>> = {
+  stepbible: {
+    outputPath: wordOccurrencesDatasetPath('stepbible'),
+    build: async (readSource) => {
+      const { files, lexicons, options } = await readStepBible(readSource);
+      return importStepBibleOccurrences(files, lexicons, options);
+    },
+  },
+};
+
 const WORD_BUILDERS: Readonly<Record<WordSourceId, DatasetBuilder>> = {
   stepbible: {
     outputPath: originalWordsDatasetPath('stepbible'),
     build: async (readSource) => {
-      const read = async ({ id, language }: { id: string; language: TaggedLanguage }) => {
-        const { source, content } = await readSource(id);
-        return { source, language, text: content.toString('utf8') };
-      };
-      const files = await Promise.all(TAGGED_SOURCES.map(read));
-      const lexicons = await Promise.all(LEXICON_SOURCES.map(read));
-      const first = files[0];
-      if (!first) {
-        throw new Error('No tagged sources are configured.');
-      }
-      const manifest = getWordSourceManifest('stepbible');
-      return importStepBibleWords(files, lexicons, {
-        maxVerses: MAX_VERSES_PER_WORD,
-        license: manifest.license,
-        attribution: manifest.attribution,
-        // Every file is pinned; the first stands for the set in the dataset's provenance, and
-        // the rest are listed beside it in data/sources.json.
-        provenance: provenanceOf(first.source),
-      });
+      const { files, lexicons, options } = await readStepBible(readSource);
+      return importStepBibleWords(files, lexicons, options);
     },
   },
 };
@@ -169,4 +207,5 @@ export const DATASET_BUILDERS: readonly DatasetBuilder[] = [
   ...Object.values(TRANSLATION_BUILDERS),
   ...Object.values(CROSS_REFERENCE_BUILDERS),
   ...Object.values(WORD_BUILDERS),
+  ...Object.values(WORD_OCCURRENCE_BUILDERS),
 ];
