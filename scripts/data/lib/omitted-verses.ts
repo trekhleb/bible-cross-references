@@ -69,6 +69,7 @@ const NO_OMISSIONS: ReadonlySet<string> = new Set();
 const OMISSIONS_ALLOWED: Readonly<Record<TranslationId, ReadonlySet<string>>> = {
   bsb: CRITICAL_TEXT_OMISSIONS,
   vbl: CRITICAL_TEXT_OMISSIONS,
+  'chr1914-sl': NO_OMISSIONS,
   kjv: NO_OMISSIONS,
   blivre: NO_OMISSIONS,
   luther1912: NO_OMISSIONS,

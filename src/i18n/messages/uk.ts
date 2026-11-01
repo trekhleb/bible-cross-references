@@ -25,6 +25,8 @@ export function formOf(count: number, one: string, few: string, many: string): s
 
 /** The interface in Ukrainian. Anything left out falls back to the English word. */
 export const uk: LocaleMessages = {
+  'attribution.chr1914-sl':
+    'Словенський текст: Chráska 1914, джерело в суспільному надбанні оцифроване dLib.si. Помилки OCR виправлено для цього застосунку.',
   'app.name': 'Перехресні посилання Біблії',
   'app.name.short': 'Перехресні посилання',
 

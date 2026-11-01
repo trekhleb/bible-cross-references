@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import type { DatasetProvenance } from '../../../core/datasets/formats.ts';
 import type { LicenseInfo } from '../../../core/datasets/metadata.ts';
 import { KeyValueList, type KeyValueItem } from '../../../shared/ui/KeyValueList.tsx';
@@ -30,16 +31,19 @@ export function SourceDetails({
     <KeyValueList
       items={[
         ...items,
-        { label: 'License', value: <ExternalLink href={license.url}>{license.name}</ExternalLink> },
-        { label: 'Attribution', value: attribution },
-        { label: 'Homepage', value: <ExternalLink href={homepage}>{homepage}</ExternalLink> },
         {
-          label: 'Raw file',
+          label: t('License'),
+          value: <ExternalLink href={license.url}>{license.name}</ExternalLink>,
+        },
+        { label: t('Attribution'), value: attribution },
+        { label: t('Homepage'), value: <ExternalLink href={homepage}>{homepage}</ExternalLink> },
+        {
+          label: t('Raw file'),
           value: <ExternalLink href={provenance.url}>{provenance.url}</ExternalLink>,
         },
-        { label: 'SHA-256', value: <code>{provenance.sha256}</code> },
-        { label: 'Retrieved', value: provenance.retrievedAt },
-        { label: 'Upstream snapshot', value: provenance.snapshotDate ?? 'not published' },
+        { label: t('SHA-256'), value: <code>{provenance.sha256}</code> },
+        { label: t('Retrieved'), value: provenance.retrievedAt },
+        { label: t('Upstream snapshot'), value: provenance.snapshotDate ?? 'not published' },
       ]}
     />
   );

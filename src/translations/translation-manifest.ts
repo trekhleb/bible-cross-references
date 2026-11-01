@@ -26,4 +26,9 @@ export interface TranslationManifest {
    * have no text here to show (see `external-translations.ts`).
    */
   readonly access: 'bundled';
+  /** Visible label for an incomplete local text preview. */
+  readonly previewNotice?: string;
+  readonly previewVerseCount?: number;
+  /** Empty slots in an OCR draft are unresolved, rather than manuscript omissions. */
+  readonly emptyVerseNote?: string;
 }

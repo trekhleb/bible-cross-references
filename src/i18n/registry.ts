@@ -1,3 +1,7 @@
+import { slBooks } from './books/sl.ts';
+import { slGenres } from './genres/sl.ts';
+import { slInstall } from './install/sl.tsx';
+import { sl } from './messages/sl.ts';
 import type { GenreId } from '../core/bible/genres.ts';
 import { enBooks } from './books/en.ts';
 import { ptBooks } from './books/pt.ts';
@@ -81,6 +85,14 @@ const LOCALES: Readonly<Record<LocaleId, Locale>> = {
     books: esBooks,
     genres: esGenres,
     install: esInstall,
+  },
+  sl: {
+    id: 'sl',
+    ...LOCALE_TAGS.sl,
+    messages: sl,
+    books: slBooks,
+    genres: slGenres,
+    install: slInstall,
   },
   uk: {
     id: 'uk',

@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { RAW_DATA_DIR } from './lib/paths.ts';
+import { join } from 'node:path';
 import { strToU8, zipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { CANONICAL_VERSIFICATION } from '../../src/core/bible/versification.ts';
@@ -159,6 +162,12 @@ function verseLines(id: TranslationId): string {
 }
 
 const CONTENT: Readonly<Record<string, string | Uint8Array>> = {
+  'chr1914-sl': readFileSync(join(RAW_DATA_DIR, 'chr1914-sl.draft.json'), 'utf8')
+    .replaceAll('V začetku je ustvaril Bog nebesa in zemljo.', 'chr1914-sl fixture')
+    .replace(
+      'https://www.dlib.si/details/URN%3ANBN%3ASI%3Adoc-ME2U9X4P',
+      'https://example.org/chr1914-sl',
+    ),
   bsb: `The Holy Bible, Berean Standard Bible\nVerse\tBerean Standard Bible\n${BSB}`,
   kjv: zipSync({ 'eng-kjv2006_vpl.txt': strToU8(verseLines('kjv')) }),
   blivre: zipSync({ 'bliv-tr_vpl.txt': strToU8(verseLines('blivre')) }),
@@ -264,6 +273,7 @@ describe('DATASET_BUILDERS', () => {
       'data/translations/luther1912.json',
       'data/translations/riveduta1927.json',
       'data/translations/vbl.json',
+      'data/translations/chr1914-sl.json',
       'data/cross-references/openbible.json',
       'data/words/stepbible.json',
     ]);

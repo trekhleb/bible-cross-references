@@ -1,3 +1,4 @@
+import { t } from '../../../locales/ui.ts';
 import type { ImportNotice } from '../../../core/datasets/formats.ts';
 import { formatInteger } from '../../../shared/lib/format.ts';
 import styles from '../DebugPage.module.css';
@@ -9,7 +10,7 @@ interface NoticeListProps {
 /** What the data pipeline noticed or changed while importing a dataset. */
 export function NoticeList({ notices }: NoticeListProps) {
   if (notices.length === 0) {
-    return <p className={styles.muted}>No import notices.</p>;
+    return <p className={styles.muted}>{t('No import notices.')}</p>;
   }
   return (
     <ul className={styles.notices}>
@@ -18,7 +19,7 @@ export function NoticeList({ notices }: NoticeListProps) {
           <strong>{notice.level}</strong> · {notice.message} ({formatInteger(notice.count)})
           {notice.examples.length > 0 && (
             <div className={styles.muted}>
-              e.g. <code>{notice.examples.join(' · ')}</code>
+              {t('e.g.')} <code>{notice.examples.join(' · ')}</code>
             </div>
           )}
         </li>

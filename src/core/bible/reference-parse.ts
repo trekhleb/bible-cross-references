@@ -52,7 +52,7 @@ export type ReferenceParseResult =
  *   it a German reader typing the citation their own Bible prints is told there is no such book.
  */
 const REFERENCE_PATTERN =
-  /^(?<book>(?:[1-3][º°ª]?[\s.-]*)?[\p{L}\p{M}][\p{L}\p{M}\s.'’‘ʼ-]*?)\s*(?<chapter>\d+)(?:\s*[:.,\s]\s*(?<verse>\d+))?$/iu;
+  /^(?<book>(?:[1-5][º°ª]?[\s.-]*)?[\p{L}\p{M}][\p{L}\p{M}\s.'’‘ʼ-]*?)\s*(?<chapter>\d+)(?:\s*[:.,\s]\s*(?<verse>\d+))?$/iu;
 
 /**
  * The book a reference names, as typed: `1º Coríntios 13` → `1º Coríntios`, `Joh 3,16` → `Joh`.
