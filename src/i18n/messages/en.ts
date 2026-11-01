@@ -83,6 +83,8 @@ export const en = {
     'Barrios de Avila, with Gustavo Sanabria and Rebekah Põldaas, ' +
     'https://ebible.org/Scriptures/details.php?id=spavbl, licensed under CC BY-SA 4.0. ' +
     'Changed: a space before a colon was moved in one verse; no word was altered.',
+  'attribution.ubg':
+    'Scripture text: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, licensed under CC BY-ND 4.0. No word or punctuation was changed.',
   'license.publicDomain': 'Public domain',
   'menu.translation': 'Translation',
   'menu.translation.failed': (name: string) => `${name} could not be loaded.`,

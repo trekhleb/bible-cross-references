@@ -284,4 +284,40 @@ export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
       alt: 'Арки, що з’єднують вірші Біблії, від Буття до Об’явлення, забарвлені за жанром',
     },
   },
+  pl: {
+    siteName: 'Odnośniki biblijne',
+    hreflang: 'pl',
+    ogLocale: 'pl_PL',
+    pages: {
+      main: {
+        title: 'Odnośniki biblijne',
+        description:
+          'Zobacz wszystkie 344 799 odnośników biblijnych naraz: każdy werset na jednej linii z łukami jego powiązań, a każdy rozdział z liniami do miejsc, do których prowadzą.',
+        noscript:
+          'Strona „Odnośniki biblijne” rysuje 344 799 odnośników między wersetami Biblii. Do działania potrzebuje JavaScriptu.',
+      },
+      threads: {
+        title: 'Rozdziały · Odnośniki biblijne',
+        description:
+          'Czytaj dowolny rozdział Biblii i zobacz, dokąd prowadzą odnośniki każdego wersetu, od Księgi Rodzaju po Apokalipsę.',
+        noscript:
+          '„Rozdziały” pokazują, dokąd prowadzą odnośniki każdego wersetu rozdziału — przez całą Biblię. Do działania potrzebny jest JavaScript.',
+      },
+    },
+    manifest: {
+      name: 'Odnośniki biblijne',
+      // Ten characters: a home screen truncates around twelve.
+      shortName: 'Odnośniki',
+      description:
+        'Wszystkie odnośniki biblijne narysowane jako łuki, a każdy rozdział z własnymi liniami.',
+    },
+    socialImage: {
+      file: 'social-preview.pl.jpg',
+      // Still the English picture, as for every language but English; the URL is already the
+      // final one, so a Polish picture can replace it without changing a single link.
+      from: 'social-preview.jpg',
+      placeholder: true,
+      alt: 'Łuki łączące wersety Biblii, od Księgi Rodzaju po Apokalipsę, w kolorach gatunków',
+    },
+  },
 };

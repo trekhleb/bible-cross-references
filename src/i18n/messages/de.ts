@@ -74,6 +74,8 @@ export const de: LocaleMessages = {
     'https://ebible.org/Scriptures/details.php?id=spavbl, lizenziert unter CC BY-SA 4.0. ' +
     'Geändert: In einem Vers wurde ein Leerzeichen vor einem Doppelpunkt verschoben; kein Wort ' +
     'wurde verändert.',
+  'attribution.ubg':
+    'Bibeltext: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, lizenziert unter CC BY-ND 4.0. Kein Wort und kein Satzzeichen wurde verändert.',
   'license.publicDomain': 'Gemeinfrei',
   'menu.translation': 'Übersetzung',
   'menu.translation.failed': (name) => `${name} konnte nicht geladen werden.`,

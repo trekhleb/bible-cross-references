@@ -4,6 +4,7 @@ import type { VerseIndex } from '../../../core/bible/verse-ref.ts';
 import { ExpandIcon, WordsIcon } from '../../../shared/ui/icons.tsx';
 import { verseTextOrNote } from '../../../translations/verse-text.ts';
 import type { OriginalWordsDataset } from '../../../words/load-original-words.ts';
+import { localizedGloss, useGlosses } from '../../../words/glosses.ts';
 import { originalWordsIfLoaded, originalWordsLoader, resetOriginalWords } from '../viz-data.ts';
 import { useLocalization } from '../../../i18n/use-locale.tsx';
 import { PanelSection } from './PanelSection.tsx';
@@ -61,8 +62,9 @@ export function OriginalWordsSection({
   readonly data: VizData;
   readonly onSelect: (passage: Passage) => void;
 }) {
-  const { t, books, n } = useLocalization();
+  const { t, books, n, locale } = useLocalization();
   const words = useOriginalWords();
+  const glosses = useGlosses(locale.id);
   const [expanded, setExpanded] = useState(false);
   const [openWord, setOpenWord] = useState<number | null>(null);
   const { versification, translation } = data;
@@ -106,7 +108,7 @@ export function OriginalWordsSection({
                   <span className={styles.count}>{n(word.verseCount)}</span>
                   <ExpandIcon className={styles.chevron} />
                 </span>
-                <span className={styles.snippet}>{word.gloss}</span>
+                <span className={styles.snippet}>{localizedGloss(word, glosses)}</span>
               </button>
               {open &&
                 words.index.versesOf(word.index).map((other) => (

@@ -15,6 +15,7 @@ const MEMBERS: Readonly<Record<string, string>> = {
   luther1912: 'deu1912_vpl.txt',
   riveduta1927: 'ita1927_vpl.txt',
   vbl: 'spavbl_vpl.txt',
+  ubg: 'polubg_vpl.txt',
 };
 
 /**
@@ -99,7 +100,7 @@ function unbalancedBracketVerses(verses: readonly string[]): string[] {
  * match the shape the KJV's Crown-copyright qualification actually has and nothing looser.
  */
 const RECOGNISED_LICENSE =
-  /^(Public domain|CC0 1\.0|CC BY(-SA)? \d\.\d( [A-Z]{2})?)( \([A-Z][\w ]+: [^();]+\))?$/;
+  /^(Public domain|CC0 1\.0|CC BY(-SA|-ND)? \d\.\d( [A-Z]{2})?)( \([A-Z][\w ]+: [^();]+\))?$/;
 
 /**
  * Hosts a source may be fetched from.
@@ -165,6 +166,7 @@ const CONTENT: Readonly<Record<string, string | Uint8Array>> = {
   luther1912: zipSync({ 'deu1912_vpl.txt': strToU8(verseLines('luther1912')) }),
   riveduta1927: zipSync({ 'ita1927_vpl.txt': strToU8(verseLines('riveduta1927')) }),
   vbl: zipSync({ 'spavbl_vpl.txt': strToU8(verseLines('vbl')) }),
+  ubg: zipSync({ 'polubg_vpl.txt': strToU8(verseLines('ubg')) }),
   openbible: zipSync({
     'cross_references.txt': strToU8(
       'From Verse\tTo Verse\tVotes\t# CC-BY 2026-01-01\nGen.1.1\tJohn.1.1\t5',
@@ -240,6 +242,7 @@ const PINS_READ: Readonly<Record<string, readonly string[]>> = {
   'data/translations/luther1912.json': ['luther1912'],
   'data/translations/riveduta1927.json': ['riveduta1927'],
   'data/translations/vbl.json': ['vbl'],
+  'data/translations/ubg.json': ['ubg'],
   'data/cross-references/openbible.json': ['openbible'],
   // Six files of words and two lexicons. The first stands for the set in the dataset's
   // provenance, and the rest are listed beside it in data/sources.json.
@@ -264,6 +267,7 @@ describe('DATASET_BUILDERS', () => {
       'data/translations/luther1912.json',
       'data/translations/riveduta1927.json',
       'data/translations/vbl.json',
+      'data/translations/ubg.json',
       'data/cross-references/openbible.json',
       'data/words/stepbible.json',
     ]);
