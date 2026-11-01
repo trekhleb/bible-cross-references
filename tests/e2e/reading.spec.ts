@@ -87,6 +87,62 @@ test.describe('reading the Bible', () => {
     await page.locator(ACTIVE).getByRole('link', { name: 'Arcs', exact: true }).click();
     await expect(page).toHaveURL(/ref=John\.3\.16/);
   });
+
+  /**
+   * A zoom whose arithmetic goes wrong is dropped, rather than wrecking the arcs.
+   *
+   * A Firefox reader zoomed with the wheel and lost everything that depends on the visible
+   * window — the arcs, the book bar and its labels — and their next hover took the whole view
+   * down with "Index NaN is out of bounds". The window had become NaN. What in their browser
+   * produced it is not known, and an ordinary wheel cannot, so this makes the arithmetic fail the
+   * one way it can: a stage 64px square keeps the axis horizontal and 32px clear of each end,
+   * which leaves it no length at all, and a zoom there divides by zero pixels per verse. (Only
+   * 64px wide, the stage would be taller than wide and turn the axis upright, with room to
+   * spare.)
+   */
+  test('a zoom that cannot be worked out is ignored, rather than breaking the arcs', async ({
+    page,
+  }) => {
+    test.skip(test.info().project.name !== 'desktop', 'the wheel is a desktop gesture');
+    const errors = collectErrors(page);
+    await page.goto('./');
+    await waitForApp(page);
+    const stage = page.locator(`${ACTIVE} [role="application"]`);
+    // The stage measures itself with a ResizeObserver, which reports before the next frame.
+    const resize = async (side: string) => {
+      await stage.evaluate((element, value) => {
+        element.style.inlineSize = value;
+        element.style.blockSize = value;
+      }, side);
+      await page.evaluate(
+        async () =>
+          new Promise<void>((done) => {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                done();
+              });
+            });
+          }),
+      );
+    };
+
+    await resize('64px');
+    const square = await stage.boundingBox();
+    if (!square) throw new Error('The arcs stage is not on screen.');
+    await page.mouse.move(square.x + 10, square.y + square.height / 2);
+    await page.mouse.wheel(0, -100);
+
+    await resize('');
+    const stageBox = await stage.boundingBox();
+    if (!stageBox) throw new Error('The arcs stage is not on screen.');
+    const middle = { x: stageBox.x + stageBox.width / 2, y: stageBox.y + stageBox.height / 2 };
+    await page.mouse.move(middle.x, middle.y);
+    await page.mouse.move(middle.x + 4, middle.y);
+    // Still a working diagram: a hover names a passage, and nothing has failed.
+    await expect(page.locator(`${ACTIVE} [class*="tooltip"]`)).toBeVisible();
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
 });
 
 test.describe('sending a verse on', () => {

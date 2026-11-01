@@ -282,6 +282,12 @@ export class ArcsController {
       return null;
     }
     const verse = Math.floor(alongToVerse(this.#layout, this.#view, along));
+    // NaN passes the bounds check above (every comparison with it is false) and survives the
+    // clamp below, so it is turned away here: a verse that cannot be worked out is no verse, not
+    // a lookup of verse NaN.
+    if (!Number.isFinite(verse)) {
+      return null;
+    }
     return Math.min(Math.max(verse, 0), this.#options.versification.verseCount - 1);
   }
 

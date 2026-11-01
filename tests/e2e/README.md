@@ -7,15 +7,16 @@ Run them with `npm run test:e2e` (once: `npx playwright install --with-deps chro
 
 ## Reading
 
-| Flow                                                    | Covered by        |
-| ------------------------------------------------------- | ----------------- |
-| The whole Bible is drawn, and says how much is shown    | `reading.spec.ts` |
-| Find a verse by typing its reference                    | `reading.spec.ts` |
-| Open a whole chapter and see its verses listed          | `reading.spec.ts` |
-| A reference that is not one says so and changes nothing | `reading.spec.ts` |
-| Step to the next verse and back                         | `reading.spec.ts` |
-| Close the details and return to the whole picture       | `reading.spec.ts` |
-| Switch between Arcs and Threads, keeping the passage    | `reading.spec.ts` |
+| Flow                                                                       | Covered by        |
+| -------------------------------------------------------------------------- | ----------------- |
+| The whole Bible is drawn, and says how much is shown                       | `reading.spec.ts` |
+| Find a verse by typing its reference                                       | `reading.spec.ts` |
+| Open a whole chapter and see its verses listed                             | `reading.spec.ts` |
+| A reference that is not one says so and changes nothing                    | `reading.spec.ts` |
+| Step to the next verse and back                                            | `reading.spec.ts` |
+| Close the details and return to the whole picture                          | `reading.spec.ts` |
+| Switch between Arcs and Threads, keeping the passage                       | `reading.spec.ts` |
+| A zoom that cannot be worked out is ignored, rather than breaking the arcs | `reading.spec.ts` |
 
 ## Cross-references — the reason the app exists
 
