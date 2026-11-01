@@ -96,6 +96,8 @@ export const uk: LocaleMessages = {
     'Barrios de Avila, за участю Gustavo Sanabria і Rebekah Põldaas, ' +
     'https://ebible.org/Scriptures/details.php?id=spavbl, за ліцензією CC BY-SA 4.0. ' +
     'Зміни: в одному вірші пробіл перед двокрапкою пересунуто; жодного слова не змінено.',
+  'attribution.ubg':
+    'Біблійний текст: Uwspółcześniona Biblia Gdańska (UBG), © 2018 Fundacja Wrota Nadziei, https://ebible.org/Scriptures/details.php?id=polubg, за ліцензією CC BY-ND 4.0. Жодного слова чи розділового знака не змінено.',
   'license.publicDomain': 'Суспільне надбання',
   'menu.translation': 'Переклад',
   'menu.translation.failed': (name) => `Не вдалося завантажити ${name}.`,

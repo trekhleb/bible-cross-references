@@ -62,6 +62,17 @@
       "verses": 31102
     }
   },
+  "data/translations/ubg.json": {
+    "sha256": "ff57cdd86daa6c0471b5c542794972c185e95b0fdbdcbee7545a34e7e4d3c50a",
+    "bytes": 3981079,
+    "shape": {
+      "characters": 3635550,
+      "digits": 0,
+      "empty": 0,
+      "supplied": 8284,
+      "verses": 31102
+    }
+  },
   "data/translations/vbl.json": {
     "sha256": "c8317a7eb2bc1343d091e71e91a798a54de932a1f29da642ae6c6da4f2b7d41c",
     "bytes": 4259104,

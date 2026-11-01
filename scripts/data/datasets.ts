@@ -99,6 +99,7 @@ const TRANSLATION_BUILDERS: Readonly<Record<TranslationId, DatasetBuilder>> = {
   luther1912: ebibleTranslation('luther1912'),
   riveduta1927: ebibleTranslation('riveduta1927'),
   vbl: ebibleTranslation('vbl'),
+  ubg: ebibleTranslation('ubg'),
 };
 
 /** One builder per cross-reference source. */

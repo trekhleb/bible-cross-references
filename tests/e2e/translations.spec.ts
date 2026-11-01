@@ -63,6 +63,12 @@ test.describe('translations', () => {
         says: /unigenito Figliuolo/,
       },
       { id: 'vbl', radio: /Versión Biblia Libre/, group: 'Español', says: /su único Hijo/ },
+      {
+        id: 'ubg',
+        radio: /Uwspółcześniona Biblia Gdańska/,
+        group: 'Polski',
+        says: /jednorodzonego Syna/,
+      },
     ] as const;
 
     for (const { id, radio, group, says } of CASES) {

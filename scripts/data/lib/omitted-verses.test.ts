@@ -83,7 +83,7 @@ describe('omittedVerseNotices', () => {
    * asked again of whatever is added next.
    */
   describe('the allowance each translation gets', () => {
-    const PRINTS_ALL_SIXTEEN = ['kjv', 'blivre', 'luther1912', 'riveduta1927'] as const;
+    const PRINTS_ALL_SIXTEEN = ['kjv', 'blivre', 'luther1912', 'riveduta1927', 'ubg'] as const;
     const LEAVES_THEM_OUT = ['bsb', 'vbl'] as const;
 
     it.each(PRINTS_ALL_SIXTEEN)(
