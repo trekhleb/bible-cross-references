@@ -44,6 +44,17 @@ interface ThreadsStageProps {
 /** Scroll distance after which the chapter header condenses into a slim sticky bar. */
 const CONDENSE_AFTER_PX = 72;
 
+/**
+ * How near the top the reader has to come back before the header opens up again: lower than
+ * `CONDENSE_AFTER_PX` by more than the header shrinks when it condenses.
+ *
+ * One threshold for both ways was a loop. Condensing takes about 37px out of the scrolled
+ * content, and the browser's scroll anchoring takes the same off `scrollTop`, so a reader stopped
+ * just past 72px was put back on it, which opened the header, which put them past it again — a
+ * header flickering every frame, for as long as they stayed there.
+ */
+const EXPAND_BEFORE_PX = 24;
+
 /** Room for the spine bar and its labels, right of the thread area. */
 const SPINE_WIDTH = { wide: 96, compact: 18 } as const;
 const SPINE_TOP = 16;
@@ -200,7 +211,9 @@ export function ThreadsStage({
       return undefined;
     }
     const scheduler = new FrameScheduler(() => {
-      setCondensed(reading.scrollTop > CONDENSE_AFTER_PX);
+      setCondensed((was) =>
+        was ? reading.scrollTop >= EXPAND_BEFORE_PX : reading.scrollTop > CONDENSE_AFTER_PX,
+      );
       const headerBottom =
         chapterHeaderRef.current?.getBoundingClientRect().bottom ??
         reading.getBoundingClientRect().top;
