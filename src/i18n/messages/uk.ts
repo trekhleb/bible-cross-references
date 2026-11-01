@@ -145,6 +145,9 @@ export const uk: LocaleMessages = {
   'panel.copy': (reference) => `Копіювати ${reference} з посиланням`,
   'panel.copy.title': 'Копіювати з посиланням',
   'panel.copied': (reference) => `${reference} скопійовано`,
+  'panel.readElsewhere': (site) => `Читати на ${site}`,
+  'panel.readElsewhere.link': (reference, name, abbreviation, site) =>
+    `${abbreviation}: читати ${reference} у ${name} на ${site}, у новій вкладці`,
   'panel.omitted': (abbreviation) => `Відсутній у ${abbreviation}.`,
   'panel.moreVerses': (count, plural) =>
     `+ ще ${count} ${formOf(plural, 'вірш', 'вірші', 'віршів')}`,

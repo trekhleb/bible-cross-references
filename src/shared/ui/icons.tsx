@@ -5,6 +5,7 @@ import {
   LuArrowLeft,
   LuArrowRight,
   LuArrowRightLeft,
+  LuArrowUpRight,
   LuBookOpenText,
   LuCheck,
   LuChevronDown,
@@ -15,6 +16,7 @@ import {
   LuGithub,
   LuHand,
   LuLanguages,
+  LuLink,
   LuMonitorDown,
   LuMouse,
   LuMousePointerClick,
@@ -73,6 +75,8 @@ export const SearchIcon = decorative(LuSearch);
 export const ResetIcon = decorative(LuRotateCcw);
 export const RetryIcon = decorative(LuRefreshCw);
 export const CopyIcon = decorative(LuCopy);
+/** Copying a passage's address, as distinct from `CopyIcon`, which copies its words. */
+export const CopyLinkIcon = decorative(LuLink);
 export const CopiedIcon = decorative(LuCheck);
 export const DoneIcon = decorative(LuCheck);
 
@@ -97,6 +101,9 @@ export const GenresIcon = decorative(LuPalette);
 export const OutgoingIcon = decorative(LuArrowRight);
 export const IncomingIcon = decorative(LuArrowLeft);
 export const BothDirectionsIcon = decorative(LuArrowRightLeft);
+
+// A link that leaves the app for another site, which opens in a tab of its own.
+export const ExternalLinkIcon = decorative(LuArrowUpRight);
 
 // The source code, which lives on GitHub. Lucide draws the mark in the same stroke as the rest,
 // so the footer's link stays in one family instead of pulling in a second icon set for one glyph.

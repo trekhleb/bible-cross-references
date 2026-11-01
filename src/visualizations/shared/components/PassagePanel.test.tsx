@@ -1,9 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { versePassage, type Passage } from '../../../core/bible/passage.ts';
-import { verseIndex } from '../../../test-utils/fixtures.ts';
+import { CANONICAL_VERSIFICATION } from '../../../core/bible/versification.ts';
+import { createTranslationFile, verseIndex } from '../../../test-utils/fixtures.ts';
 import { createVizData } from '../../../test-utils/viz-data.ts';
+import { getTranslationManifest } from '../../../translations/registry.ts';
+import { Translation } from '../../../translations/translation.ts';
 import { DEFAULT_LINK_FILTER } from '../link-filter.ts';
 import { PassagePanel } from './PassagePanel.tsx';
 
@@ -137,5 +140,88 @@ describe('PassagePanel', () => {
       />,
     );
     expect(screen.getByText(/Omitted in the BSB/)).toBeDefined();
+  });
+
+  describe('other translations, on bible.com', () => {
+    it('offers the verse in the ESV, the NASB 1995 and the NLT, one click each', () => {
+      renderPanel();
+      const group = screen.getByRole('group', { name: 'Read on bible.com' });
+      const links = within(group).getAllByRole('link');
+      expect(links.map((link) => link.textContent)).toEqual(['ESV', 'NASB 1995', 'NLT']);
+      expect(links.map((link) => link.getAttribute('href'))).toEqual([
+        'https://www.bible.com/bible/59/JHN.3.16.ESV',
+        'https://www.bible.com/bible/100/JHN.3.16.NASB1995',
+        'https://www.bible.com/bible/116/JHN.3.16.NLT',
+      ]);
+    });
+
+    /**
+     * Plain links that leave the app: a tab of their own, so the reader's place here survives,
+     * and no referrer, so the site learns nothing about where the reader came from.
+     */
+    it('opens them in a new tab, telling the other site nothing', () => {
+      renderPanel();
+      const group = screen.getByRole('group', { name: 'Read on bible.com' });
+      for (const link of within(group).getAllByRole('link')) {
+        expect(link.getAttribute('target')).toBe('_blank');
+        expect(link.getAttribute('rel')?.split(' ')).toContain('noreferrer');
+      }
+    });
+
+    /**
+     * The name starts with the link's own text: what a voice-control user says to follow it, and
+     * what tells the three apart in a screen reader's list of links.
+     */
+    it('says in full to a screen reader which passage opens where, and names it on hover', () => {
+      renderPanel();
+      const esv = screen.getByRole('link', {
+        name: 'ESV: read John 3:16 in the English Standard Version on bible.com, in a new tab',
+      });
+      expect(esv.getAttribute('title')).toBe('English Standard Version');
+    });
+
+    it('offers a whole chapter the same way', () => {
+      renderPanel({ kind: 'chapter', book: 'John', chapter: 3 });
+      expect(screen.getByRole('link', { name: /NASB 1995/ }).getAttribute('href')).toBe(
+        'https://www.bible.com/bible/100/JHN.3.NASB1995',
+      );
+    });
+
+    it('sits under the actions the host gives, in the same row of ways to open the passage', () => {
+      renderPanel(versePassage(JOHN_3_16), {
+        actions: <button type="button">Read in context</button>,
+      });
+      const host = screen.getByRole('button', { name: 'Read in context' });
+      expect(host.nextElementSibling).toBe(
+        screen.getByRole('group', { name: 'Read on bible.com' }),
+      );
+    });
+
+    describe('beside a text in another language', () => {
+      const PORTUGUESE = {
+        ...DATA,
+        translation: new Translation(
+          getTranslationManifest('blivre'),
+          CANONICAL_VERSIFICATION,
+          createTranslationFile(new Map([[JOHN_3_16, 'Porque Deus amou o mundo…']])),
+        ),
+      };
+
+      it('offers nothing, rather than links in a language the reader may not read', () => {
+        renderPanel(versePassage(JOHN_3_16), { data: PORTUGUESE });
+        expect(screen.getByText('Porque Deus amou o mundo…')).toBeDefined();
+        expect(screen.queryByRole('group', { name: 'Read on bible.com' })).toBeNull();
+        expect(screen.queryByRole('link', { name: /bible\.com/ })).toBeNull();
+      });
+
+      it("still shows the host's own actions, on their own", () => {
+        renderPanel(versePassage(JOHN_3_16), {
+          data: PORTUGUESE,
+          actions: <button type="button">Read in context</button>,
+        });
+        const host = screen.getByRole('button', { name: 'Read in context' });
+        expect(host.nextElementSibling).toBeNull();
+      });
+    });
   });
 });

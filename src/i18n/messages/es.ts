@@ -117,6 +117,9 @@ export const es: LocaleMessages = {
   'panel.copy': (reference) => `Copiar ${reference} con un enlace`,
   'panel.copy.title': 'Copiar con un enlace',
   'panel.copied': (reference) => `${reference} copiado`,
+  'panel.readElsewhere': (site) => `Leer en ${site}`,
+  'panel.readElsewhere.link': (reference, name, abbreviation, site) =>
+    `${abbreviation}: leer ${reference} en la ${name} en ${site} (se abre en una pestaña nueva)`,
   'panel.omitted': (abbreviation) => `No figura en la ${abbreviation}.`,
   'panel.moreVerses': (count, plural) =>
     plural === 1 ? `+ ${count} versículo más` : `+ ${count} versículos más`,

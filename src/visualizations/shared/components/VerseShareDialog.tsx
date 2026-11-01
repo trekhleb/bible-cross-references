@@ -4,6 +4,7 @@ import {
   CloseIcon,
   CopiedIcon,
   CopyIcon,
+  CopyLinkIcon,
   InstallIcon,
   ShareVerseIcon,
 } from '../../../shared/ui/icons.tsx';
@@ -39,6 +40,32 @@ type Drawing =
   | { readonly state: 'drawing' }
   | { readonly state: 'ready'; readonly blob: Blob; readonly src: string }
   | { readonly state: 'failed' };
+
+/**
+ * A button's label that says something else for a moment, without the button changing size: both
+ * wordings are laid out in one place and only one is seen (see `.steadyLabel`). The other is
+ * hidden from assistive technology too, so the button's name is only ever the one on show.
+ */
+function SteadyLabel({
+  label,
+  momentary,
+  showMomentary,
+}: {
+  readonly label: string;
+  readonly momentary: string;
+  readonly showMomentary: boolean;
+}) {
+  return (
+    <span className={styles.steadyLabel}>
+      <span className={showMomentary ? styles.unseen : undefined} aria-hidden={showMomentary}>
+        {label}
+      </span>
+      <span className={showMomentary ? undefined : styles.unseen} aria-hidden={!showMomentary}>
+        {momentary}
+      </span>
+    </span>
+  );
+}
 
 /**
  * A verse as a picture, with the ways of sending it.
@@ -162,6 +189,7 @@ export function VerseShareDialog({
     file !== null &&
     'canShare' in navigator &&
     navigator.canShare({ files: [file] });
+  const copyable = canCopy();
 
   return (
     <dialog
@@ -217,72 +245,87 @@ export function VerseShareDialog({
           )}
         </div>
 
-        {canSendFile && (
-          <button
-            type="button"
-            className={`${styles.action} ${styles.primary}`}
-            onClick={() => {
-              void navigator
-                .share({ files: [file], text: request.quote.text, url: request.url })
-                .catch((error: unknown) => {
-                  // Dismissing the system sheet is an answer, not a fault, and the only one
-                  // that should leave the card exactly as it was. Anything else means this
-                  // browser will not take the picture, so the button goes and the reader is
-                  // left with the ways of keeping it that do work.
-                  const name = error instanceof Error ? error.name : '';
-                  if (name !== 'AbortError') {
-                    setShareRefused(true);
-                  }
-                });
-            }}
-          >
-            <ShareVerseIcon />
-            {t('share.send')}
-          </button>
+        {/* Two pairs: the picture first (Share, Save image), then what can be pasted (Copy text,
+            Copy link). A pair can be missing a member, or be absent altogether: there is no
+            picture until it is drawn, no Share where the browser refuses files, and no copying
+            without a clipboard. */}
+        {(drawing.state === 'ready' || copyable) && (
+          <div className={styles.actions}>
+            {drawing.state === 'ready' && (
+              <div className={styles.pair}>
+                {canSendFile && (
+                  <button
+                    type="button"
+                    className={`${styles.action} ${styles.primary}`}
+                    onClick={() => {
+                      void navigator
+                        .share({ files: [file], text: request.quote.text, url: request.url })
+                        .catch((error: unknown) => {
+                          // Dismissing the system sheet is an answer, not a fault, and the only
+                          // one that should leave the card exactly as it was. Anything else
+                          // means this browser will not take the picture, so the button goes
+                          // and the reader is left with the ways of keeping it that do work.
+                          const name = error instanceof Error ? error.name : '';
+                          if (name !== 'AbortError') {
+                            setShareRefused(true);
+                          }
+                        });
+                    }}
+                  >
+                    <ShareVerseIcon />
+                    {t('share.send')}
+                  </button>
+                )}
+                <a className={styles.action} href={drawing.src} download={file?.name}>
+                  <InstallIcon />
+                  {t('share.save')}
+                </a>
+              </div>
+            )}
+            {copyable && (
+              <div className={styles.pair}>
+                <button
+                  type="button"
+                  className={styles.action}
+                  onClick={() => {
+                    void copyQuote(request.quote).then(
+                      () => {
+                        setCopied('text');
+                      },
+                      () => undefined,
+                    );
+                  }}
+                >
+                  {copied === 'text' ? <CopiedIcon /> : <CopyIcon />}
+                  <SteadyLabel
+                    label={t('share.copyText')}
+                    momentary={t('share.copied')}
+                    showMomentary={copied === 'text'}
+                  />
+                </button>
+                <button
+                  type="button"
+                  className={styles.action}
+                  onClick={() => {
+                    void navigator.clipboard.writeText(request.url).then(
+                      () => {
+                        setCopied('link');
+                      },
+                      () => undefined,
+                    );
+                  }}
+                >
+                  {copied === 'link' ? <CopiedIcon /> : <CopyLinkIcon />}
+                  <SteadyLabel
+                    label={t('share.copyLink')}
+                    momentary={t('share.copied')}
+                    showMomentary={copied === 'link'}
+                  />
+                </button>
+              </div>
+            )}
+          </div>
         )}
-
-        <div className={styles.actions}>
-          {drawing.state === 'ready' && (
-            <a className={styles.action} href={drawing.src} download={file?.name}>
-              <InstallIcon />
-              {t('share.save')}
-            </a>
-          )}
-          {canCopy() && (
-            <>
-              <button
-                type="button"
-                className={styles.action}
-                onClick={() => {
-                  void copyQuote(request.quote).then(
-                    () => {
-                      setCopied('text');
-                    },
-                    () => undefined,
-                  );
-                }}
-              >
-                {copied === 'text' ? <CopiedIcon /> : <CopyIcon />}
-                {copied === 'text' ? t('share.copied') : t('share.copyText')}
-              </button>
-              <button
-                type="button"
-                className={styles.action}
-                onClick={() => {
-                  void navigator.clipboard.writeText(request.url).then(
-                    () => {
-                      setCopied('link');
-                    },
-                    () => undefined,
-                  );
-                }}
-              >
-                {copied === 'link' ? <CopiedIcon /> : <CopyIcon />}
-                {copied === 'link' ? t('share.copied') : t('share.copyLink')}
-              </button>
-            </>
-          )}
-        </div>
 
         <span className={styles.visuallyHidden} role="status">
           {copied === null ? '' : t('share.copied')}

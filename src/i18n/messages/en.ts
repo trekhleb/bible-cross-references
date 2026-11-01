@@ -132,6 +132,17 @@ export const en = {
   'panel.copy': (reference: string) => `Copy ${reference} with a link`,
   'panel.copy.title': 'Copy with a link',
   'panel.copied': (reference: string) => `${reference} copied`,
+  // Translations the app links to rather than includes. The heading names the site, so that
+  // nobody takes them for texts the app provides. Each link's name starts with what the link
+  // shows: it is what a voice-control user says to follow it, and what tells the three apart in
+  // a screen reader's list of links.
+  'panel.readElsewhere': (site: string) => `Read on ${site}`,
+  'panel.readElsewhere.link': (
+    reference: string,
+    name: string,
+    abbreviation: string,
+    site: string,
+  ) => `${abbreviation}: read ${reference} in the ${name} on ${site}, in a new tab`,
   'panel.omitted': (abbreviation: string) => `Omitted in the ${abbreviation}.`,
   'panel.moreVerses': (count: string, plural: number) =>
     plural === 1 ? `+ ${count} more verse` : `+ ${count} more verses`,

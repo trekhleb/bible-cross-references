@@ -42,12 +42,15 @@ Run them with `npm run test:e2e` (once: `npx playwright install --with-deps chro
 
 ## Translations
 
-| Flow                                                    | Covered by             |
-| ------------------------------------------------------- | ---------------------- |
-| Choose another translation and see the text change      | `translations.spec.ts` |
-| The choice is remembered for the next visit             | `translations.spec.ts` |
-| The footer credit follows the translation on screen     | `translations.spec.ts` |
-| Copy a passage with its reference, translation and link | `translations.spec.ts` |
+| Flow                                                                            | Covered by             |
+| ------------------------------------------------------------------------------- | ---------------------- |
+| Choose another translation and see the text change                              | `translations.spec.ts` |
+| The choice is remembered for the next visit                                     | `translations.spec.ts` |
+| The footer credit follows the translation on screen                             | `translations.spec.ts` |
+| Copy a passage with its reference, translation and link                         | `translations.spec.ts` |
+| Open a verse or chapter in the ESV, NASB 1995 or NLT on bible.com, in a new tab | `translations.spec.ts` |
+| …with nothing loaded from bible.com until a link is followed                    | `translations.spec.ts` |
+| …and only beside a text in their language                                       | `translations.spec.ts` |
 
 ## Sharing
 

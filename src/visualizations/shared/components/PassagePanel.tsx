@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useId, useMemo, useState, type ReactNode } from 'react';
 import { GENRES, getBookGenre } from '../../../core/bible/genres.ts';
 import {
   chapterPassageOf,
@@ -17,6 +17,7 @@ import {
   CopiedIcon,
   CopyIcon,
   ExpandIcon,
+  ExternalLinkIcon,
   GenresIcon,
   IncomingIcon,
   NextIcon,
@@ -26,6 +27,12 @@ import {
   ShareVerseIcon,
   type IconComponent,
 } from '../../../shared/ui/icons.tsx';
+import {
+  EXTERNAL_SITE,
+  externalPassageUrl,
+  externalTranslationsFor,
+  type ExternalTranslation,
+} from '../../../translations/external-translations.ts';
 import type { Translation } from '../../../translations/translation.ts';
 import { verseTextOrNote } from '../../../translations/verse-text.ts';
 import {
@@ -216,6 +223,61 @@ function ShareVerseButton({
 }
 
 /**
+ * The passage in translations the app cannot include, one click away on bible.com.
+ *
+ * A block of its own under the app's own actions, kept apart from them because these leave the
+ * app, and headed with the site they lead to, so that nobody takes them for texts the app
+ * provides. Plain links in a new tab: nothing is fetched from the site, or sent to it, until one
+ * is followed, and then `noreferrer` stops even this page's address from going along.
+ */
+function ReadElsewhere({
+  passage,
+  versification,
+  translations,
+}: {
+  readonly passage: Passage;
+  readonly versification: Versification;
+  readonly translations: readonly ExternalTranslation[];
+}) {
+  const { t, books } = useLocalization();
+  const labelId = useId();
+  const reference = formatPassage(passage, versification, books);
+  return (
+    <div className={styles.elsewhere} role="group" aria-labelledby={labelId}>
+      <span id={labelId} className={styles.elsewhereLabel}>
+        {t('panel.readElsewhere')(EXTERNAL_SITE)}
+      </span>
+      <span className={styles.elsewhereLinks}>
+        {translations.map((translation) => {
+          const name = t('panel.readElsewhere.link')(
+            reference,
+            translation.name,
+            translation.abbreviation,
+            EXTERNAL_SITE,
+          );
+          return (
+            <a
+              key={translation.id}
+              className={styles.elsewhereLink}
+              href={externalPassageUrl(translation, passage, versification)}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={name}
+              // The full name on hover, for a reader who does not know the abbreviation. Not the
+              // whole sentence, which a screen reader would then read twice.
+              title={translation.name}
+            >
+              {translation.abbreviation}
+              <ExternalLinkIcon />
+            </a>
+          );
+        })}
+      </span>
+    </div>
+  );
+}
+
+/**
  * Details of the focused passage: its text, where it connects (by genre) and every connection,
  * grouped by book. Every connection is a button that travels there, so nothing depends on hover.
  */
@@ -248,6 +310,17 @@ export function PassagePanel({
   const previous = neighbor(passage, -1, versification);
   const next = neighbor(passage, 1, versification);
   const isVerse = passage.kind === 'verse';
+  const elsewhere = externalTranslationsFor(translation.manifest.language);
+  // Where the passage can be opened: elsewhere in the app, then on other sites.
+  const actionRow =
+    actions || elsewhere.length > 0 ? (
+      <div className={styles.actions}>
+        {actions}
+        {elsewhere.length > 0 && (
+          <ReadElsewhere passage={passage} versification={versification} translations={elsewhere} />
+        )}
+      </div>
+    ) : null;
 
   return (
     <div className={styles.panel}>
@@ -323,11 +396,11 @@ export function PassagePanel({
                 />
               )}
             </div>
-            {actions && <div className={styles.actions}>{actions}</div>}
+            {actionRow}
           </>
         ) : (
           <>
-            {actions && <div className={styles.actions}>{actions}</div>}
+            {actionRow}
             <ChapterVerses
               start={range.start}
               end={range.end}

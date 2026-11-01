@@ -142,6 +142,20 @@ describe('the verse share dialog', () => {
     );
   });
 
+  /**
+   * "Copied" takes the label's place without the button changing size: both wordings stay in it,
+   * and only the one on show gives the button its name.
+   */
+  it('keeps the button the same size while it says it copied', async () => {
+    mountDialog();
+    await open();
+    await userEvent.click(screen.getByRole('button', { name: 'Copy link' }));
+    const button = await screen.findByRole('button', { name: 'Copied' });
+    expect(button.textContent).toContain('Copy link');
+    expect(button.textContent).toContain('Copied');
+    expect(screen.getByRole('button', { name: 'Copy text' })).toBeTruthy();
+  });
+
   it('copies the address on its own, for somebody who wants the link and not the words', async () => {
     mountDialog();
     await open();
@@ -204,6 +218,46 @@ describe('the verse share dialog', () => {
     await open();
     const save = await screen.findByRole('link', { name: /Save image/ });
     expect(save.getAttribute('download')).toBe('John-3-16.png');
+  });
+
+  it('pairs the actions: the picture first, then what can be pasted', async () => {
+    Object.defineProperty(navigator, 'canShare', { value: () => true, configurable: true });
+    Object.defineProperty(navigator, 'share', { value: vi.fn(), configurable: true });
+    mountDialog();
+    await open();
+    const share = await screen.findByRole('button', { name: 'Share' });
+    const save = screen.getByRole('link', { name: /Save image/ });
+    const copyText = screen.getByRole('button', { name: 'Copy text' });
+    const copyLink = screen.getByRole('button', { name: 'Copy link' });
+    expect(save.parentElement).toBe(share.parentElement);
+    expect(copyLink.parentElement).toBe(copyText.parentElement);
+    expect(share.parentElement?.nextElementSibling).toBe(copyText.parentElement);
+  });
+
+  /**
+   * Each pair is a row of its own, so a browser that will not share the picture leaves Save
+   * image alone on its row, rather than pulling Copy text up beside it and splitting the two
+   * ways of copying across rows.
+   */
+  it('keeps the two ways of copying together where the picture cannot be shared', async () => {
+    mountDialog();
+    await open();
+    const save = await screen.findByRole('link', { name: /Save image/ });
+    const copyText = screen.getByRole('button', { name: 'Copy text' });
+    expect(save.parentElement?.children).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Copy link' }).parentElement).toBe(
+      copyText.parentElement,
+    );
+  });
+
+  /** Two buttons that look alike side by side read as one action offered twice. */
+  it('marks copying the words and copying the link with different icons', async () => {
+    mountDialog();
+    await open();
+    const glyph = (name: string) =>
+      screen.getByRole('button', { name }).querySelector('svg')?.innerHTML ?? '';
+    expect(glyph('Copy text')).not.toBe('');
+    expect(glyph('Copy link')).not.toBe(glyph('Copy text'));
   });
 
   /**

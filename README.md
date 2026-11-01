@@ -47,6 +47,15 @@ The details panel shows the passage's text, where its connections go by genre, a
 with its text. Each one is a link: follow it to travel there. "Read in context" opens the passage in
 Threads.
 
+Under it, an English passage is one click from three translations the app cannot include: the
+ESV, the NASB 1995 and the NLT, each opening the same verse or chapter on
+[bible.com](https://www.bible.com/) in a new tab (on a phone with the YouVersion app, the link may
+open in the app instead). Their text is copyrighted, and the free use their publishers allow stops
+far short of a whole Bible, so the app links rather than copies: a link names the passage and
+nothing more, on a site the publishers license to show it, and nothing is loaded from bible.com
+until one is followed. The ESV, NASB and NLT names are trademarks of their publishers; this
+project is not affiliated with them or with YouVersion.
+
 A verse also lists the Hebrew or Greek words behind it — the dictionary form, how it is said and
 what it means — and, under each one, every other verse that uses the same word, least common
 first. It is a different kind of link from a cross-reference and is kept apart from it: a

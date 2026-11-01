@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { ACTIVE, PANEL, openPassage, waitForApp } from './helpers.ts';
+import { ACTIVE, PANEL, openPanel, openPassage, waitForApp } from './helpers.ts';
 
 test.describe('translations', () => {
   test('the text changes when another translation is chosen, and the address says which', async ({
@@ -114,5 +114,84 @@ test.describe('translations', () => {
     expect(copied).toContain('Psalm 23:1');
     expect(copied).toContain('(BSB)');
     expect(copied).toContain('?ref=Ps.23.1&t=bsb');
+  });
+});
+
+/**
+ * The translations the app cannot include, offered as links to bible.com.
+ *
+ * Nothing may be fetched from bible.com, or sent to it, until a reader follows a link: that is
+ * what keeps a plain link free of the consent and privacy duties an embedded widget would bring.
+ * So in every test here, each request to bible.com — or to youversion.com, which serves its
+ * pictures — is refused and recorded, and the test fails if there was one. The links are checked
+ * by their addresses and never followed: YouVersion's terms forbid automated visits.
+ */
+test.describe('other translations, on bible.com', () => {
+  let requested: string[] = [];
+
+  test.beforeEach(async ({ page }) => {
+    requested = [];
+    await page
+      .context()
+      .route(/^https?:\/\/([^/]+\.)?(bible|youversion)\.com\//u, async (route) => {
+        requested.push(route.request().url());
+        await route.abort();
+      });
+  });
+
+  test.afterEach(() => {
+    expect(requested).toEqual([]);
+  });
+
+  test('a verse opens in the ESV, the NASB 1995 and the NLT, in a new tab, with nothing loaded first', async ({
+    page,
+  }) => {
+    await openPassage(page, 'John.3.16');
+    const links = page
+      .locator(PANEL)
+      .getByRole('group', { name: 'Read on bible.com' })
+      .getByRole('link');
+    await expect(links).toHaveText(['ESV', 'NASB 1995', 'NLT']);
+    const addresses = [
+      'https://www.bible.com/bible/59/JHN.3.16.ESV',
+      'https://www.bible.com/bible/100/JHN.3.16.NASB1995',
+      'https://www.bible.com/bible/116/JHN.3.16.NLT',
+    ];
+    for (const [index, address] of addresses.entries()) {
+      const link = links.nth(index);
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', address);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', /\bnoreferrer\b/u);
+    }
+  });
+
+  test('a chapter opens whole', async ({ page }) => {
+    await openPassage(page, 'Ps.23');
+    await expect(page.locator(PANEL).getByRole('link', { name: /^ESV:/u })).toHaveAttribute(
+      'href',
+      'https://www.bible.com/bible/59/PSA.23.ESV',
+    );
+  });
+
+  test('the verse being read in Threads is offered the same way', async ({ page }) => {
+    await page.goto('./threads/?ref=Ps.16.8');
+    await waitForApp(page);
+    await openPanel(page);
+    await expect(page.locator(PANEL).getByRole('link', { name: /^NLT:/u })).toHaveAttribute(
+      'href',
+      'https://www.bible.com/bible/116/PSA.16.8.NLT',
+    );
+  });
+
+  test('a text in another language is offered none, rather than links it may not read', async ({
+    page,
+  }) => {
+    await openPassage(page, 'John.3.16', '&t=blivre');
+    // The panel is up, in Portuguese, before its links are counted: a count of none taken
+    // before the panel arrived would pass whatever the panel then showed.
+    await expect(page.locator(PANEL)).toContainText(/Porque Deus amou ao mundo/u);
+    await expect(page.locator(PANEL).getByRole('group')).toHaveCount(0);
+    await expect(page.locator(PANEL).getByRole('link', { name: /bible\.com/u })).toHaveCount(0);
   });
 });

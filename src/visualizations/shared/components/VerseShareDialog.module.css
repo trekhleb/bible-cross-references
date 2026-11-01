@@ -49,11 +49,15 @@
   }
 }
 
-/* On a phone it is a sheet: full width, anchored to the bottom, clear of the home indicator. */
+/* On a phone it is a sheet: full width, anchored to the bottom, clear of the home indicator.
+   Browsers cap a modal dialog a little short of the screen's width in their own stylesheet, which
+   outranks `inline-size`: without lifting that cap, the sheet stopped 18px short of each edge,
+   with no side borders to say where it ended. */
 @media (max-width: 30rem) {
   .dialog {
     margin: auto auto 0;
     inline-size: 100vw;
+    max-inline-size: none;
     max-block-size: calc(100dvh - 3rem);
     border-width: 1px 0 0;
     border-radius: 0.875rem 0.875rem 0 0;
@@ -135,7 +139,15 @@
   text-align: center;
 }
 
+/* The pairs, one above the other and as close together as the buttons inside them, so that the
+   whole set reads as one block under the card. */
 .actions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Two buttons for one kind of thing: keeping the picture, or copying something to paste. */
+.pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
@@ -154,8 +166,27 @@
   color: var(--color-text);
   font: inherit;
   font-size: 0.875rem;
+  /* A button centres a label that wraps and a link does not, so Save image and the others broke
+     their second lines differently side by side. Said once here, they all match. */
+  text-align: start;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* A label that changes for a moment ("Copied") without changing its button's size: both wordings
+   share one cell and only one is seen, so the button is as big as the longer of the two either
+   way. Where one of them wraps onto a second line and the other does not — "Копіювати
+   посилання" and "Скопійовано" — the whole sheet used to jump when the label changed. */
+.steadyLabel {
+  display: grid;
+}
+
+.steadyLabel > * {
+  grid-area: 1 / 1;
+}
+
+.unseen {
+  visibility: hidden;
 }
 
 .action:hover,
@@ -163,14 +194,15 @@
   border-color: var(--color-text-muted);
 }
 
-/* An odd last action would otherwise sit alone in half a row, which reads as a missing button
-   rather than a deliberate one. It takes the whole row instead. */
-.actions > .action:last-child:nth-child(odd) {
+/* A pair missing a member (no Share where the browser refuses files) would otherwise leave one
+   button in half a row, which reads as a missing button rather than a deliberate one. It takes
+   the whole row instead. */
+.pair > .action:only-child {
   grid-column: 1 / -1;
 }
 
-/* Share stands above the pairs, full width: on a phone it is the one that matters, and the rest
-   are what somebody reaches for when it was not what they wanted. */
+/* Share leads the first pair, filled: on a phone it is the one that matters, and the rest are
+   what somebody reaches for when it was not what they wanted. */
 .primary {
   border-color: var(--color-text-muted);
   background: var(--color-surface-muted);

@@ -120,6 +120,9 @@ export const de: LocaleMessages = {
   'panel.copy': (reference) => `${reference} mit Link kopieren`,
   'panel.copy.title': 'Mit Link kopieren',
   'panel.copied': (reference) => `${reference} kopiert`,
+  'panel.readElsewhere': (site) => `Auf ${site} lesen`,
+  'panel.readElsewhere.link': (reference, name, abbreviation, site) =>
+    `${abbreviation}: ${reference} in der ${name} in neuem Tab auf ${site} lesen`,
   'panel.omitted': (abbreviation) => `In der ${abbreviation} nicht enthalten.`,
   'panel.moreVerses': (count, plural) =>
     plural === 1 ? `+ ${count} weiterer Vers` : `+ ${count} weitere Verse`,

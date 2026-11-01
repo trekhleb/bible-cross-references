@@ -84,6 +84,65 @@
   gap: var(--space-2);
 }
 
+/* Translations the app cannot include, on another site. A block of their own under the app's own
+   actions, because they leave the app and should not pass for part of it: the site's name on one
+   line, as a heading, and the translations on the next, the same at every width and in every
+   language. */
+.elsewhere {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.elsewhereLabel {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+/* They fit on one line at any phone width at the usual text size. With the text enlarged — a
+   setting many readers rely on — they would not, and a line that cannot break pushes the whole
+   panel sideways, so they wrap instead. */
+.elsewhereLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.elsewhereLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-block-size: 1.75rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.elsewhereLink:hover,
+.elsewhereLink:focus-visible {
+  border-color: var(--color-text-muted);
+}
+
+.elsewhereLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* On a touch screen, 32px: a comfortable tap, well over the 24px minimum. Short of the 40px button
+   above them on purpose, because on a phone every pixel this block takes pushes the
+   cross-references further down the half-open sheet. */
+@media (pointer: coarse) {
+  .elsewhereLink {
+    min-block-size: 2rem;
+  }
+}
+
 /* Scripture is set in a narrow column and German compounds it without limit:
    `hundertsiebenundfünfzigtausend` is thirty characters with nowhere to break, and the
    Lutherbibel has 210 runs of twenty or more against the KJV's none. At 320px that is wider
