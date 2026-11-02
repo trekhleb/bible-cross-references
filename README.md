@@ -6,6 +6,8 @@ See how the Bible is woven together, and read any passage with its connections i
 
 **▶ [Open Bible Cross-References](https://trekhleb.dev/bible-cross-references/)**
 
+![Bible Cross-References — see how the whole Bible is woven together, then follow any verse](./bible-cross-references-demo.gif)
+
 ## Why this exists
 
 For centuries, readers of the Bible have followed cross-references: the small notes in the margin
