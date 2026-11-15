@@ -2,6 +2,8 @@ import type { Emphasized, LocaleMessages } from './types.ts';
 
 /** The interface in Italian. Anything left out falls back to the English word. */
 export const it: LocaleMessages = {
+  'attribution.chr1914-sl':
+    'Testo sloveno: Chráska 1914, fonte di pubblico dominio digitalizzata da dLib.si. Errori OCR corretti per questa app.',
   'app.name': 'Riferimenti incrociati della Bibbia',
   'app.name.short': 'Riferimenti',
 

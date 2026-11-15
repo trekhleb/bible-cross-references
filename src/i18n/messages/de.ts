@@ -2,6 +2,8 @@ import type { Emphasized, LocaleMessages } from './types.ts';
 
 /** The interface in German. Anything left out falls back to the English word. */
 export const de: LocaleMessages = {
+  'attribution.chr1914-sl':
+    'Slowenischer Text: Chráska 1914, gemeinfreie Quelle, digitalisiert von dLib.si. OCR-Fehler für diese App korrigiert.',
   'app.name': 'Bibel-Querverweise',
   'app.name.short': 'Querverweise',
 

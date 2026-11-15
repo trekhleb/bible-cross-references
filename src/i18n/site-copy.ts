@@ -79,6 +79,38 @@ export interface SiteCopy {
 }
 
 export const SITE_COPY: Readonly<Record<LocaleId, SiteCopy>> = {
+  sl: {
+    siteName: 'Navzkrižne reference Svetega pisma',
+    hreflang: 'sl',
+    ogLocale: 'sl_SI',
+    pages: {
+      main: {
+        title: 'Navzkrižne reference Svetega pisma',
+        description:
+          'Raziščite 344.799 svetopisemskih povezav: vsaka vrstica z loki do povezanih odlomkov in vsako poglavje z nitmi skozi Sveto pismo.',
+        noscript:
+          'Navzkrižne reference Svetega pisma prikazujejo povezave med svetopisemskimi vrsticami. Za delovanje potrebujete JavaScript.',
+      },
+      threads: {
+        title: 'Niti · Navzkrižne reference Svetega pisma',
+        description:
+          'Berite poglavje Svetega pisma in sledite povezavam njegovih vrstic od Prve Mojzesove do Razodetja.',
+        noscript:
+          'Niti prikazujejo povezave vrstic poglavja s celotnim Svetim pismom. Za delovanje potrebujete JavaScript.',
+      },
+    },
+    manifest: {
+      name: 'Navzkrižne reference Svetega pisma',
+      shortName: 'Povezave SP',
+      description: 'Svetopisemske povezave, prikazane z loki in nitmi skozi poglavja.',
+    },
+    socialImage: {
+      file: 'social-preview.sl.jpg',
+      from: 'social-preview.jpg',
+      placeholder: true,
+      alt: 'Loki med svetopisemskimi vrsticami od Prve Mojzesove do Razodetja, obarvani po zvrsteh',
+    },
+  },
   en: {
     siteName: 'Bible Cross-References',
     hreflang: 'en',

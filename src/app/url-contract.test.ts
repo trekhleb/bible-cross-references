@@ -74,6 +74,11 @@ const DEFAULTS: UrlState = {
 };
 
 const SAVED: readonly (readonly [string, Partial<UrlState>])[] = [
+  ['/bible-cross-references/?lang=sl', { locale: 'sl', translation: 'chr1914-sl' }],
+  [
+    '/bible-cross-references/sl/threads/?t=chr1914-sl&ref=Gen.1.1',
+    { view: 'threads', locale: 'sl', translation: 'chr1914-sl', ref: 'Gen.1.1' },
+  ],
   // The bare site, in all the shapes a host and a browser produce.
   ['/bible-cross-references/', {}],
   ['/bible-cross-references/index.html', {}],

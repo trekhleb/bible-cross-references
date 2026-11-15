@@ -37,7 +37,7 @@ export function normalizeBookName(value: string): string {
     .normalize('NFC')
     .trim()
     .toLowerCase()
-    .replace(/^(i{1,3})\s+/, (_match: string, numeral: string) => String(numeral.length))
+    .replace(/^(i{1,3})\.?\s+/, (_match: string, numeral: string) => String(numeral.length))
     .replace(/[\s.\-'’‘ʼº°ª]+/gu, '');
 }
 

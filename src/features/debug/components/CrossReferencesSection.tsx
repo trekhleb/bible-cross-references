@@ -1,3 +1,5 @@
+import { t } from '../../../locales/ui.ts';
+import { getDisplayBookName } from '../../../core/bible/book-labels.ts';
 import { useMemo } from 'react';
 import type { Testament } from '../../../core/bible/books.ts';
 import { CANONICAL_VERSIFICATION } from '../../../core/bible/versification.ts';
@@ -37,8 +39,8 @@ function VerseCountTable({
       rows={rows}
       rowKey={(row) => row.verse}
       columns={[
-        { header: 'Verse', render: (row) => <VerseLink verse={row.verse} /> },
-        { header: 'Links', align: 'end', render: (row) => formatInteger(row.count) },
+        { header: t('Verse'), render: (row) => <VerseLink verse={row.verse} /> },
+        { header: t('Links'), align: 'end', render: (row) => formatInteger(row.count) },
       ]}
     />
   );
@@ -55,11 +57,11 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
   return (
     <Section
       id={id}
-      title={`Cross-references · ${manifest.name}`}
+      title={t('Cross-references · {name}', { name: manifest.name })}
       description={manifest.description}
     >
       <SourceDetails
-        items={[{ label: 'ID', value: <code>{manifest.id}</code> }]}
+        items={[{ label: t('ID'), value: <code>{manifest.id}</code> }]}
         license={manifest.license}
         attribution={manifest.attribution}
         homepage={manifest.homepage}
@@ -67,46 +69,50 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
       />
 
       <div>
-        <h3 className={styles.subheading}>Links</h3>
+        <h3 className={styles.subheading}>{t('Links')}</h3>
         <KeyValueList
           items={[
-            { label: 'Raw rows', value: formatInteger(dataset.sourceRowCount) },
-            { label: 'Links', value: formatInteger(stats.linkCount) },
-            { label: 'Distinct verse pairs', value: formatInteger(stats.distinctPairCount) },
+            { label: t('Raw rows'), value: formatInteger(dataset.sourceRowCount) },
+            { label: t('Links'), value: formatInteger(stats.linkCount) },
+            { label: t('Distinct verse pairs'), value: formatInteger(stats.distinctPairCount) },
             {
-              label: 'Reciprocal pairs',
+              label: t('Reciprocal pairs'),
               value: `${formatInteger(stats.reciprocalPairCount)} (A → B and B → A)`,
             },
             {
-              label: 'Verses with outgoing links',
+              label: t('Verses with outgoing links'),
               value: withShare(stats.sourceVerseCount, verseCount),
             },
             {
-              label: 'Verses with incoming links',
+              label: t('Verses with incoming links'),
               value: withShare(stats.targetVerseCount, verseCount),
             },
             {
-              label: 'Verses without any link',
+              label: t('Verses without any link'),
               value: withShare(stats.unconnectedVerses.length, verseCount),
             },
             {
-              label: 'Links per verse (avg.)',
+              label: t('Links per verse (avg.)'),
               value: formatDecimal(stats.linkCount / Math.max(stats.sourceVerseCount, 1)),
             },
-            { label: 'Links to a range', value: withShare(stats.rangeLinkCount, stats.linkCount) },
-            { label: '… spanning chapters', value: formatInteger(stats.crossChapterRangeCount) },
-            { label: '… spanning books', value: formatInteger(stats.crossBookRangeCount) },
             {
-              label: '… containing their source',
+              label: t('Links to a range'),
+              value: withShare(stats.rangeLinkCount, stats.linkCount),
+            },
+            { label: t('… spanning chapters'), value: formatInteger(stats.crossChapterRangeCount) },
+            { label: t('… spanning books'), value: formatInteger(stats.crossBookRangeCount) },
+            {
+              label: t('… containing their source'),
               value: formatInteger(stats.selfInclusiveLinkCount),
             },
             {
-              label: 'Longest range',
+              label: t('Longest range'),
               value: longestRange ? (
                 <>
                   <VerseLink verse={longestRange.targetStart} rangeEnd={longestRange.targetEnd} />{' '}
-                  (from <VerseLink verse={longestRange.from} />,{' '}
-                  {formatInteger(longestRange.targetEnd - longestRange.targetStart + 1)} verses)
+                  {t('(from')} <VerseLink verse={longestRange.from} />,{' '}
+                  {formatInteger(longestRange.targetEnd - longestRange.targetStart + 1)}{' '}
+                  {t('verses)')}
                 </>
               ) : (
                 '—'
@@ -118,27 +124,27 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
 
       <div className={styles.columns}>
         <div>
-          <h3 className={styles.subheading}>Votes</h3>
+          <h3 className={styles.subheading}>{t('Votes')}</h3>
           <KeyValueList
             items={[
               {
-                label: 'Min / max',
+                label: t('Min / max'),
                 value: `${formatInteger(stats.votes.min)} / ${formatInteger(stats.votes.max)}`,
               },
-              { label: 'Mean', value: formatDecimal(stats.votes.mean) },
-              { label: 'Median', value: formatDecimal(stats.votes.median) },
+              { label: t('Mean'), value: formatDecimal(stats.votes.mean) },
+              { label: t('Median'), value: formatDecimal(stats.votes.median) },
             ]}
           />
         </div>
         <DataTable
-          caption="Vote distribution"
+          caption={t('Vote distribution')}
           rows={stats.votes.histogram}
           rowKey={(bucket) => bucket.label}
           columns={[
-            { header: 'Votes', render: (bucket) => bucket.label },
-            { header: 'Links', align: 'end', render: (bucket) => formatInteger(bucket.count) },
+            { header: t('Votes'), render: (bucket) => bucket.label },
+            { header: t('Links'), align: 'end', render: (bucket) => formatInteger(bucket.count) },
             {
-              header: 'Share',
+              header: t('Share'),
               align: 'end',
               render: (bucket) => formatShare(bucket.count, stats.linkCount),
             },
@@ -151,18 +157,18 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
           ]}
         />
         <DataTable
-          caption="Links kept by a minimum-votes threshold"
+          caption={t('Links kept by a minimum-votes threshold')}
           rows={stats.votes.thresholds}
           rowKey={(threshold) => threshold.minVotes}
           columns={[
-            { header: 'Min. votes', render: (threshold) => `≥ ${threshold.minVotes}` },
+            { header: t('Min. votes'), render: (threshold) => `≥ ${threshold.minVotes}` },
             {
-              header: 'Links',
+              header: t('Links'),
               align: 'end',
               render: (threshold) => formatInteger(threshold.count),
             },
             {
-              header: 'Share',
+              header: t('Share'),
               align: 'end',
               render: (threshold) => formatShare(threshold.count, stats.linkCount),
             },
@@ -172,11 +178,11 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
 
       <div className={styles.narrow}>
         <DataTable
-          caption="Links by testament (source → target)"
+          caption={t('Links by testament (source → target)')}
           rows={TESTAMENTS}
           rowKey={(testament) => testament}
           columns={[
-            { header: 'From \\ to', render: (from) => from },
+            { header: t('From \\ to'), render: (from) => from },
             ...TESTAMENTS.map((to) => ({
               header: to,
               align: 'end' as const,
@@ -188,35 +194,35 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
       </div>
 
       <div className={styles.columns}>
-        <VerseCountTable caption="Most outgoing links" rows={stats.topSources} />
-        <VerseCountTable caption="Most incoming links" rows={stats.topTargets} />
+        <VerseCountTable caption={t('Most outgoing links')} rows={stats.topSources} />
+        <VerseCountTable caption={t('Most incoming links')} rows={stats.topTargets} />
         <DataTable
-          caption="Most voted links"
+          caption={t('Most voted links')}
           rows={stats.topVotedLinkIds.map((id) => index.link(id))}
           rowKey={(link) => link.id}
           columns={[
-            { header: 'From', render: (link) => <VerseLink verse={link.from} /> },
+            { header: t('From'), render: (link) => <VerseLink verse={link.from} /> },
             {
-              header: 'To',
+              header: t('To'),
               render: (link) => <VerseLink verse={link.targetStart} rangeEnd={link.targetEnd} />,
             },
-            { header: 'Votes', align: 'end', render: (link) => formatInteger(link.votes) },
+            { header: t('Votes'), align: 'end', render: (link) => formatInteger(link.votes) },
           ]}
         />
       </div>
 
       <details>
-        <summary className={styles.summary}>Links by book</summary>
+        <summary className={styles.summary}>{t('Links by book')}</summary>
         <DataTable
           rows={stats.books}
           rowKey={(row) => row.book.id}
           columns={[
-            { header: 'Book', render: (row) => row.book.name },
-            { header: 'Verses', align: 'end', render: (row) => formatInteger(row.verseCount) },
-            { header: 'Outgoing', align: 'end', render: (row) => formatInteger(row.outgoing) },
-            { header: 'Incoming', align: 'end', render: (row) => formatInteger(row.incoming) },
+            { header: t('Book'), render: (row) => getDisplayBookName(row.book) },
+            { header: t('Verses'), align: 'end', render: (row) => formatInteger(row.verseCount) },
+            { header: t('Outgoing'), align: 'end', render: (row) => formatInteger(row.outgoing) },
+            { header: t('Incoming'), align: 'end', render: (row) => formatInteger(row.incoming) },
             {
-              header: 'Outgoing per verse',
+              header: t('Outgoing per verse'),
               align: 'end',
               render: (row) => formatDecimal(row.outgoing / row.verseCount),
             },
@@ -226,7 +232,8 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
 
       <details>
         <summary className={styles.summary}>
-          Verses without any link ({formatInteger(stats.unconnectedVerses.length)})
+          {t('Verses without any link (')}
+          {formatInteger(stats.unconnectedVerses.length)})
         </summary>
         <p className={styles.inlineList}>
           {stats.unconnectedVerses.map((verse) => (
@@ -236,7 +243,7 @@ export function CrossReferencesSection({ id, dataset }: CrossReferencesSectionPr
       </details>
 
       <div>
-        <h3 className={styles.subheading}>Import notices</h3>
+        <h3 className={styles.subheading}>{t('Import notices')}</h3>
         <NoticeList notices={dataset.notices} />
       </div>
     </Section>

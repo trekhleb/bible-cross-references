@@ -35,6 +35,213 @@ export interface AcceptanceCase {
 }
 
 export const BOOK_ACCEPTANCE: Readonly<Record<LocaleId, readonly AcceptanceCase[]>> = {
+  sl: [
+    {
+      typed: 'cetrtamojzesova 1:1',
+      expect: 'Num.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'cetrtaknjigamojzesova 1:1',
+      expect: 'Num.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '1kroniska 1:1',
+      expect: '1Chr.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '2kroniska 1:1',
+      expect: '2Chr.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'zalostinke 1:1',
+      expect: 'Lam.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'zal 1:1',
+      expect: 'Lam.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'zalostinkejeremija 1:1',
+      expect: 'Lam.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'zalostinkejeremijeve 1:1',
+      expect: 'Lam.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'matevz 1:1',
+      expect: 'Matt.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'svmatevz 1:1',
+      expect: 'Matt.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'evangelijposvmatevzu 1:1',
+      expect: 'Matt.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'lukez 1:1',
+      expect: 'Luke.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'svlukez 1:1',
+      expect: 'Luke.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'evangelijposvlukezu 1:1',
+      expect: 'Luke.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '1korincanom 1:1',
+      expect: '1Cor.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'prvilistkorincanom 1:1',
+      expect: '1Cor.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'korincanomprvi 1:1',
+      expect: '1Cor.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '2korincanom 1:1',
+      expect: '2Cor.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'drugilistkorincanom 1:1',
+      expect: '2Cor.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'korincanomdrugi 1:1',
+      expect: '2Cor.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'galacanom 1:1',
+      expect: 'Gal.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'efezanom 1:1',
+      expect: 'Eph.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'efez 1:1',
+      expect: 'Eph.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'kolosanom 1:1',
+      expect: 'Col.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '1tesalonicanom 1:1',
+      expect: '1Thess.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'prvilisttesalonicanom 1:1',
+      expect: '1Thess.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'tesalonicanomprvi 1:1',
+      expect: '1Thess.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '2tesalonicanom 1:1',
+      expect: '2Thess.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'drugilisttesalonicanom 1:1',
+      expect: '2Thess.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'tesalonicanomdrugi 1:1',
+      expect: '2Thess.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: 'splosnilistjakobov 1:1',
+      expect: 'Jas.1.1',
+      note: 'Slovenian spelling typed without accents.',
+    },
+    {
+      typed: '1 Mz 1:1',
+      expect: 'Gen.1.1',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'Jn 3:16',
+      expect: 'John.3.16',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'Ps 23',
+      expect: 'Ps.23',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'Raz 22:21',
+      expect: 'Rev.22.21',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: '1 Kor 13',
+      expect: '1Cor.13',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'II Petrov list 1:1',
+      expect: '2Pet.1.1',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'Matej 5:9',
+      expect: 'Matt.5.9',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'Luka 1:1',
+      expect: 'Luke.1.1',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: 'Neznana 1',
+      expect: 'unknown',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+    {
+      typed: '2 Kr 2:1',
+      expect: '2Kgs.2.1',
+      note: 'Common Slovenian reference or explicit unknown book.',
+    },
+  ],
   en: [
     { typed: 'John 3:16', expect: 'John.3.16', note: 'The plain case: a full name and a verse.' },
     { typed: 'Gen 1:1', expect: 'Gen.1.1', note: 'The usual abbreviation.' },

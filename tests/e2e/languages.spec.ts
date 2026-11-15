@@ -334,3 +334,34 @@ test.describe('the chrome fits, in every language', () => {
     });
   }
 });
+
+test.describe('reading in Slovenian', () => {
+  test('opens the Chráska text and Slovenian book names through the locale path', async ({
+    page,
+  }) => {
+    await page.goto('./sl/threads/?t=chr1914-sl&ref=Gen.1.1');
+    await waitForApp(page);
+    await openPanel(page);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'sl');
+    await expect(
+      page.locator(PANEL).getByRole('heading', { name: '1. Mojzesova 1:1' }),
+    ).toBeVisible();
+    await expect(page.locator(PANEL)).toContainText('V začetku je ustvaril Bog nebesa in zemljo.');
+    const search = page.locator(ACTIVE).getByRole('searchbox');
+    await search.fill('5 Mz 1:1');
+    await search.press('Enter');
+    await expect(
+      page.locator(PANEL).getByRole('heading', { name: '5. Mojzesova 1:1' }),
+    ).toBeVisible();
+    await expect(page).toHaveURL(/ref=Deut.1.1/);
+    await expect(page).toHaveURL(/t=chr1914-sl/);
+  });
+
+  test('keeps existing translation-only links working', async ({ page }) => {
+    await open(page, '?t=chr1914-sl&ref=Gen.1.1');
+    await expect(page.locator(PANEL)).toContainText('V začetku je ustvaril Bog nebesa in zemljo.');
+    await expect(page.locator(ACTIVE).getByRole('button', { name: /Translation/ })).toContainText(
+      'CHR',
+    );
+  });
+});
