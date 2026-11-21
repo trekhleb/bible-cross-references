@@ -302,6 +302,12 @@ npm run data:fetch -- --update   # download and re-pin the new version
 npm run data:build               # rebuild, then review the numbers on /debug/
 ```
 
+The STEPBible files are the exception: their URLs name a commit of
+[STEPBible-Data](https://github.com/STEPBible/STEPBible-Data) rather than its `master` branch,
+because STEPBible edits the files in place and a branch URL breaks every pin the moment it does.
+To adopt a newer version, change that commit in each of their URLs in `data/sources.json` first,
+then run the two commands above.
+
 Then commit `data/raw/` and `data/sources.json`.
 
 ## Development
