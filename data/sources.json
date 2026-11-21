@@ -77,7 +77,7 @@
     {
       "id": "stepbible-tagnt-mat-jhn",
       "description": "Translators Amalgamated Greek NT (Matthew-John), word-per-line with Strongs",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAGNT%20Mat-Jhn%20-%20Translators%20Amalgamated%20Greek%20NT%20-%20STEPBible.org%20CC-BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Translators%20Amalgamated%20OT+NT/TAGNT%20Mat-Jhn%20-%20Translators%20Amalgamated%20Greek%20NT%20-%20STEPBible.org%20CC-BY.txt",
       "fileName": "stepbible-tagnt-mat-jhn.txt",
       "sha256": "ab8eaaeb68e17a1dcfa34e1e9350358f22f03bc2a97244d848750ad81044bc8e",
       "retrievedAt": "2026-10-16",
@@ -87,7 +87,7 @@
     {
       "id": "stepbible-tagnt-act-rev",
       "description": "Translators Amalgamated Greek NT (Acts-Revelation), word-per-line with Strongs",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAGNT%20Act-Rev%20-%20Translators%20Amalgamated%20Greek%20NT%20-%20STEPBible.org%20CC-BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Translators%20Amalgamated%20OT+NT/TAGNT%20Act-Rev%20-%20Translators%20Amalgamated%20Greek%20NT%20-%20STEPBible.org%20CC-BY.txt",
       "fileName": "stepbible-tagnt-act-rev.txt",
       "sha256": "524e32375361e6d3fa2f7ef00b87605fdc4317a762f395651a05fdc31ad031b7",
       "retrievedAt": "2026-10-16",
@@ -97,7 +97,7 @@
     {
       "id": "stepbible-tahot-gen-deu",
       "description": "Translators Amalgamated Hebrew OT (Genesis-Deuteronomy), word-per-line with Strongs",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAHOT%20Gen-Deu%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Translators%20Amalgamated%20OT+NT/TAHOT%20Gen-Deu%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
       "fileName": "stepbible-tahot-gen-deu.txt",
       "sha256": "e9b8546ee48fe0bfc57c3b70f5f40e98d96580e803526d19026224e31753368b",
       "retrievedAt": "2026-10-16",
@@ -107,7 +107,7 @@
     {
       "id": "stepbible-tahot-jos-est",
       "description": "Translators Amalgamated Hebrew OT (Joshua-Esther), word-per-line with Strongs",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAHOT%20Jos-Est%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Translators%20Amalgamated%20OT+NT/TAHOT%20Jos-Est%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
       "fileName": "stepbible-tahot-jos-est.txt",
       "sha256": "195fee1dc3653bab33701f170734eb894ed647c10cd08cc61749375fe8b73775",
       "retrievedAt": "2026-10-16",
@@ -117,7 +117,7 @@
     {
       "id": "stepbible-tahot-job-sng",
       "description": "Translators Amalgamated Hebrew OT (Job-Song of Songs), word-per-line with Strongs",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAHOT%20Job-Sng%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Translators%20Amalgamated%20OT+NT/TAHOT%20Job-Sng%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
       "fileName": "stepbible-tahot-job-sng.txt",
       "sha256": "bb508af3af07822fca84cc43a0eba79eb70eecf672aabc0245b8d8cecf329d96",
       "retrievedAt": "2026-10-16",
@@ -127,7 +127,7 @@
     {
       "id": "stepbible-tahot-isa-mal",
       "description": "Translators Amalgamated Hebrew OT (Isaiah-Malachi), word-per-line with Strongs",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Translators%20Amalgamated%20OT+NT/TAHOT%20Isa-Mal%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Translators%20Amalgamated%20OT+NT/TAHOT%20Isa-Mal%20-%20Translators%20Amalgamated%20Hebrew%20OT%20-%20STEPBible.org%20CC%20BY.txt",
       "fileName": "stepbible-tahot-isa-mal.txt",
       "sha256": "f3ded203d2a74d6368932c97ae550d1d0754b271af491dc0dedf36fe3ba0bcc5",
       "retrievedAt": "2026-10-16",
@@ -137,7 +137,7 @@
     {
       "id": "stepbible-tbesg",
       "description": "Translators Brief lexicon of Extended Strongs for Greek (dictionary forms and glosses)",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Lexicons/TBESG%20-%20Translators%20Brief%20lexicon%20of%20Extended%20Strongs%20for%20Greek%20-%20STEPBible.org%20CC%20BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Lexicons/TBESG%20-%20Translators%20Brief%20lexicon%20of%20Extended%20Strongs%20for%20Greek%20-%20STEPBible.org%20CC%20BY.txt",
       "fileName": "stepbible-tbesg.txt",
       "sha256": "312f723d7b8ef263bbdfb0451c9b8057125804dfff390b6f8544cff2a84b57f4",
       "retrievedAt": "2026-10-16",
@@ -147,7 +147,7 @@
     {
       "id": "stepbible-tbesh",
       "description": "Translators Brief lexicon of Extended Strongs for Hebrew (dictionary forms and glosses)",
-      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/master/Lexicons/TBESH%20-%20Translators%20Brief%20lexicon%20of%20Extended%20Strongs%20for%20Hebrew%20-%20STEPBible.org%20CC%20BY.txt",
+      "url": "https://raw.githubusercontent.com/STEPBible/STEPBible-Data/be4191f0082aeedddb0eff0c02c966292b2bd641/Lexicons/TBESH%20-%20Translators%20Brief%20lexicon%20of%20Extended%20Strongs%20for%20Hebrew%20-%20STEPBible.org%20CC%20BY.txt",
       "fileName": "stepbible-tbesh.txt",
       "sha256": "464dccadd95fd8620dd05fa0d7a4caba58ec3c4d5db3ebf38e43d046ca25b591",
       "retrievedAt": "2026-10-16",
